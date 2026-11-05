@@ -1269,6 +1269,16 @@ async function keeperChat(id) {
     else await maybeKeeperGift(id);
     return;
   }
+  if (id === 'workbench') {
+    const can = affordable();
+    const line = can.length ? `You've got enough for the ${can[0].name.toLowerCase()}${can.length > 1 ? ` and ${can.length - 1} more` : ''}. Want to see the plans?` : pick(['Measure twice, cut once.', 'Not enough energy for anything new yet.']);
+    if (await talk('bram', [line], ['See the plans', 'Later']) === 0) setTimeout(openBuild, 200);
+    return;
+  }
+  if (id === 'gym') {
+    if (await talk('dot', [pick(['Hey hey! Did you move today?', 'Worked out, walked, cooked, read? Tell me.'])], ['Log something', 'Later']) === 0) setTimeout(openLog, 200);
+    return;
+  }
   const [who, lines] = CHAT[id] || [];
   if (!who) return VISIT[id]();
   await talk(who, [pick(lines)]);
