@@ -33,7 +33,9 @@ const W = MAP[0].length;
 const D = MAP.length;
 const tileAt = (x, z) => (x < 0 || z < 0 || x >= W || z >= D ? 'w' : MAP[z][x]);
 const HEIGHT = { H: 1, '.': 0, '#': 0, S: 0.5, s: -0.2, w: -0.8 };
-const tileH = (x, z) => HEIGHT[tileAt(x, z)];
+// The fishing dock: wooden planks over the sand and water you can walk on.
+const DOCK = new Set(['8,17', '8,18', '8,19']);
+const tileH = (x, z) => (DOCK.has(`${x},${z}`) ? -0.1 : HEIGHT[tileAt(x, z)]);
 
 const HOME = [9, 8];     // where Pip stands: the plaza in front of the cottage
 
@@ -641,9 +643,31 @@ function workbenchModel() {
   for (let i = 0; i < 3; i++) { const p = box(0.08, 0.7, 0.03, '#e8c08a', 0.55 + i * 0.04, 0.34, 0.15 - i * 0.08, g); p.rotation.z = -0.25; }
   return g;
 }
+function dockModel() {
+  const g = new THREE.Group(); // origin at (8.5, 18.5)
+  const wood = M('#c98f55'), dark = M('#8a5a35');
+  for (let i = 0; i < 9; i++) box(1.0, 0.06, 0.3, i % 2 ? wood : M('#d39c62'), 0, -0.1, -1.55 + i * 0.36, g);
+  for (const x of [-0.45, 0.45]) {
+    box(0.06, 0.08, 3.2, dark, x, -0.06, -0.15, g);
+    for (const z of [-0.3, 0.7, 1.4]) cyl(0.06, 0.06, 0.9, dark, x, -0.45, z, g, 8);
+  }
+  cyl(0.06, 0.06, 0.5, dark, 0.45, 0.1, 1.4, g, 8);
+  cyl(0.06, 0.06, 0.5, dark, -0.45, 0.1, 1.4, g, 8);
+  // a bucket at the end
+  cyl(0.12, 0.1, 0.2, '#7a8ca8', 0.3, 0.0, 1.1, g, 12);
+  return g;
+}
+function fishMesh(color) {
+  const g = new THREE.Group();
+  const body = sph(0.16, color, 0, 0, 0, g, 14); body.scale.set(1.5, 0.9, 0.55);
+  const tail = mesh(new THREE.ConeGeometry(0.12, 0.18, 4), M(color), -0.3, 0, 0, g); tail.rotation.z = Math.PI / 2;
+  sph(0.03, '#2a2320', 0.15, 0.04, 0.07, g, 6);
+  return g;
+}
 const STATIONS = {
   library:   { model: libraryModel,   tiles: [[2, 8], [3, 8], [2, 9], [3, 9]],      at: [3.0, 9.0],  approach: [3, 10], labelY: 2.7, keeper: makeMaple, keeperAt: [4, 9] },
   gym:       { model: gymModel,       tiles: [[16, 8], [17, 8], [16, 9], [17, 9]],  at: [17.0, 9.0], approach: [17, 10], labelY: 1.7, keeper: makeDot,   keeperAt: [15, 9] },
+  dock:      { model: dockModel,      tiles: [],                                    at: [8.5, 18.5], approach: [8, 19], labelY: 1.1 },
   workbench: { model: workbenchModel, tiles: [[10, 6]],                              at: [10.5, 6.5], approach: [10, 7], labelY: 1.4, keeper: makeBram,  keeperAt: [11, 7] },
 };
 
@@ -888,6 +912,7 @@ export class World {
       this.scene.add(m);
       this.stations.set(id, m);
       st.tiles.forEach(([x, z]) => this.occupied.add(`${x},${z}`));
+      if (!st.keeper) continue;
       const k = st.keeper();
       const [kx, kz] = st.keeperAt;
       k.position.set(kx + 0.5, tileH(kx, kz), kz + 0.5);
@@ -1042,9 +1067,56 @@ export class World {
     return url;
   }
 
+  // ── Fishing ─────────────────────────────────────────────────────────
+  fishStart() {
+    this.state = 'fish';
+    this.faceAngle = 0;
+    const { body } = this.creature.userData;
+    if (!this.rod) {
+      this.rod = new THREE.Group();
+      const pole = cyl(0.012, 0.02, 1.1, '#8a5a35', 0, 0.55, 0, this.rod, 6); void pole;
+      this.rodTip = new THREE.Object3D(); this.rodTip.position.y = 1.1; this.rod.add(this.rodTip);
+      this.rod.position.set(0.17, 0.2, 0.08); this.rod.rotation.x = 0.9;
+      this.bobber = new THREE.Group();
+      sph(0.06, '#e5483b', 0, 0.03, 0, this.bobber, 10);
+      sph(0.045, '#ffffff', 0, 0.08, 0, this.bobber, 10);
+      this.line = new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3()]), new THREE.LineBasicMaterial({ color: '#ffffff' }));
+      this.scene.add(this.bobber, this.line);
+    }
+    body.add(this.rod);
+    this.rod.visible = this.bobber.visible = this.line.visible = true;
+    const from = this.pos.clone().add(new THREE.Vector3(0.2, 1.4, 0.3));
+    const to = new THREE.Vector3(this.pos.x + 0.1, -0.3, this.pos.z + 2.0);
+    this.bobberRest = to.clone();
+    this.biting = false;
+    this.casting = true;
+    this._anim(0.3, (t) => { this.rod.rotation.x = 0.9 - Math.sin(t * Math.PI) * 1.4; });
+    this._anim(0.7, (t) => {
+      this.bobber.position.lerpVectors(from, to, t);
+      this.bobber.position.y = from.y + (to.y - from.y) * t + Math.sin(t * Math.PI) * 0.8;
+      if (t === 1) { this.casting = false; this._marker(Math.floor(to.x), Math.floor(to.z), to); }
+    });
+  }
+  fishBite(on = true) { this.biting = on; }
+  fishEnd(color) {
+    this.biting = false;
+    if (this.rod) this.rod.visible = this.bobber.visible = this.line.visible = false;
+    this.state = 'idle'; this.idleTimer = 5;
+    if (!color) return;
+    const f = fishMesh(color);
+    this.scene.add(f);
+    this.hop();
+    this._anim(2.6, (t) => {
+      f.position.set(this.pos.x, this.pos.y + 1.55 + Math.sin(t * Math.PI * 6) * 0.03, this.pos.z + 0.1);
+      f.rotation.z = Math.sin(t * Math.PI * 10) * 0.25 * (1 - t);
+      f.scale.setScalar(t < 0.1 ? t * 10 : t > 0.9 ? (1 - t) * 10 : 1);
+      if (t === 1) this.scene.remove(f);
+    });
+  }
+
   // ── Movement ─────────────────────────────────────────────────────────
   _tileOf(p) { return [Math.floor(p.x), Math.floor(p.z)]; }
-  _walkable(x, z) { return tileAt(x, z) !== 'w' && !this.occupied.has(`${x},${z}`); }
+  _walkable(x, z) { return (tileAt(x, z) !== 'w' || DOCK.has(`${x},${z}`)) && !this.occupied.has(`${x},${z}`); }
   // Height of the ground under a point; stairs are a smooth ramp.
   _groundY(x, z) {
     const tx = Math.floor(x), tz = Math.floor(z);
@@ -1098,8 +1170,10 @@ export class World {
     const arrive = () => {
       this.state = 'idle'; this.idleTimer = 6;
       const k = this.keepers.get(id);
-      this._faceToward(k.position);
-      k.userData.face = Math.atan2(this.pos.x - k.position.x, this.pos.z - k.position.z);
+      if (k) {
+        this._faceToward(k.position);
+        k.userData.face = Math.atan2(this.pos.x - k.position.x, this.pos.z - k.position.z);
+      } else this.faceAngle = 0; // the dock: face the sea
       this.hop();
       this._emit('station', id);
     };
@@ -1136,10 +1210,10 @@ export class World {
     body.rotation.z = Math.sin(time * 14) * 0.12;
     body.position.y = Math.abs(Math.sin(time * 14)) * 0.05;
   }
-  _marker(x, z) {
+  _marker(x, z, at) {
     const ring = new THREE.Mesh(new THREE.RingGeometry(0.22, 0.3, 24), new THREE.MeshBasicMaterial({ color: '#fff8e4', transparent: true, opacity: 0.9 }));
     ring.rotation.x = -Math.PI / 2;
-    ring.position.set(x + 0.5, tileH(x, z) + 0.02, z + 0.5);
+    if (at) ring.position.set(at.x, at.y + 0.04, at.z); else ring.position.set(x + 0.5, tileH(x, z) + 0.02, z + 0.5);
     this.scene.add(ring);
     this._anim(0.8, (t) => {
       ring.scale.setScalar(1 + t * 0.6);
@@ -1315,6 +1389,9 @@ export class World {
         else { this._fidget(); this.idleTimer = 3 + Math.random() * 4; }
       }
       if (Math.random() < dt * 0.35) this._blink();
+    } else if (this.state === 'fish') {
+      body.rotation.z *= 0.9;
+      body.position.y = Math.sin(time * 2) * 0.01;
     } else if (this.state === 'nap') {
       body.position.y = 0;
       head.position.y = 0.55 + Math.sin(time * 1.4) * 0.015;
@@ -1340,6 +1417,15 @@ export class World {
       }
     }
 
+    if (this.rod && this.rod.visible) {
+      if (this.bobberRest && !this.casting) {
+        const dip = this.biting ? (Math.sin(time * 18) > 0.3 ? -0.12 : -0.02) : Math.sin(time * 2.5) * 0.015;
+        this.bobber.position.set(this.bobberRest.x, this.bobberRest.y + dip, this.bobberRest.z);
+      }
+      const tip = this.rodTip.getWorldPosition(new THREE.Vector3());
+      this.line.geometry.setFromPoints([tip, this.bobber.position.clone().add(new THREE.Vector3(0, 0.1, 0))]);
+    }
+
     // ambient life
     this.waterTex.offset.x = time * 0.01; this.waterTex.offset.y = Math.sin(time * 0.3) * 0.02;
     for (const t of this.sways) t.rotation.z = Math.sin(time * 0.8 + t.userData.sway) * 0.012;
@@ -1356,7 +1442,7 @@ export class World {
     // camera — tilted top-down diorama
     const follow = new THREE.Vector3(
       Math.max(4.5, Math.min(W - 4.5, this.pos.x)), 0,
-      Math.max(5, Math.min(D - 4.5, this.pos.z - 1)));
+      Math.max(5, Math.min(D - 2.5, this.pos.z - 1)));
     this.target.lerp(follow, Math.min(1, dt * 3));
     const pitch = THREE.MathUtils.degToRad(42);
     this.camera.position.set(this.target.x, Math.sin(pitch) * this.dist, this.target.z + Math.cos(pitch) * this.dist);

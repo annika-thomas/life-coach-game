@@ -3,6 +3,7 @@ import { ITEMS, ITEM_BY_ID } from './items.js';
 import { LESSONS, CATEGORIES } from './lessons.js';
 import { load, save, reset, dayKey, rhythm } from './state.js';
 import { ICON, leafAmt } from './icons.js';
+import { QUIZ } from './quiz.js';
 
 let S = load();
 const $ = (sel) => document.querySelector(sel);
@@ -111,6 +112,7 @@ function talk(who, lines, choices = null) {
     };
     const showChoices = () => {
       choicesEl.innerHTML = choices.map((t, k) => `<button class="choice" data-k="${k}">${esc(t)}</button>`).join('');
+      choicesEl.classList.toggle('two', choices.length === 2);
       choicesEl.classList.add('show');
       choicesEl.querySelectorAll('.choice').forEach((b) => b.onclick = (e) => { e.stopPropagation(); talking.finish(+b.dataset.k); });
     };
@@ -140,7 +142,7 @@ const places = [...document.querySelectorAll('.place')];
 places.forEach((el) => { el.onclick = () => world.visit(el.dataset.place); });
 function positionPlaces() {
   const vw = window.innerWidth, vh = window.innerHeight;
-  const hide = sheet.classList.contains('open') || dlg.classList.contains('show');
+  const hide = sheet.classList.contains('open') || dlg.classList.contains('show') || fishing;
   for (const el of places) {
     el.classList.toggle('hidden', hide);
     if (hide) continue;
@@ -179,6 +181,11 @@ const VISIT = {
          'Worked out, went for a walk, cooked a real meal, read a real book? It all counts. Tell me and ' + S.creatureName + ' gets 2 energy.']
       : [pick(['What did you get up to today?', 'Moved your body? Tell me everything.', 'Every bit counts. What was it?', 'Ready when you are, champ.'])];
     if (await talk('dot', lines, ['Log something', 'Not yet']) === 0) setTimeout(openLog, 200);
+  },
+  async dock() {
+    const rev = nextReview();
+    const line = !rev ? 'The water is calm.' : rev.due ? 'Something is moving under the water.' : 'The water is calm. Something might still bite.';
+    if (await talk('note', [line], ['Cast a line', 'Leave']) === 0) setTimeout(goFishing, 200);
   },
   async workbench() {
     const can = affordable();
@@ -286,20 +293,33 @@ function chipsHtml() {
   return `<div class="chips">${Object.entries(CATEGORIES).map(([k, c]) =>
     `<button class="chip ${filters.has(k) ? 'on' : ''}" data-cat="${k}" style="--c:${c.color}"><i></i>${c.label}</button>`).join('')}</div>`;
 }
+const shuffle = (a) => { const b = a.slice(); for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; };
+
+// A card: guess first (multiple choice), then the reading unlocks, then an
+// optional "your take". Guessing before reading helps you remember it.
 function cardHtml(l) {
   const c = CATEGORIES[l.cat];
   const prior = S.lessons.some((x) => x.id === l.id);
   const unlock = l.unlocks && ITEM_BY_ID[l.unlocks];
+  const g = QUIZ[l.id][0];
   return `<article class="card" data-id="${l.id}">
     <div class="card-tag" style="--c:${c.color}">${c.label}${prior ? ' · reread' : ''}</div>
     <h3>${esc(l.title)}</h3>
-    ${l.body.map((p) => `<p>${esc(p)}</p>`).join('')}
-    ${unlock ? `<div class="card-unlock">Counts toward the ${esc(unlock.name.toLowerCase())}</div>` : ''}
-    <div class="asks"><span class="asks-who">Maple asks</span>${esc(l.question)}</div>
-    <textarea rows="3" placeholder="Your take. A sentence or two is plenty."></textarea>
-    <div class="card-actions">
-      <button class="btn ghost skip">Skip</button>
-      <button class="btn primary answer" disabled>Answer <span class="amt">${ICON.leaf}+1</span></button>
+    <div class="guess">
+      <span class="guess-label">Guess first</span>
+      <p class="guess-q">${esc(g.q)}</p>
+      <div class="opts">${shuffle([g.a, ...g.w]).map((o) => `<button class="opt" data-right="${o === g.a ? 1 : 0}">${esc(o)}</button>`).join('')}</div>
+      <p class="guess-result"></p>
+    </div>
+    <div class="reading">
+      ${l.body.map((p) => `<p>${esc(p)}</p>`).join('')}
+      ${unlock ? `<div class="card-unlock">Counts toward the ${esc(unlock.name.toLowerCase())}</div>` : ''}
+      <div class="asks"><span class="asks-who">Maple asks</span>${esc(l.question)}</div>
+      <textarea rows="2" placeholder="Your take (optional, +1 bonus)"></textarea>
+      <div class="card-actions">
+        <button class="btn ghost skip">Skip</button>
+        <button class="btn primary answer">Done <span class="amt">${ICON.leaf}<span class="n">+1</span></span></button>
+      </div>
     </div>
   </article>`;
 }
@@ -307,25 +327,37 @@ function openLessons(first) {
   openSheet('Library', `${chipsHtml()}<div id="feed"></div>`, 'lessons');
   const feed = $('#feed');
   const shown = [];
-  let answered = 0;
-  onClose = () => { if (answered) talk('maple', [answered > 1 ? `${answered} cards! ${S.creatureName} is buzzing.` : pick(['Good thinking. Come back anytime.', 'I\'ll keep a few more on the shelf for you.'])]); };
+  let done = 0;
+  onClose = () => { if (done) talk('maple', [done > 1 ? `${done} cards! The fish at the dock will be asking about those.` : pick(['Good reading. The fish might quiz you on that later.', 'I\'ll keep a few more on the shelf for you.'])]); };
   const append = (l = nextLesson(shown)) => {
     shown.push(l.id);
     feed.insertAdjacentHTML('beforeend', cardHtml(l));
     wire(feed.lastElementChild, l);
   };
   const wire = (card, l) => {
+    let guessedRight = null;
     const ta = card.querySelector('textarea');
     const btn = card.querySelector('.answer');
-    ta.addEventListener('input', () => { btn.disabled = ta.value.trim().length < 3; });
+    card.querySelectorAll('.opt').forEach((o) => o.onclick = () => {
+      if (guessedRight !== null) return;
+      guessedRight = o.dataset.right === '1';
+      card.querySelectorAll('.opt').forEach((x) => { x.disabled = true; if (x.dataset.right === '1') x.classList.add('right'); });
+      if (!guessedRight) o.classList.add('wrong');
+      card.querySelector('.guess-result').textContent = guessedRight ? 'Nice guess. Here\'s the story.' : 'Not quite. Read on to see why.';
+      card.classList.add('guessed');
+    });
+    ta.addEventListener('input', () => { btn.querySelector('.n').textContent = ta.value.trim().length >= 3 ? '+2' : '+1'; });
     btn.onclick = () => {
-      S.lessons.push({ id: l.id, cat: l.cat, answer: ta.value.trim(), ts: Date.now() });
+      const take = ta.value.trim();
+      const gain = take.length >= 3 ? 2 : 1;
+      S.lessons.push({ id: l.id, cat: l.cat, answer: take, guessed: guessedRight, ts: Date.now() });
       S.skipped = S.skipped.filter((x) => x !== l.id);
-      S.energy += 1; answered += 1;
+      scheduleNew(l.id);
+      S.energy += gain; done += 1;
       commit();
-      floatReward(1, btn);
+      floatReward(gain, btn);
       card.classList.add('done');
-      card.querySelector('.card-actions').innerHTML = `<div class="answered">${ICON.check} Answered</div>`;
+      card.querySelector('.card-actions').innerHTML = `<div class="answered">${ICON.check} Done. You'll see this one again at the dock.</div>`;
       ta.readOnly = true;
       newlyUnlocked();
       append();
@@ -347,6 +379,166 @@ function openLessons(first) {
     if (open) open.remove();
     append();
   });
+}
+
+// ── Spaced review (drives the fishing questions) ──────────────────────
+// Leitner boxes: right answers push a card further out, wrong ones reset it.
+const DAY = 864e5;
+const BOX_DAYS = { 1: 1 / 48, 2: 1, 3: 3, 4: 7, 5: 21 };
+S.reviews = S.reviews || {};
+S.fish = S.fish || [];
+for (const l of S.lessons) if (!S.reviews[l.id]) S.reviews[l.id] = { box: 1, due: Date.now(), n: 0, last: 0 };
+function scheduleNew(id) {
+  if (!S.reviews[id]) S.reviews[id] = { box: 1, due: Date.now() + BOX_DAYS[1] * DAY, n: 0, last: Date.now() };
+}
+function nextReview() {
+  const ids = Object.keys(S.reviews).filter((id) => QUIZ[id]);
+  if (!ids.length) return null;
+  const now = Date.now();
+  const due = ids.filter((id) => S.reviews[id].due <= now).sort((a, b) => S.reviews[a].due - S.reviews[b].due);
+  const id = due[0] || ids.sort((a, b) => S.reviews[a].last - S.reviews[b].last)[0];
+  const r = S.reviews[id];
+  const qs = QUIZ[id];
+  return { id, box: r.box, q: qs[(r.n + 1) % qs.length], due: !!due.length };
+}
+function grade(id, right) {
+  const r = S.reviews[id];
+  r.box = right ? Math.min(5, r.box + 1) : 1;
+  r.due = Date.now() + (right ? BOX_DAYS[r.box] : 1 / 144) * DAY;
+  r.n += 1; r.last = Date.now();
+}
+
+// ── Fishing ────────────────────────────────────────────────────────────
+// Cast, wait for a bite, reel it in, then answer a question about something
+// you read to land the fish. Older, well-known cards hook rarer fish.
+const FISH = [
+  { id: 'minnow',   name: 'Minnow',        tier: 0, color: '#9fb7c9' },
+  { id: 'bluegill', name: 'Bluegill',      tier: 0, color: '#5b8fd6' },
+  { id: 'perch',    name: 'Perch',         tier: 0, color: '#d8b24a' },
+  { id: 'sardine',  name: 'Sardine',       tier: 0, color: '#a9c3d6' },
+  { id: 'bass',     name: 'Sea Bass',      tier: 1, color: '#6d7f8f' },
+  { id: 'mackerel', name: 'Mackerel',      tier: 1, color: '#4f8fa8' },
+  { id: 'snapper',  name: 'Red Snapper',   tier: 1, color: '#e0604a' },
+  { id: 'puffer',   name: 'Pufferfish',    tier: 1, color: '#e8c35a' },
+  { id: 'trout',    name: 'Rainbow Trout', tier: 2, color: '#e88fb0' },
+  { id: 'koi',      name: 'Koi',           tier: 2, color: '#f08a3c' },
+  { id: 'moonfish', name: 'Moonfish',      tier: 2, color: '#c9d3ff' },
+  { id: 'carp',     name: 'Golden Carp',   tier: 2, color: '#f2c94c' },
+];
+const TIER = [
+  { label: 'common', speed: 0.55, zone: 0.34 },
+  { label: 'uncommon', speed: 0.85, zone: 0.28 },
+  { label: 'rare', speed: 1.2, zone: 0.23 },
+];
+function rollFish(box) {
+  const r = Math.random();
+  const tier = box >= 4 ? (r < 0.6 ? 2 : 1) : box === 3 ? (r < 0.15 ? 2 : r < 0.85 ? 1 : 0) : (r < 0.15 ? 1 : 0);
+  return pick(FISH.filter((f) => f.tier === tier));
+}
+const fishSvg = (color, known = true) => `<svg class="fishsvg" viewBox="0 0 64 36"><path d="M8 18c8-12 26-14 38-6l10-8v28l-10-8C34 32 16 30 8 18z" fill="${known ? color : '#cfc6b0'}" stroke="#4a3b33" stroke-width="3" stroke-linejoin="round"/>${known ? '<circle cx="18" cy="16" r="2.6" fill="#2a2320"/>' : ''}</svg>`;
+
+const fishUI = $('#fish'), hint = $('#fish-hint'), reelEl = $('#reel'), zoneEl = $('#zone'), fishyEl = $('#fishy'), meterEl = $('#meter');
+let fishing = false;
+const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+// resolves true if tapped within ms
+function tapWithin(ms) {
+  return new Promise((resolve) => {
+    const t = setTimeout(() => { fishUI.onpointerdown = null; resolve(false); }, ms);
+    fishUI.onpointerdown = () => { clearTimeout(t); fishUI.onpointerdown = null; resolve(true); };
+  });
+}
+// Hold to raise the green bar; keep the fish inside it until the meter fills.
+function reel(tier) {
+  return new Promise((resolve) => {
+    const T = TIER[tier];
+    reelEl.classList.add('show');
+    zoneEl.style.height = `${T.zone * 100}%`;
+    let zone = 0.1, vel = 0, fish = 0.5, target = 0.5, nextTarget = 0, progress = 0.3, holding = false, last = performance.now();
+    fishUI.onpointerdown = () => { holding = true; };
+    fishUI.onpointerup = fishUI.onpointercancel = () => { holding = false; };
+    const step = (now) => {
+      const dt = Math.min(0.05, (now - last) / 1000); last = now;
+      vel += (holding ? 2.6 : -2.2) * dt;
+      vel = Math.max(-1.2, Math.min(1.2, vel));
+      zone += vel * dt;
+      if (zone < 0) { zone = 0; vel = Math.max(0, vel) * -0.3; }
+      if (zone > 1 - T.zone) { zone = 1 - T.zone; vel = 0; }
+      nextTarget -= dt;
+      if (nextTarget <= 0) { target = Math.random(); nextTarget = 0.5 + Math.random() * (1.4 - T.speed * 0.6); }
+      fish += Math.sign(target - fish) * Math.min(Math.abs(target - fish), T.speed * dt);
+      const inside = fish >= zone && fish <= zone + T.zone;
+      progress += (inside ? 0.32 : -0.22) * dt;
+      zoneEl.style.bottom = `${zone * 100}%`;
+      zoneEl.classList.toggle('on', inside);
+      fishyEl.style.bottom = `calc(${fish * 100}% - 12px)`;
+      meterEl.style.height = `${Math.max(0, Math.min(1, progress)) * 100}%`;
+      if (progress >= 1 || progress <= 0) {
+        fishUI.onpointerdown = fishUI.onpointerup = fishUI.onpointercancel = null;
+        reelEl.classList.remove('show');
+        return resolve(progress >= 1);
+      }
+      requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  });
+}
+async function goFishing() {
+  if (fishing) return;
+  const rev = nextReview();
+  if (!rev) {
+    await talk('note', ['Nothing is biting yet.', 'Fish here bite on things you\'ve read. Maple\'s library is up the road.']);
+    return;
+  }
+  fishing = true;
+  const fish = rollFish(rev.box);
+  fishUI.classList.add('show');
+  world.fishStart();
+  hint.textContent = 'Wait for a bite...';
+  await wait(1800 + Math.random() * 3500);
+  world.fishBite(true);
+  hint.textContent = 'Tap!';
+  hint.classList.add('bite');
+  const hooked = await tapWithin(1600);
+  hint.classList.remove('bite');
+  world.fishBite(false);
+  let landed = false;
+  if (hooked) {
+    hint.textContent = 'Hold to raise the bar. Keep the fish inside it.';
+    landed = await reel(fish.tier);
+  }
+  hint.textContent = '';
+  fishUI.classList.remove('show');
+  if (!hooked || !landed) {
+    world.fishEnd(null);
+    fishing = false;
+    const again = await talk('note', [hooked ? 'It got away!' : 'Too slow. It took the bait and left.'], ['Cast again', 'Done']);
+    if (again === 0) goFishing();
+    return;
+  }
+  // On the line: answer to land it.
+  const q = rev.q;
+  const opts = shuffle([q.a, ...q.w]);
+  const pickIdx = await talk('note', [`Something ${TIER[fish.tier].label} is on the line! ${q.q}`], opts);
+  const right = pickIdx !== null && opts[pickIdx] === q.a;
+  grade(rev.id, right);
+  const lesson = LESSONS.find((l) => l.id === rev.id);
+  if (right) {
+    const first = !S.fish.some((f) => f.species === fish.id);
+    S.fish.push({ species: fish.id, card: rev.id, ts: Date.now() });
+    S.energy += 1;
+    commit();
+    floatReward(1);
+    world.fishEnd(fish.color);
+    fishing = false;
+    const again = await talk('note', [`You caught a ${fish.name}!${first ? ' New to your collection.' : ''}`, q.why], ['Cast again', 'Done']);
+    if (again === 0) goFishing();
+  } else {
+    save(S);
+    world.fishEnd(null);
+    fishing = false;
+    const again = await talk('note', ['The fish slipped away!', `The answer was "${q.a}". ${q.why}`, `This one's from "${lesson.title}". It'll come back around soon.`], ['Cast again', 'Done']);
+    if (again === 0) goFishing();
+  }
 }
 
 // ── Gym: log real-world actions ───────────────────────────────────────
@@ -435,12 +627,16 @@ function openJournal() {
     <div class="stats">
       <div><b>${S.lessons.length}</b><small>cards</small></div>
       <div><b>${S.logs.length}</b><small>real things</small></div>
+      <div><b>${S.fish.length}</b><small>fish</small></div>
       <div><b>${S.built.length}</b><small>built</small></div>
     </div>
     <div class="catbars">${cats.map(({ c, n }) => `<span class="catbar" style="--c:${c.color}"><i></i>${c.label} ${n}</span>`).join('')}</div>
+    <h4>Fish caught</h4>
+    <div class="fishgrid">${FISH.map((f) => { const n = S.fish.filter((x) => x.species === f.id).length; return `<div class="fishcell ${n ? '' : 'unknown'}">${fishSvg(f.color, n > 0)}<small>${n ? `${esc(f.name)} ×${n}` : '???'}</small></div>`; }).join('')}</div>
     <h4>Your answers</h4>
     <div class="answers">${S.lessons.length ? S.lessons.slice().reverse().map((a) => {
       const l = LESSONS.find((x) => x.id === a.id);
+      if (!a.answer) return '';
       return l ? `<details><summary><i style="background:${CATEGORIES[a.cat].color}"></i>${esc(l.title)}</summary><p class="q">${esc(l.question)}</p><p class="a">${esc(a.answer)}</p></details>` : '';
     }).join('') : '<p class="lead">Nothing yet. Your answers collect here.</p>'}</div>
     <h4>Settings</h4>

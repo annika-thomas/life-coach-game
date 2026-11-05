@@ -229,7 +229,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .choices.show { opacity: 1; pointer-events: auto; transform: none; }
 .choice { min-width: 170px; padding: 10px 22px; border: 3px solid var(--ink); border-radius: 999px; background: #fffdf4; box-shadow: 0 3px 0 var(--ink);
   font-family: var(--display); font-weight: 800; font-size: 17px; text-align: right; }
-.choice:first-child { background: linear-gradient(#fff6c9, #ffd96a); }
+.choices.two .choice:first-child { background: linear-gradient(#fff6c9, #ffd96a); }
 .choice:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--ink); }
 
 /* no emojis: coloured dots, drawn icons, 3D thumbnails */
@@ -253,3 +253,48 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .thumb .lock .ico { width: 22px; height: 22px; }
 .item-cost .ico { width: 20px; height: 20px; }
 .item.locked { opacity: .8; }
+
+/* guess first, then read */
+.guess { background: #fff6dc; border: 2.5px solid var(--ink); border-radius: 18px; padding: 10px 12px 8px; margin: 8px 0 12px; }
+.guess-label { display: inline-block; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .5px; color: #b8352c; }
+.guess-q { font-family: var(--display); font-weight: 700; font-size: 18px; line-height: 1.3; margin: 2px 0 8px; }
+.opts { display: grid; gap: 6px; }
+.opt { text-align: left; padding: 9px 12px; border: 2.5px solid var(--ink); border-radius: 14px; background: #fffdf4; box-shadow: 0 2px 0 var(--ink); font-weight: 700; font-size: 15px; }
+.opt:disabled { color: var(--ink); opacity: .55; }
+.opt.right { background: #d8f6c4; opacity: 1; }
+.opt.wrong { background: #ffd6cf; opacity: 1; }
+.guess-result { margin: 8px 2px 0; font-weight: 800; min-height: 0; font-size: 14px; }
+.guess-result:empty { display: none; }
+.card .reading { display: none; }
+.card.guessed .reading { display: block; animation: fadein .35s; }
+@keyframes fadein { from { opacity: 0; transform: translateY(6px); } }
+.card textarea { margin-top: 10px; }
+
+/* longer quiz answers in dialogue choices */
+.choice { max-width: min(86vw, 420px); white-space: normal; line-height: 1.2; }
+
+/* fishing */
+.fish-ui { position: fixed; inset: 0; z-index: 15; display: none; touch-action: none; }
+.fish-ui.show { display: block; }
+.fish-hint { position: absolute; left: 50%; top: calc(var(--safe-t) + 120px); transform: translateX(-50%); margin: 0; padding: 8px 18px; max-width: 86vw; text-align: center;
+  background: var(--cream); border: 3px solid var(--ink); border-radius: 999px; font-family: var(--display); font-weight: 800; font-size: 17px; box-shadow: 0 3px 0 var(--ink); }
+.fish-hint:empty { display: none; }
+.fish-hint.bite { background: var(--coral); color: #fff; font-size: 30px; animation: pulse .35s ease-in-out infinite; }
+.reel { position: absolute; right: 22px; top: 50%; transform: translateY(-50%); display: none; gap: 8px; height: min(52vh, 360px); }
+.reel.show { display: flex; }
+.reel .track { position: relative; width: 58px; height: 100%; border: 3.5px solid var(--ink); border-radius: 18px; overflow: hidden;
+  background: linear-gradient(#7fd3e8, #2f8fa3); box-shadow: 0 4px 0 var(--ink); }
+.reel .zone { position: absolute; left: 4px; right: 4px; bottom: 0; border-radius: 12px; background: rgba(160, 230, 120, .55); border: 3px solid #2f7a28; }
+.reel .zone.on { background: rgba(160, 240, 110, .9); }
+.reel .fishy { position: absolute; left: 50%; width: 30px; height: 24px; margin-left: -15px; border-radius: 50% 40% 40% 50%; background: #f08a3c; border: 3px solid var(--ink); }
+.reel .fishy::after { content: ''; position: absolute; right: -10px; top: 3px; border: 6px solid transparent; border-left: 9px solid var(--ink); }
+.reel .meter { position: relative; width: 16px; height: 100%; border: 3px solid var(--ink); border-radius: 10px; background: #fffdf4; overflow: hidden; }
+.reel .meter b { position: absolute; left: 0; right: 0; bottom: 0; background: linear-gradient(#ffd96a, #6cc04a); }
+
+/* fish collection */
+.fishgrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.fishcell { display: flex; flex-direction: column; align-items: center; padding: 6px 2px; border: 2.5px solid var(--ink); border-radius: 14px; background: #eef9fc; text-align: center; }
+.fishcell.unknown { background: #f1ead6; border-color: #cdbf9c; }
+.fishcell small { font-weight: 800; font-size: 11px; line-height: 1.1; }
+.fishsvg { width: 46px; height: 26px; }
+.stats { grid-template-columns: repeat(4, 1fr); }
