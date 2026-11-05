@@ -87,7 +87,6 @@ function unlockSource(it) {
 $('#energy-ico').innerHTML = ICON.leaf;
 $('#btn-journal').innerHTML = ICON.journal;
 function renderHud() {
-  $('.place[data-place=workbench]').classList.toggle('ready', affordable().length > 0);
   const shown = Math.min(S.energy, 10);
   $('#energy-pips').innerHTML = Array.from({ length: 10 }, (_, i) => `<span class="pip ${i < shown ? 'on' : ''}"></span>`).join('');
   $('#energy-num').textContent = S.energy;
@@ -166,23 +165,23 @@ dlg.addEventListener('pointerup', () => talking && talking.advance());
 // ── Places on the island ──────────────────────────────────────────────
 const places = [...document.querySelectorAll('.place')];
 places.forEach((el) => { el.onclick = () => world.visit(el.dataset.place); });
+// No permanent signs: a place's name fades in only when Pip is right next to
+// it. The workbench "!" floats over Bram's head when something can be built.
 function positionPlaces() {
-  const vw = window.innerWidth, vh = window.innerHeight;
-  const hide = sheet.classList.contains('open') || dlg.classList.contains('show') || fishing;
+  const busy = sheet.classList.contains('open') || dlg.classList.contains('show') || fishing;
   for (const el of places) {
-    el.classList.toggle('hidden', hide);
-    if (hide) continue;
-    const p = world.stationScreenPos(el.dataset.place);
-    // Off-screen places stick to the nearest edge as a small tab you can still tap.
-    const top = 120, bottom = vh - 40, left = 46, right = vw - 46;
-    const off = !p.visible || p.x < left || p.x > right || p.y < top || p.y > bottom;
-    const x = Math.max(left + 14, Math.min(right - 14, p.x)), y = Math.max(top, Math.min(bottom, p.y));
-    // only the main places pin to the screen edge; district keepers just hide
-    if (off && !PINNED.includes(el.dataset.place)) { el.classList.add('hidden'); continue; }
-    el.classList.toggle('edge', off);
-    el.dataset.dir = p.x > right ? 'r' : p.x < left ? 'l' : p.y < top ? 'u' : 'd';
-    el.style.transform = `translate(${Math.round(off ? x : p.x)}px, ${Math.round(off ? y : p.y)}px) translate(-50%, ${off ? '-50%' : '-100%'})`;
+    const id = el.dataset.place;
+    const near = !busy && world.state !== 'walk' && world.stationDistance(id) < 1.6;
+    el.classList.toggle('show', near);
+    if (!near) continue;
+    const p = world.stationScreenPos(id);
+    el.style.transform = `translate(${Math.round(p.x)}px, ${Math.round(p.y)}px) translate(-50%, -100%)`;
   }
+  const alert = $('#bench-alert');
+  const kp = world.keeperScreenPos('workbench', 1.35);
+  const on = !busy && kp && kp.visible && affordable().length > 0 && world.stationDistance('workbench') >= 1.6;
+  alert.classList.toggle('show', !!on);
+  if (on) alert.style.transform = `translate(${Math.round(kp.x)}px, ${Math.round(kp.y)}px) translate(-50%, -100%)`;
 }
 world.onFrame = positionPlaces;
 
@@ -781,7 +780,7 @@ if (!S.introDone) {
       'Maple at the library and Dot at the gym can help with that.',
     ]);
     S.introDone = true; save(S);
-    toast('Tap a sign to visit. Tap the ground to walk.');
+    toast('Tap a building or someone to visit. Tap the ground to walk.');
   }, 2600);
 }
 

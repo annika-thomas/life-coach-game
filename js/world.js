@@ -1702,6 +1702,19 @@ export class World {
     if (path && path.length > 1) this._walk(path, arrive);
     else arrive();
   }
+  // How far Pip is from a place (tiles), for proximity name tags.
+  stationDistance(id) {
+    const st = STATIONS[id];
+    return Math.hypot(this.pos.x - (st.approach[0] + 0.5), this.pos.z - (st.approach[1] + 0.5));
+  }
+  keeperScreenPos(id, lift = 1.75) {
+    const k = this.keepers.get(id);
+    if (!k) return null;
+    const v = k.position.clone(); v.y += lift;
+    v.project(this.camera);
+    const r = this.canvas.getBoundingClientRect();
+    return { x: (v.x * 0.5 + 0.5) * r.width + r.left, y: (-v.y * 0.5 + 0.5) * r.height + r.top, visible: v.z < 1 && Math.abs(v.x) < 1 && Math.abs(v.y) < 1 };
+  }
   stationScreenPos(id) {
     const st = STATIONS[id];
     const v = new THREE.Vector3(st.at[0], st.labelY, st.at[1]).project(this.camera);

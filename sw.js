@@ -1,5 +1,5 @@
 // Offline cache for the app shell. Bump VERSION when files change.
-const VERSION = 'island-v14';
+const VERSION = 'island-v15';
 const FILES = [
   './', 'index.html', 'manifest.webmanifest', 'css/style.css',
   'js/app.js', 'js/world.js', 'js/items.js', 'js/lessons.js', 'js/state.js', 'js/icons.js', 'js/quiz.js',

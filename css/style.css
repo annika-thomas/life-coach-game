@@ -324,3 +324,14 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .item.plan { background: #fffaf0; }
 .item.plan .item-cost { opacity: .5; }
 .place.small { font-size: 14px; min-height: 38px; padding: 2px 12px; }
+
+/* name tags only appear when Pip is next to a place */
+.place { opacity: 0; pointer-events: none; transition: opacity .25s; font-size: 14px; min-height: 34px; padding: 2px 12px; animation: none; }
+.place.show { opacity: 1; pointer-events: auto; }
+.place::after { display: none; }
+.bench-alert { position: fixed; left: 0; top: 0; z-index: 3; opacity: 0; pointer-events: none; transition: opacity .25s; }
+.bench-alert b { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center;
+  background: var(--coral); color: #fff; border: 3px solid var(--ink); box-shadow: 0 2px 0 var(--ink);
+  font-family: var(--display); font-weight: 800; font-size: 18px; line-height: 1; }
+.bench-alert.show { opacity: 1; }
+.bench-alert.show b { animation: pulse 1.2s ease-in-out infinite; }

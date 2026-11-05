@@ -36,7 +36,7 @@ Then open `http://localhost:8080`, or `http://<laptop-ip>:8080` from your phone 
 
 ## How it plays
 
-There are no menu buttons. You visit places on the island, each with a keeper. Tap a sign, a place or its keeper: Pip walks over, the keeper talks in the dialogue box, and you pick from the choices. The main places (Library, Gym, Workbench, Dock) pin to the screen edge when off-screen.
+There are no menu buttons. You visit places on the island, each with a keeper. Tap a building or its keeper: Pip walks over, the keeper talks in the dialogue box, and you pick from the choices. There are no permanent signs; a place's name fades in when Pip is standing next to it, and a "!" floats over Bram when something can be built.
 
 | Place | What it does |
 |---|---|
