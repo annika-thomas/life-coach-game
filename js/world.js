@@ -642,39 +642,39 @@ function workbenchModel() {
   return g;
 }
 const STATIONS = {
-  library:   { model: libraryModel,   tiles: [[3, 6], [4, 6], [3, 7], [4, 7]],      at: [4.0, 7.0],  approach: [3, 8],  labelY: 2.7 },
-  gym:       { model: gymModel,       tiles: [[12, 9], [13, 9], [12, 10], [13, 10]], at: [13.0, 10.0], approach: [12, 11], labelY: 1.7 },
-  workbench: { model: workbenchModel, tiles: [[9, 5]],                               at: [9.5, 5.5], approach: [9, 6],  labelY: 1.4 },
+  library:   { model: libraryModel,   tiles: [[3, 6], [4, 6], [3, 7], [4, 7]],      at: [4.0, 7.0],  approach: [3, 8],  labelY: 2.7, keeper: makeMaple, keeperAt: [4, 8] },
+  gym:       { model: gymModel,       tiles: [[12, 9], [13, 9], [12, 10], [13, 10]], at: [13.0, 10.0], approach: [12, 11], labelY: 1.7, keeper: makeDot,   keeperAt: [13, 11] },
+  workbench: { model: workbenchModel, tiles: [[9, 5]],                               at: [9.5, 5.5], approach: [9, 6],  labelY: 1.4, keeper: makeBram,  keeperAt: [10, 6] },
 };
 
 // ── The creature ───────────────────────────────────────────────────────
 // Pip: an original round sprout-creature in a striped knit sweater.
-function makeCreature() {
+// One rig for every character: big round head, tiny body, dot eyes, blush.
+// Options recolour it and add species details.
+function makeCritter(o) {
   const root = new THREE.Group();
   const body = new THREE.Group(); root.add(body);
-  const fur = M('#f7dcae');
-  const sweater = new THREE.MeshLambertMaterial({ map: stripeTex('#3fb3a5', '#f6ecd6', 6) });
-  const torso = sph(0.17, sweater, 0, 0.2, 0, body, 16); torso.scale.set(1, 1.05, 0.9);
-  for (const x of [-0.09, 0.09]) { const f = sph(0.06, '#8a5a35', x, 0.04, 0.03, body, 10); f.scale.set(1, 0.6, 1.3); }
+  const fur = M(o.fur);
+  const top = new THREE.MeshLambertMaterial({ map: stripeTex(o.top[0], o.top[1], 6) });
+  const torso = sph(0.17, top, 0, 0.2, 0, body, 16); torso.scale.set(1, 1.05, 0.9);
+  for (const x of [-0.09, 0.09]) { const f = sph(0.06, o.feet || '#8a5a35', x, 0.04, 0.03, body, 10); f.scale.set(1, 0.6, 1.3); }
   const arms = [];
-  for (const x of [-0.17, 0.17]) { const a = sph(0.055, fur, x, 0.22, 0.02, body, 10); arms.push(a); }
+  for (const x of [-0.17, 0.17]) arms.push(sph(0.055, fur, x, 0.22, 0.02, body, 10));
   const head = new THREE.Group(); head.position.y = 0.55; body.add(head);
-  const skull = sph(0.3, fur, 0, 0, 0, head, 22); skull.scale.set(1.05, 0.95, 0.95);
-  // little round ears
-  for (const x of [-0.2, 0.2]) { const e = sph(0.08, fur, x, 0.22, -0.03, head, 10); e.scale.set(1, 1, 0.6); sph(0.045, '#f3a9a0', x, 0.22, 0.01, head, 8).scale.set(1, 1, 0.3); }
-  // sprout
-  cyl(0.012, 0.012, 0.12, '#4fa53a', 0, 0.33, 0, head, 5);
-  for (const s of [-1, 1]) { const l = sph(0.07, '#6cc04a', s * 0.06, 0.4, 0, head, 10); l.scale.set(1.2, 0.45, 0.7); l.rotation.z = s * 0.5; }
-  // face
+  const skull = sph(0.3, fur, 0, 0, 0, head, 22); skull.scale.set(...(o.skull || [1.05, 0.95, 0.95]));
+  if (o.ears !== false) {
+    for (const x of [-0.2, 0.2]) { const e = sph(0.08, fur, x, 0.22, -0.03, head, 10); e.scale.set(1, 1, 0.6); sph(0.045, o.innerEar || '#f3a9a0', x, 0.22, 0.01, head, 8).scale.set(1, 1, 0.3); }
+  }
   const eyes = [];
+  const ey = o.eyeY ?? 0.02;
   for (const x of [-0.1, 0.1]) {
-    const e = sph(0.046, '#2a2320', x, 0.02, 0.27, head, 10); e.scale.set(0.85, 1.15, 0.6); eyes.push(e);
-    sph(0.012, '#ffffff', x + 0.012, 0.045, 0.3, head, 6);
+    const e = sph(0.046, '#2a2320', x, ey, 0.27, head, 10); e.scale.set(0.85, 1.15, 0.6); eyes.push(e);
+    sph(0.012, '#ffffff', x + 0.012, ey + 0.025, 0.3, head, 6);
   }
   const blushMat = new THREE.MeshBasicMaterial({ color: '#ff9a9a', transparent: true, opacity: 0.7 });
   for (const x of [-0.17, 0.17]) { const b = new THREE.Mesh(new THREE.CircleGeometry(0.045, 14), blushMat); b.position.set(x, -0.06, 0.255); b.rotation.y = x * 1.6; head.add(b); }
   const mouth = mesh(new THREE.TorusGeometry(0.025, 0.008, 6, 10, Math.PI), M('#5a3a2a'), 0, -0.05, 0.285, head); mouth.rotation.z = Math.PI;
-  // hammer (only while building)
+  if (o.extra) o.extra(head, body, fur);
   const hammer = new THREE.Group();
   box(0.025, 0.22, 0.025, '#8a5a35', 0, 0.11, 0, hammer);
   box(0.1, 0.06, 0.06, '#7a7f8a', 0, 0.22, 0, hammer);
@@ -682,6 +682,56 @@ function makeCreature() {
   root.userData = { body, head, eyes, arms, hammer };
   root.scale.setScalar(1.35);
   return root;
+}
+// Pip: a round sprout creature in a striped sweater.
+function makeCreature() {
+  return makeCritter({
+    fur: '#f7dcae', top: ['#3fb3a5', '#f6ecd6'],
+    extra: (head) => {
+      cyl(0.012, 0.012, 0.12, '#4fa53a', 0, 0.33, 0, head, 5);
+      for (const s of [-1, 1]) { const l = sph(0.07, '#6cc04a', s * 0.06, 0.4, 0, head, 10); l.scale.set(1.2, 0.45, 0.7); l.rotation.z = s * 0.5; }
+    },
+  });
+}
+// Maple, the librarian: a sheep in a plum cardigan and round glasses.
+function makeMaple() {
+  return makeCritter({
+    fur: '#fbf3e4', top: ['#8a5a9e', '#9d6db1'], ears: false, feet: '#5a4a44',
+    extra: (head) => {
+      const wool = M('#ffffff');
+      [[0, 0.24, 0, 0.13], [-0.14, 0.2, 0.02, 0.11], [0.14, 0.2, 0.02, 0.11], [-0.08, 0.28, -0.08, 0.1], [0.08, 0.28, -0.08, 0.1], [-0.24, 0.08, -0.04, 0.1], [0.24, 0.08, -0.04, 0.1]]
+        .forEach(([x, y, z, r]) => sph(r, wool, x, y, z, head, 12));
+      for (const s of [-1, 1]) { const e = sph(0.09, '#e9dcc6', s * 0.3, -0.02, -0.02, head, 10); e.scale.set(1.3, 0.5, 0.7); e.rotation.z = s * -0.4; }
+      for (const x of [-0.1, 0.1]) { const r = mesh(new THREE.TorusGeometry(0.06, 0.01, 6, 18), M('#5a3a2a'), x, 0.02, 0.28, head); void r; }
+      box(0.06, 0.012, 0.012, '#5a3a2a', 0, 0.03, 0.29, head);
+    },
+  });
+}
+// Dot, the coach: a frog in a red headband and tank top.
+function makeDot() {
+  return makeCritter({
+    fur: '#7cc96a', top: ['#f07a5f', '#ffffff'], ears: false, skull: [1.15, 0.85, 0.95], feet: '#5aa84a', eyeY: 0.08,
+    extra: (head, body, fur) => {
+      for (const x of [-0.12, 0.12]) sph(0.1, fur, x, 0.2, 0.08, head, 12);
+      const band = mesh(new THREE.TorusGeometry(0.3, 0.035, 8, 24), M('#e5483b'), 0, 0.06, 0, head);
+      band.rotation.x = Math.PI / 2; band.scale.set(1.15, 1, 1);
+      sph(0.07, '#e9f5c9', 0, -0.1, 0.22, head, 10).scale.set(1.6, 0.6, 0.6);
+    },
+  });
+}
+// Bram, the carpenter: a beaver in blue overalls and a hard hat.
+function makeBram() {
+  return makeCritter({
+    fur: '#b07a48', top: ['#3f6fb0', '#3f6fb0'], innerEar: '#8a5a35', feet: '#6b4a2b',
+    extra: (head, body) => {
+      sph(0.1, '#e2c49b', 0, -0.08, 0.22, head, 12).scale.set(1.3, 0.8, 0.8);
+      box(0.05, 0.05, 0.02, '#ffffff', -0.03, -0.17, 0.29, head); box(0.05, 0.05, 0.02, '#ffffff', 0.03, -0.17, 0.29, head);
+      const hat = mesh(new THREE.SphereGeometry(0.24, 18, 10, 0, Math.PI * 2, 0, Math.PI / 2), M('#f2c94c'), 0, 0.14, -0.01, head);
+      void hat;
+      cyl(0.27, 0.27, 0.025, '#f2c94c', 0, 0.14, 0.03, head, 18);
+      const tail = box(0.18, 0.04, 0.3, '#6b4a2b', 0, 0.08, -0.25, body); tail.rotation.x = -0.3;
+    },
+  });
 }
 
 // ── The world ──────────────────────────────────────────────────────────
@@ -830,6 +880,7 @@ export class World {
     for (const x of [5, 6, 7]) for (const z of [4, 5]) this.occupied.add(`${x},${z}`);
     this._place(mailbox(), 7, 6);
     this.stations = new Map();
+    this.keepers = new Map();
     for (const [id, st] of Object.entries(STATIONS)) {
       const m = st.model();
       m.position.set(st.at[0], 0, st.at[1]);
@@ -837,6 +888,15 @@ export class World {
       this.scene.add(m);
       this.stations.set(id, m);
       st.tiles.forEach(([x, z]) => this.occupied.add(`${x},${z}`));
+      const k = st.keeper();
+      const [kx, kz] = st.keeperAt;
+      k.position.set(kx + 0.5, tileH(kx, kz), kz + 0.5);
+      k.rotation.y = 0.35 * (kx > st.approach[0] ? -1 : 1);
+      k.traverse((o) => { o.userData.station = id; });
+      k.userData.phase = Math.random() * 6;
+      this.scene.add(k);
+      this.keepers.set(id, k);
+      this.occupied.add(`${kx},${kz}`);
     }
     const trees = [[1, 4, '#e8312f'], [14, 6, '#ff9f1c'], [0, 9, '#e8312f'], [15, 12, '#ff9f1c'], [5, 15, '#e8312f'], [3, 5, null], [10, 5, '#e8312f']];
     trees.forEach(([x, z, f], i) => { const t = this._place(tree(f, i + 3), x, z); this.sways.push(t); });
@@ -953,6 +1013,35 @@ export class World {
     return { x: (v.x * 0.5 + 0.5) * r.width + r.left, y: (-v.y * 0.5 + 0.5) * r.height + r.top };
   }
 
+  // Small 3D picture of a buildable, for the workbench list.
+  thumbnail(id) {
+    this._thumbs = this._thumbs || new Map();
+    if (this._thumbs.has(id)) return this._thumbs.get(id);
+    if (!BUILDERS[id]) return '';
+    if (!this._tr) {
+      const c = document.createElement('canvas'); c.width = c.height = 160;
+      this._tr = new THREE.WebGLRenderer({ canvas: c, antialias: true, alpha: true, preserveDrawingBuffer: true });
+      this._tr.setSize(160, 160, false);
+      this._ts = new THREE.Scene();
+      this._ts.add(new THREE.HemisphereLight('#fff6e0', '#9aa07a', 2.2));
+      const d = new THREE.DirectionalLight('#fff1d6', 2.2); d.position.set(-2, 4, 3); this._ts.add(d);
+      this._tc = new THREE.PerspectiveCamera(28, 1, 0.05, 50);
+    }
+    const m = BUILDERS[id]();
+    this._ts.add(m);
+    const bb = new THREE.Box3().setFromObject(m);
+    const size = bb.getSize(new THREE.Vector3()), center = bb.getCenter(new THREE.Vector3());
+    const r = Math.max(size.x, size.y, size.z);
+    const dist = r * 2.3 + 0.2;
+    this._tc.position.set(center.x + dist * 0.35, center.y + dist * 0.5, center.z + dist * 0.8);
+    this._tc.lookAt(center);
+    this._tr.render(this._ts, this._tc);
+    const url = this._tr.domElement.toDataURL();
+    this._ts.remove(m);
+    this._thumbs.set(id, url);
+    return url;
+  }
+
   // ── Movement ─────────────────────────────────────────────────────────
   _tileOf(p) { return [Math.floor(p.x), Math.floor(p.z)]; }
   _walkable(x, z) { return tileAt(x, z) !== 'w' && !this.occupied.has(`${x},${z}`); }
@@ -1008,7 +1097,9 @@ export class World {
     const [ax, az] = st.approach;
     const arrive = () => {
       this.state = 'idle'; this.idleTimer = 6;
-      this._faceToward(new THREE.Vector3(st.at[0], 0, st.at[1]));
+      const k = this.keepers.get(id);
+      this._faceToward(k.position);
+      k.userData.face = Math.atan2(this.pos.x - k.position.x, this.pos.z - k.position.z);
       this.hop();
       this._emit('station', id);
     };
@@ -1165,7 +1256,7 @@ export class World {
       const ndc = new THREE.Vector2(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
       ray.setFromCamera(ndc, this.camera);
       if (ray.intersectObject(this.creature, true).length) { this.hop(); this._emit('creatureTap'); return; }
-      const st = ray.intersectObjects([...this.stations.values()], true);
+      const st = ray.intersectObjects([...this.stations.values(), ...this.keepers.values()], true);
       if (st.length) { this.visit(st[0].object.userData.station); return; }
       const items = ray.intersectObjects([...this.built.values()], true);
       if (items.length) { this._emit('itemTap', items[0].object.userData.itemId); return; }
@@ -1235,6 +1326,18 @@ export class World {
     if (this.faceAngle !== undefined) {
       const diff = Math.atan2(Math.sin(this.faceAngle - c.rotation.y), Math.cos(this.faceAngle - c.rotation.y));
       c.rotation.y += diff * Math.min(1, dt * 10);
+    }
+
+    // keepers: gentle bob, blink, turn to face Pip when talking
+    for (const k of this.keepers.values()) {
+      const u = k.userData;
+      u.body.position.y = Math.sin(time * 2.2 + u.phase) * 0.015;
+      const blink = ((time + u.phase) % 4.5) < 0.12;
+      u.eyes.forEach((e) => { e.scale.y = blink ? 0.2 : 1.15; });
+      if (u.face !== undefined) {
+        const d = Math.atan2(Math.sin(u.face - k.rotation.y), Math.cos(u.face - k.rotation.y));
+        k.rotation.y += d * Math.min(1, dt * 6);
+      }
     }
 
     // ambient life

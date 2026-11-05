@@ -20,15 +20,15 @@
   <!-- HUD -->
   <div class="hud-top">
     <div class="clock" id="clock">
-      <span id="clock-icon" class="clock-icon">☀️</span>
-      <div><div id="clock-time" class="clock-time">--:--</div><div id="clock-day" class="clock-day">—</div></div>
+      <span id="clock-icon" class="clock-icon"></span>
+      <div><div id="clock-time" class="clock-time">--:--</div><div id="clock-day" class="clock-day"></div></div>
     </div>
     <div class="hud-right">
       <button class="energy" id="energy" aria-label="Energy">
-        <span class="energy-label">⚡ <span id="energy-num">0</span></span>
+        <span class="energy-label"><span id="energy-ico"></span><span id="energy-num">0</span></span>
         <span class="pips" id="energy-pips"></span>
       </button>
-      <button class="round-btn" id="btn-journal" aria-label="Journal">📔</button>
+      <button class="round-btn" id="btn-journal" aria-label="Journal"></button>
     </div>
   </div>
 
@@ -37,21 +37,28 @@
     <div class="posts"><i></i><i></i></div>
   </div>
 
-  <div class="bubble" id="bubble"></div>
+  <!-- dialogue: tap anywhere to advance -->
+  <div class="dlg-catch" id="dlg-catch"></div>
+  <div class="choices" id="choices"></div>
+  <div class="dialog" id="dialog">
+    <div class="dlg-name" id="dlg-name"></div>
+    <p class="dlg-text" id="dlg-text"></p>
+    <i class="dlg-next"></i>
+  </div>
   <div class="toast" id="toast"></div>
 
   <!-- floating signs over the Library, Gym and Workbench -->
   <div id="labels">
-    <button class="place" data-place="library"><span>📖</span>Library</button>
-    <button class="place" data-place="gym"><span>🏋️</span>Gym</button>
-    <button class="place" data-place="workbench"><span>🔨</span>Workbench<b class="badge">!</b></button>
+    <button class="place" data-place="library">Library</button>
+    <button class="place" data-place="gym">Gym</button>
+    <button class="place" data-place="workbench">Workbench<b class="badge">!</b></button>
   </div>
 
   <div class="scrim" id="scrim"></div>
   <section class="sheet" id="sheet" aria-modal="true" role="dialog">
     <header class="sheet-head">
       <h2 id="sheet-title"></h2>
-      <button id="sheet-close" class="round-btn small" aria-label="Close">✕</button>
+      <button id="sheet-close" class="round-btn small" aria-label="Close"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="#4a3b33" stroke-width="3.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
     </header>
     <div class="sheet-body" id="sheet-body"></div>
   </section>

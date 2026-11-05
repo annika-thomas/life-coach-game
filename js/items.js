@@ -7,35 +7,35 @@
 //   { type: 'log', kind, n }                 n logged real-world actions of a kind
 export const ITEMS = [
   // Starters — so there is something to spend the very first energy on.
-  { id: 'flowerbed', name: 'Flower bed',  emoji: '🌷', cost: 1, slot: [8, 6],  req: { type: 'none' } },
-  { id: 'appletree', name: 'Apple tree',  emoji: '🍎', cost: 2, slot: [4, 10],  req: { type: 'none' } },
-  { id: 'bench',     name: 'Wooden bench', emoji: '🪑', cost: 2, slot: [5, 9], req: { type: 'none' } },
+  { id: 'flowerbed', name: 'Flower bed',  cost: 1, slot: [8, 6],  req: { type: 'none' } },
+  { id: 'appletree', name: 'Apple tree',  cost: 2, slot: [4, 10],  req: { type: 'none' } },
+  { id: 'bench',     name: 'Wooden bench', cost: 2, slot: [5, 9], req: { type: 'none' } },
 
   // One per curriculum category — the world reflects what you learned.
-  { id: 'kiosk',      name: 'News kiosk',          emoji: '🗞️', cost: 3, slot: [2, 9],  req: { type: 'cat', cat: 'news', n: 1 } },
-  { id: 'robot',      name: 'Little robot helper', emoji: '🤖', cost: 4, slot: [9, 9], req: { type: 'cat', cat: 'robotics', n: 1 } },
-  { id: 'dressform',  name: 'Dress form',          emoji: '👗', cost: 3, slot: [8, 4],   req: { type: 'cat', cat: 'fashion', n: 1 } },
-  { id: 'trellis',    name: 'Vine trellis',        emoji: '🍇', cost: 3, slot: [4, 3],   req: { type: 'cat', cat: 'wine', n: 1 } },
-  { id: 'cheesecart', name: 'Cheese cart',         emoji: '🧀', cost: 3, slot: [10, 7],  req: { type: 'cat', cat: 'cheese', n: 1 } },
-  { id: 'cinema',     name: 'Outdoor cinema',      emoji: '🎬', cost: 4, slot: [7, 12],  req: { type: 'cat', cat: 'film', n: 1 } },
-  { id: 'grill',      name: 'Garden kitchen',      emoji: '🍳', cost: 3, slot: [11, 9],  req: { type: 'cat', cat: 'food', n: 1 } },
-  { id: 'signpost',   name: 'Travel signpost',     emoji: '🧭', cost: 2, slot: [7, 9], req: { type: 'cat', cat: 'travel', n: 1 } },
-  { id: 'easel',      name: 'Easel with a colour-field canvas', emoji: '🎨', cost: 3, slot: [4, 12], req: { type: 'cat', cat: 'art', n: 1 } },
-  { id: 'lanterns',   name: 'Paper lanterns',      emoji: '🏮', cost: 3, slot: [5, 7],   req: { type: 'cat', cat: 'culture', n: 1 } },
-  { id: 'column',     name: 'Thinking column',     emoji: '🏛️', cost: 4, slot: [9, 3],   req: { type: 'cat', cat: 'philosophy', n: 1 } },
-  { id: 'galton',     name: 'Galton board',        emoji: '🎲', cost: 4, slot: [5, 12],  req: { type: 'cat', cat: 'stats', n: 1 } },
-  { id: 'telescope',  name: 'Telescope',           emoji: '🔭', cost: 4, slot: [11, 3],  req: { type: 'cat', cat: 'science', n: 1 } },
-  { id: 'library',    name: 'Little library',      emoji: '📚', cost: 3, slot: [10, 3],   req: { type: 'cat', cat: 'history', n: 1 } },
+  { id: 'kiosk',      name: 'News kiosk',          cost: 3, slot: [2, 9],  req: { type: 'cat', cat: 'news', n: 1 } },
+  { id: 'robot',      name: 'Little robot helper', cost: 4, slot: [9, 9], req: { type: 'cat', cat: 'robotics', n: 1 } },
+  { id: 'dressform',  name: 'Dress form',          cost: 3, slot: [8, 4],   req: { type: 'cat', cat: 'fashion', n: 1 } },
+  { id: 'trellis',    name: 'Vine trellis',        cost: 3, slot: [4, 3],   req: { type: 'cat', cat: 'wine', n: 1 } },
+  { id: 'cheesecart', name: 'Cheese cart',         cost: 3, slot: [10, 7],  req: { type: 'cat', cat: 'cheese', n: 1 } },
+  { id: 'cinema',     name: 'Outdoor cinema',      cost: 4, slot: [7, 12],  req: { type: 'cat', cat: 'film', n: 1 } },
+  { id: 'grill',      name: 'Garden kitchen',      cost: 3, slot: [11, 9],  req: { type: 'cat', cat: 'food', n: 1 } },
+  { id: 'signpost',   name: 'Travel signpost',     cost: 2, slot: [7, 9], req: { type: 'cat', cat: 'travel', n: 1 } },
+  { id: 'easel',      name: 'Easel with a colour-field canvas', cost: 3, slot: [4, 12], req: { type: 'cat', cat: 'art', n: 1 } },
+  { id: 'lanterns',   name: 'Paper lanterns',      cost: 3, slot: [5, 7],   req: { type: 'cat', cat: 'culture', n: 1 } },
+  { id: 'column',     name: 'Thinking column',     cost: 4, slot: [9, 3],   req: { type: 'cat', cat: 'philosophy', n: 1 } },
+  { id: 'galton',     name: 'Galton board',        cost: 4, slot: [5, 12],  req: { type: 'cat', cat: 'stats', n: 1 } },
+  { id: 'telescope',  name: 'Telescope',           cost: 4, slot: [11, 3],  req: { type: 'cat', cat: 'science', n: 1 } },
+  { id: 'library',    name: 'Little library',      cost: 3, slot: [10, 3],   req: { type: 'cat', cat: 'history', n: 1 } },
 
   // Real-world actions build real-world things.
-  { id: 'pullupbar', name: 'Pull-up bar',     emoji: '🏋️', cost: 3, slot: [11, 4],  req: { type: 'log', kind: 'workout', n: 3 } },
-  { id: 'lamppost',  name: 'Path lamp',       emoji: '🏮', cost: 2, slot: [11, 6],  req: { type: 'log', kind: 'walk', n: 3 } },
-  { id: 'picnic',    name: 'Picnic blanket',  emoji: '🧺', cost: 3, slot: [9, 10],  req: { type: 'log', kind: 'cooked', n: 2 } },
-  { id: 'hammock',   name: 'Reading hammock', emoji: '📖', cost: 3, slot: [11, 10], req: { type: 'log', kind: 'read', n: 2 } },
+  { id: 'pullupbar', name: 'Pull-up bar',     cost: 3, slot: [11, 4],  req: { type: 'log', kind: 'workout', n: 3 } },
+  { id: 'lamppost',  name: 'Path lamp',       cost: 2, slot: [11, 6],  req: { type: 'log', kind: 'walk', n: 3 } },
+  { id: 'picnic',    name: 'Picnic blanket',  cost: 3, slot: [9, 10],  req: { type: 'log', kind: 'cooked', n: 2 } },
+  { id: 'hammock',   name: 'Reading hammock', cost: 3, slot: [11, 10], req: { type: 'log', kind: 'read', n: 2 } },
 
   // Bigger milestones.
-  { id: 'peachtree', name: 'Peach tree',      emoji: '🍑', cost: 3, slot: [11, 12], req: { type: 'lessons', n: 10 } },
-  { id: 'fountain',  name: 'Stone fountain',  emoji: '⛲', cost: 6, slot: [9, 12],  req: { type: 'lessons', n: 20 } },
+  { id: 'peachtree', name: 'Peach tree',      cost: 3, slot: [11, 12], req: { type: 'lessons', n: 10 } },
+  { id: 'fountain',  name: 'Stone fountain',  cost: 6, slot: [9, 12],  req: { type: 'lessons', n: 20 } },
 ];
 
 export const ITEM_BY_ID = Object.fromEntries(ITEMS.map((i) => [i.id, i]));

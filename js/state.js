@@ -4,7 +4,8 @@ const KEY = 'island-mentor-v1';
 const fresh = () => ({
   version: 1,
   creatureName: 'Pip',
-  seenPlacesHint: false,
+  introDone: false,
+  met: {},
   energy: 0,
   built: [],     // [{ id, ts }]
   lessons: [],   // [{ id, cat, answer, ts }]

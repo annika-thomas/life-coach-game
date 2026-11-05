@@ -36,14 +36,14 @@ Then open `http://localhost:8080`, or `http://<laptop-ip>:8080` from your phone 
 
 ## How it plays
 
-There are no menu buttons. You visit places on the island, and each one has a floating wooden sign. Tap a sign (or the place itself) and Pip walks there, then its screen opens. When a place is off-screen, its sign sits at the screen edge as an arrow.
+There are no menu buttons. You visit places on the island, each with a keeper: **Maple** (a sheep) runs the library, **Dot** (a frog) runs the gym, and **Bram** (a beaver) runs the workbench. Tap a sign, a place or its keeper. Pip walks over, the keeper says something in the dialogue box, and you pick from two choices. When a place is off-screen, its sign sits at the screen edge as a small tab.
 
 | Place | What it does |
 |---|---|
-| **📖 Library** | An endless feed of ~2-minute cards across 14 categories. Each ends with an opinion question; answering pays +1 ⚡. Chips filter categories. Skip is free but pays nothing. |
-| **🏋️ Gym** | Log something real: Workout / Walk / Cooked / Read, optional note, this week's strip. +2 ⚡ each. |
-| **🔨 Workbench** | Everything Pip can make, priced in energy, labelled with the lesson that unlocked it. Shows a "!" when you can afford something. |
-| **📔 Journal** (top right) | Every answer you've written, per-category counts, rename the creature, export or reset data. |
+| **Library** | An endless feed of ~2-minute cards across 14 categories. Each ends with an opinion question; answering pays +1 energy. Chips filter categories. Skip is free but pays nothing. |
+| **Gym** | Log something real: Workout / Walk / Cooked / Read, optional note, this week's strip. +2 energy each. |
+| **Workbench** | Everything Pip can make, priced in energy, labelled with the lesson that unlocked it. Shows a "!" when you can afford something. |
+| **Journal** (top right) | Every answer you've written, per-category counts, rename the creature, export or reset data. |
 
 Walking: **tap the ground** to walk Pip there, or **press and drag** for a joystick. The camera follows Pip. Tap Pip to chat, or tap anything you built to see which lesson it came from.
 

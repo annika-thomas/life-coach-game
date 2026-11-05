@@ -1,8 +1,8 @@
 // Offline cache for the app shell. Bump VERSION when files change.
-const VERSION = 'island-v4';
+const VERSION = 'island-v5';
 const FILES = [
   './', 'index.html', 'manifest.webmanifest', 'css/style.css',
-  'js/app.js', 'js/world.js', 'js/items.js', 'js/lessons.js', 'js/state.js',
+  'js/app.js', 'js/world.js', 'js/items.js', 'js/lessons.js', 'js/state.js', 'js/icons.js',
   'vendor/three.module.min.js',
   'fonts/baloo-2-latin-700-normal.woff2', 'fonts/baloo-2-latin-800-normal.woff2',
   'fonts/nunito-latin-600-normal.woff2', 'fonts/nunito-latin-800-normal.woff2',
