@@ -400,13 +400,13 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .bugdot { width: 26px; height: 18px; border-radius: 50% 50% 40% 40%; border: 2.5px solid var(--ink); margin: 4px 0 2px; }
 
 /* Today: the daily learning session */
-.today { position: fixed; z-index: 5; left: 14px; top: calc(var(--safe-t) + 78px); display: flex; align-items: center; gap: 6px; padding: 6px 14px 6px 12px;
+.today-tag { position: fixed; z-index: 5; left: 14px; top: calc(var(--safe-t) + 78px); display: flex; align-items: center; gap: 6px; padding: 6px 14px 6px 12px;
   background: repeating-linear-gradient(0deg, #c98f55 0 9px, #bf8550 9px 11px); border: 3px solid #5e3a1e; border-radius: 14px; box-shadow: 0 3px 0 #5e3a1e;
   color: #fff8e4; font-family: var(--display); text-shadow: 0 2px 0 #5e3a1e; animation: bob 2.8s ease-in-out infinite; }
-.today b { font-size: 17px; font-weight: 800; }
-.today small { font-weight: 700; font-size: 12px; opacity: .9; }
-.today.done { animation: none; opacity: .85; }
-.today .ico { width: 18px; height: 18px; }
+.today-tag b { font-size: 17px; font-weight: 800; }
+.today-tag small { font-weight: 700; font-size: 12px; opacity: .9; }
+.today-tag.done { animation: none; opacity: .85; }
+.today-tag .ico { width: 18px; height: 18px; }
 .today-bar { height: 10px; border: 2.5px solid var(--ink); border-radius: 999px; background: #fffdf4; overflow: hidden; margin: 2px 0 8px; }
 .today-bar i { display: block; height: 100%; background: linear-gradient(90deg, #a4e77f, #5bbf4a); transition: width .3s; }
 .today-kind { margin: 0 0 4px; font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: .5px; color: #8a5a35; }

@@ -393,7 +393,7 @@ function cardHtml(l) {
     <div class="card-tag" style="--c:${c.color}">${c.label}${prior ? ' · reread' : ''}</div>
     <h3>${esc(l.title)}</h3>
     <div class="guess">
-      <span class="guess-label">Quick guess</span><span class="guess-sub">Nobody's expected to know this. Guessing first helps it stick.</span>
+      <span class="guess-label">Quick guess</span>
       <p class="guess-q">${esc(QUIZ[l.id][0].q)}</p>
       <div class="opts">${shuffle([QUIZ[l.id][0].a, ...QUIZ[l.id][0].w]).map((o) => `<button class="opt" data-right="${o === QUIZ[l.id][0].a ? 1 : 0}">${esc(o)}</button>`).join('')}</div>
       <p class="guess-result"></p>
@@ -437,7 +437,7 @@ function openLessons(first) {
       if (card.classList.contains('guessed')) return;
       const right = o.dataset.right === '1';
       if (!right) o.classList.add('wrong');
-      reveal(right ? 'Nice guess. Here\'s the story.' : pick(['Most people miss this one. Here\'s why.', 'Good guess. The real answer is in here.']));
+      reveal(right ? 'Correct.' : 'Not quite.');
     });
     card.querySelector('.guess-skip').onclick = () => reveal('');
     ta.addEventListener('input', () => { btn.querySelector('.n').textContent = ta.value.trim().length >= 3 ? '+2' : '+1'; });
@@ -804,7 +804,7 @@ function openTimeline() {
   const events = dailyTimeline();
   const done = S.daily.timeline;
   openSheet('Timeline', `
-    <p class="lead">${done ? `You got ${done.score} of 5 today. A new one tomorrow.` : 'Put these in order, earliest at the top. Drag to rearrange.'}</p>
+    <p class="lead">${done ? `You got ${done.score} of 5 today. A new one tomorrow.` : 'Earliest at the top.'}</p>
     <ol class="tl">${(done ? done.order.map((id) => events.find((e) => e.id === id)).filter(Boolean) : events).map((l) => `<li class="tl-row" data-id="${l.id}"><span class="grip"><i></i><i></i><i></i></span><span class="tl-text">${esc(l.timeline.event)}</span><b class="tl-year"></b></li>`).join('')}</ol>
     ${done ? '' : '<button id="tl-go" class="btn primary wide">Check my order</button>'}
   `, 'puzzle');
@@ -872,7 +872,7 @@ function openGuess() {
   openSheet('Guess of the day', `
     <p class="guess-big">${esc(e.q)}</p>
     <div class="slider"><input id="gs" type="range" min="${e.min}" max="${e.max}" step="${step}" value="${start}" ${done ? 'disabled' : ''}><b id="gv">${fmt(start)}</b></div>
-    <p class="lead" id="g-res">${done ? `You guessed ${fmt(done.value)}. The answer: ${fmt(e.answer)}. From "${esc(card.title)}".` : 'Slide to your best guess.'}</p>
+    <p class="lead" id="g-res">${done ? `You guessed ${fmt(done.value)}. The answer: ${fmt(e.answer)}. From "${esc(card.title)}".` : ''}</p>
     ${done ? '' : '<button id="g-go" class="btn primary wide">Lock it in</button>'}
   `, 'puzzle');
   const gs = $('#gs');
@@ -1001,18 +1001,6 @@ function openTaste() {
   };
   show();
 }
-VISIT.market = async () => {
-  const t = KEEPER_TALK.pepper;
-  const lines = firstVisit('market') ? [...t.intro, 'I also run a few little games: wine and cheese maps, and a taste test.'] : [pick(t.idle)];
-  const opts = ['Wine map', 'Cheese map', 'Taste test', ...(fruitTotal() >= 5 ? ['Trade 5 fruit'] : []), 'Read about food, wine or cheese', 'Later'];
-  const pickd = opts[await talk('pepper', lines, opts)];
-  if (pickd === 'Wine map') setTimeout(openWineMap, 200);
-  if (pickd === 'Cheese map') setTimeout(openCheeseMap, 200);
-  if (pickd === 'Taste test') setTimeout(openTaste, 200);
-  if (pickd === 'Trade 5 fruit') setTimeout(tradeFruit, 200);
-  if (pickd === 'Read about food, wine or cheese') { filters = new Set(DISTRICTS.market.cats); setTimeout(() => openLessons(), 200); }
-};
-
 // ── Focus time (grow a grove) ──────────────────────────────────────────
 // Like a focus forest: pick a length, put the phone down, and a plant grows.
 // Nothing withers if you leave: it's on your honour, like logging. A full
@@ -1078,12 +1066,6 @@ $('#focus-stop').onclick = async () => {
   await talk('pip', [mins >= 1 ? `${mins} minute${mins > 1 ? 's' : ''} is still something. The seedling will wait for next time.` : 'No problem. The seedling will wait for next time.']);
 };
 document.addEventListener('visibilitychange', () => { if (!document.hidden && S.focus) runFocus(); });
-VISIT.home = async () => {
-  const mins = S.grove.reduce((a, g) => a + g.mins, 0);
-  const lines = [mins ? `Want to focus for a while? We've grown ${S.grove.length} thing${S.grove.length > 1 ? 's' : ''} in the grove so far.` : 'Want to focus for a while? Put the phone down and I\'ll grow something for the grove.'];
-  const c = await talk('pip', lines, ['10 minutes: flowers', '25 minutes: a tree', '50 minutes: a blossom tree', 'Not now']);
-  if (c !== null && c < 3) startFocus([10, 25, 50][c]);
-};
 if (S.focus) setTimeout(runFocus, 500);
 
 // ── Seasons, weather and time of day ───────────────────────────────────
@@ -1231,7 +1213,7 @@ setInterval(() => {
 // now and then a small gift). No conversations stand between you and the
 // learning.
 function placeMenu(title, lead, buttons) {
-  openSheet(title, `<p class="lead">${lead}</p><div class="menu">${buttons.map((b, i) => `<button class="menu-btn" data-i="${i}"><b>${esc(b.label)}</b>${b.sub ? `<small>${esc(b.sub)}</small>` : ''}</button>`).join('')}</div>`, 'menu-sheet');
+  openSheet(title, `${lead ? `<p class="lead">${lead}</p>` : ''}<div class="menu">${buttons.map((b, i) => `<button class="menu-btn" data-i="${i}"><b>${esc(b.label)}</b>${b.sub ? `<small>${esc(b.sub)}</small>` : ''}</button>`).join('')}</div>`, 'menu-sheet');
   sheet.querySelectorAll('.menu-btn').forEach((el) => el.onclick = () => { const b = buttons[+el.dataset.i]; closeSheet(); setTimeout(b.fn, 260); });
 }
 VISIT.library = () => { filters = new Set(); openLessons(); };
@@ -1240,19 +1222,19 @@ VISIT.workbench = () => openBuild();
 VISIT.dock = () => goFishing('dock');
 VISIT.pond = () => goFishing('pond');
 VISIT.observatory = () => { filters = new Set(DISTRICTS.observatory.cats); openLessons(); };
-VISIT.square = () => placeMenu('Town board', 'Two puzzles a day, built from cards you\'ve read.', [
+VISIT.square = () => placeMenu('Town board', '', [
   { label: `Today's timeline${S.daily.timeline ? ` · ${S.daily.timeline.score}/5` : ''}`, sub: 'Put five events in order', fn: openTimeline },
   { label: `Guess of the day${S.daily.guess ? ' · done' : ''}`, sub: 'A number from one of your cards', fn: openGuess },
   { label: 'Read about news, travel or history', fn: () => { filters = new Set(DISTRICTS.square.cats); openLessons(); } },
 ]);
-VISIT.market = () => placeMenu('Market', 'Wine and cheese, from the map to the glass.', [
+VISIT.market = () => placeMenu('Market', '', [
   { label: 'Wine map', sub: 'Name or find 24 wine regions', fn: openWineMap },
   { label: 'Cheese map', sub: 'Where 23 cheeses are made', fn: openCheeseMap },
   { label: 'Taste test', sub: 'Sweetness, acidity, tannin, body', fn: openTaste },
   ...(fruitTotal() >= 5 ? [{ label: 'Trade 5 fruit', sub: `You have ${fruitTotal()}`, fn: tradeFruit }] : []),
   { label: 'Read about food, wine or cheese', fn: () => { filters = new Set(DISTRICTS.market.cats); openLessons(); } },
 ]);
-VISIT.home = () => placeMenu('Focus time', S.grove.length ? `Put the phone down and grow something. ${S.grove.length} grown so far.` : 'Put the phone down and grow something for the grove.', [
+VISIT.home = () => placeMenu('Focus time', S.grove.length ? `${S.grove.length} grown so far.` : '', [
   { label: '10 minutes', sub: 'A flower patch · +1 energy', fn: () => startFocus(10) },
   { label: '25 minutes', sub: 'A tree · +2 energy', fn: () => startFocus(25) },
   { label: '50 minutes', sub: 'A blossom tree · +3 energy', fn: () => startFocus(50) },
@@ -1340,14 +1322,14 @@ function startToday() {
       const l = st.card, g = QUIZ[l.id][0];
       frame(`New · ${CATEGORIES[l.cat].label}`, `<article class="card">
         <h3>${esc(l.title)}</h3>
-        <div class="guess"><span class="guess-label">Quick guess</span><span class="guess-sub">Nobody's expected to know this.</span>
+        <div class="guess"><span class="guess-label">Quick guess</span>
           <p class="guess-q">${esc(g.q)}</p>
           <div class="opts">${shuffle([g.a, ...g.w]).map((o) => `<button class="opt" data-right="${o === g.a ? 1 : 0}">${esc(o)}</button>`).join('')}</div>
           <p class="guess-result"></p><button class="guess-skip">Skip the guess</button></div>
         <div class="reading">${l.body.map((p) => `<p>${esc(p)}</p>`).join('')}</div></article>`);
       const card = $('#tstep .card');
       const reveal = (txt) => { card.querySelectorAll('.opt').forEach((x) => { x.disabled = true; if (x.dataset.right === '1') x.classList.add('right'); }); card.querySelector('.guess-result').textContent = txt; card.classList.add('guessed'); };
-      card.querySelectorAll('.opt').forEach((o) => o.onclick = () => { const r = o.dataset.right === '1'; if (!r) o.classList.add('wrong'); reveal(r ? 'Nice guess.' : 'Most people miss this one. Here\'s why.'); });
+      card.querySelectorAll('.opt').forEach((o) => o.onclick = () => { const r = o.dataset.right === '1'; if (!r) o.classList.add('wrong'); reveal(r ? 'Correct.' : 'Not quite.'); });
       card.querySelector('.guess-skip').onclick = () => reveal('');
       const got = document.createElement('button');
       got.className = 'btn primary wide'; got.innerHTML = `Got it <span class="amt">${ICON.leaf}+1</span>`;
@@ -1404,7 +1386,7 @@ function startToday() {
       const pool = S.lessons.map((x) => LESSONS.find((y) => y.id === x.id)).filter((x) => x?.timeline);
       const years = new Set();
       const evs = shuffle(pool).filter((x) => !years.has(x.timeline.year) && years.add(x.timeline.year)).slice(0, 4);
-      frame('Timeline', `<p class="guess-q">Put these in order, earliest at the top.</p>
+      frame('Timeline', `<p class="guess-q">Earliest at the top.</p>
         <ol class="tl">${shuffle(evs).map((x) => `<li class="tl-row" data-id="${x.id}"><span class="grip"><i></i><i></i><i></i></span><span class="tl-text">${esc(x.timeline.event)}</span><b class="tl-year"></b></li>`).join('')}</ol>
         <button class="btn primary wide" id="tlgo">Check</button>`);
       const list = $('#tstep .tl');
@@ -1459,7 +1441,6 @@ function openLog() {
   let kind = null;
   const r = rhythm(S);
   openSheet('Gym', `
-    <p class="lead">What did you do? Honour system.</p>
     <div class="tiles">${Object.entries(LOG_KINDS).map(([k, v]) =>
       `<button class="tile" data-kind="${k}">${v.icon}${v.label}</button>`).join('')}</div>
     <input id="log-note" class="note" placeholder="Add a note (optional)" maxlength="120">
@@ -1549,9 +1530,9 @@ function openJournal() {
     </div>
     <h4>Topics</h4>
     <div class="topics">${cats.map(({ k, c, n }) => `<div class="topic" style="--c:${c.color}"><i></i><span>${c.label}</span><small>${n} read</small><b class="lv">${[1, 2, 3].map((l) => `<u class="${mastery(k) >= l ? 'on' : ''}"></u>`).join('')}</b></div>`).join('')}</div>
-    <p class="lead small">Dots are mastery: remember a topic's cards at the dock to fill them.</p>
+    <p class="lead small">Dots show mastery.</p>
     <h4>Fish caught</h4>
-    <p class="lead small">${new Set(S.fish.map((f) => f.species)).size} of ${FISH.length} species. Unknown ones show where and when to look.</p>
+    <p class="lead small">${new Set(S.fish.map((f) => f.species)).size} of ${FISH.length} species.</p>
     <div class="fishgrid">${FISH.map((f) => { const mine = S.fish.filter((x) => x.species === f.id); const n = mine.length; const best = Math.max(0, ...mine.map((x) => x.cm || 0)); return `<div class="fishcell ${n ? '' : 'unknown'}">${fishSvg(f.color, n > 0)}<small>${n ? `${esc(f.name)}${best ? ` · ${best} cm` : ` ×${n}`}` : `${f.where === 'pond' ? 'Pond' : 'Sea'}, ${TIME_LABEL[f.time]}`}</small></div>`; }).join('')}</div>
     <p class="lead small">${S.gifts.length} gift${S.gifts.length === 1 ? '' : 's'} on your island.</p>
     <h4>Bugs</h4>
@@ -1565,7 +1546,7 @@ function openJournal() {
       const l = LESSONS.find((x) => x.id === a.id);
       if (!a.answer) return '';
       return l ? `<details><summary><i style="background:${CATEGORIES[a.cat].color}"></i>${esc(l.title)}</summary><p class="q">${esc(l.question)}</p><p class="a">${esc(a.answer)}</p></details>` : '';
-    }).join('') : '<p class="lead">Nothing yet. Your answers collect here.</p>'}</div>
+    }).join('') : '<p class="lead">No takes yet.</p>'}</div>
     <h4>Settings</h4>
     <label class="field">Your creature's name <input id="name" value="${esc(S.creatureName)}" maxlength="16"></label>
     <div class="row">
