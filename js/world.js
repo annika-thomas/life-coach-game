@@ -8,26 +8,26 @@ import { ITEMS, ITEM_BY_ID } from './items.js';
 // H plateau (raised terrace)   . grass   # dirt path   S stairs
 // s sand                        w water
 const MAP = [
-  'HHHHHHHHHHHHHHHH',
-  'HHHHHHHHHHHHHHHH',
-  'HHHHHHHHHHHHHHHH',
-  'HHHHHHHHHHHHSHHH',
-  '............#...',
-  '............#...',
-  '......#.....#...',
-  '......#.....#...',
-  '......#######...',
-  '......#.........',
-  '......#.........',
-  '..#########.....',
-  '..#.......#..ww.',
-  '..#.......#..ww.',
-  '..#.......#.....',
-  '..........#.....',
-  'ss........#..sss',
-  'ssssssssssssssss',
-  'wwwwwwwwwwwwwwww',
-  'wwwwwwwwwwwwwwww',
+  'HHHHHHHHHHHHHHHHHH',
+  'HHHHHHHHHHHHHHHHHH',
+  'HHHHHHHHHHHHHHHHHH',
+  'HHHHHHHHHHHHHHSHHH',
+  '..............#...',
+  '..............#...',
+  '........#.....#...',
+  '.......####...#...',
+  '.......####...#...',
+  '........#.....#...',
+  '..##############..',
+  '........#.........',
+  '........#.........',
+  '........#....ww...',
+  '........#....ww...',
+  '........#.........',
+  'ss......#.....ssss',
+  'ssssssssssssssssss',
+  'wwwwwwwwwwwwwwwwww',
+  'wwwwwwwwwwwwwwwwww',
 ];
 const W = MAP[0].length;
 const D = MAP.length;
@@ -35,7 +35,7 @@ const tileAt = (x, z) => (x < 0 || z < 0 || x >= W || z >= D ? 'w' : MAP[z][x]);
 const HEIGHT = { H: 1, '.': 0, '#': 0, S: 0.5, s: -0.2, w: -0.8 };
 const tileH = (x, z) => HEIGHT[tileAt(x, z)];
 
-const HOME = [8, 10];    // where Pip stands
+const HOME = [9, 8];     // where Pip stands: the plaza in front of the cottage
 
 // ── Small helpers ──────────────────────────────────────────────────────
 const matCache = new Map();
@@ -642,9 +642,9 @@ function workbenchModel() {
   return g;
 }
 const STATIONS = {
-  library:   { model: libraryModel,   tiles: [[3, 6], [4, 6], [3, 7], [4, 7]],      at: [4.0, 7.0],  approach: [3, 8],  labelY: 2.7, keeper: makeMaple, keeperAt: [4, 8] },
-  gym:       { model: gymModel,       tiles: [[12, 9], [13, 9], [12, 10], [13, 10]], at: [13.0, 10.0], approach: [12, 11], labelY: 1.7, keeper: makeDot,   keeperAt: [13, 11] },
-  workbench: { model: workbenchModel, tiles: [[9, 5]],                               at: [9.5, 5.5], approach: [9, 6],  labelY: 1.4, keeper: makeBram,  keeperAt: [10, 6] },
+  library:   { model: libraryModel,   tiles: [[2, 8], [3, 8], [2, 9], [3, 9]],      at: [3.0, 9.0],  approach: [3, 10], labelY: 2.7, keeper: makeMaple, keeperAt: [4, 9] },
+  gym:       { model: gymModel,       tiles: [[12, 8], [13, 8], [12, 9], [13, 9]],  at: [13.0, 9.0], approach: [13, 10], labelY: 1.7, keeper: makeDot,   keeperAt: [11, 9] },
+  workbench: { model: workbenchModel, tiles: [[10, 6]],                              at: [10.5, 6.5], approach: [10, 7], labelY: 1.4, keeper: makeBram,  keeperAt: [11, 7] },
 };
 
 // ── The creature ───────────────────────────────────────────────────────
@@ -876,9 +876,9 @@ export class World {
   _decor() {
     this.sways = [];
     const c = cottage();
-    c.position.set(6.5, 0, 5.0); this.scene.add(c);
-    for (const x of [5, 6, 7]) for (const z of [4, 5]) this.occupied.add(`${x},${z}`);
-    this._place(mailbox(), 7, 6);
+    c.position.set(8.5, 0, 5.0); this.scene.add(c);
+    for (const x of [7, 8, 9]) for (const z of [4, 5]) this.occupied.add(`${x},${z}`);
+    this._place(mailbox(), 9, 6);
     this.stations = new Map();
     this.keepers = new Map();
     for (const [id, st] of Object.entries(STATIONS)) {
@@ -898,7 +898,7 @@ export class World {
       this.keepers.set(id, k);
       this.occupied.add(`${kx},${kz}`);
     }
-    const trees = [[1, 4, '#e8312f'], [14, 6, '#ff9f1c'], [0, 9, '#e8312f'], [15, 12, '#ff9f1c'], [5, 15, '#e8312f'], [3, 5, null], [10, 5, '#e8312f']];
+    const trees = [[1, 5, '#e8312f'], [16, 5, '#ff9f1c'], [0, 13, '#e8312f'], [17, 14, '#ff9f1c'], [5, 16, '#e8312f'], [5, 5, null], [12, 12, '#e8312f']];
     trees.forEach(([x, z, f], i) => { const t = this._place(tree(f, i + 3), x, z); this.sways.push(t); });
     // backdrop trees on the terrace and beyond
     for (let x = -4; x < W + 4; x += 1) {
@@ -919,7 +919,7 @@ export class World {
       t.position.set(sx + 0.5 + (sx < 0 ? -r() * 1.5 : r() * 1.5), 0, z + r() * 0.5);
       this.scene.add(t);
     }
-    [[4, 5, 1], [5, 8, 2], [8, 7, 3], [1, 7, 4], [14, 8, 5], [0, 13, 6], [14, 11, 7]].forEach(([x, z, s]) => {
+    [[6, 7, 1], [6, 6, 2], [1, 9, 3], [16, 9, 4], [10, 12, 5], [3, 12, 6], [15, 13, 7]].forEach(([x, z, s]) => {
       const f = flowerCluster(s); f.position.set(x + 0.5, 0, z + 0.5); this.scene.add(f);
     });
     // little grass tufts scattered over open grass (non-blocking)
@@ -937,7 +937,7 @@ export class World {
     const o = new THREE.Object3D();
     spots.forEach(([x, y, z, rz], i) => { o.position.set(x, y + 0.07, z); o.rotation.set(0, 0, rz); o.updateMatrix(); tufts.setMatrixAt(i, o.matrix); });
     this.scene.add(tufts);
-    this._place(rock(), 15, 15);
+    this._place(rock(), 17, 16);
     this._place(rock(), 3, 3);
   }
 

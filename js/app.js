@@ -11,6 +11,7 @@ const pick = (a) => a[Math.floor(Math.random() * a.length)];
 const commit = () => { save(S); renderHud(); };
 
 const world = new World($('#world'));
+if (window.__expose) window.__world = world; // test hook
 S.built.forEach((b) => world.placeBuilt(b.id));
 world.setEnergy(S.energy);
 
