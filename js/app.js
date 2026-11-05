@@ -7,7 +7,7 @@ import { load, save, reset, dayKey, rhythm } from './state.js';
 import { ICON, leafAmt } from './icons.js';
 import { QUIZ } from './quiz.js';
 import { MAPS, project } from './wine-maps.js';
-import { REGIONS, STYLES, TRAITS } from './wine-games.js';
+import { REGIONS, CHEESES, STYLES, TRAITS } from './wine-games.js';
 
 let S = load();
 const $ = (sel) => document.querySelector(sel);
@@ -910,22 +910,24 @@ const mapSvg = (map, dots, glow) => {
 };
 const readText = () => S.lessons.map((l) => LESSONS.find((x) => x.id === l.id)).filter(Boolean).map((l) => ({ id: l.id, text: (l.title + ' ' + l.body.join(' ')).toLowerCase() }));
 const cardFor = (region) => readText().find((c) => region.words.some((w) => c.text.includes(w)))?.id;
-function openWineMap() {
-  // regions you've read about come first; the rest fill in
-  const known = REGIONS.filter((r) => cardFor(r)), other = REGIONS.filter((r) => !cardFor(r));
+function openWineMap() { openPlaceMap(REGIONS, 'Wine map', 'region', 'mapGift'); }
+function openCheeseMap() { openPlaceMap(CHEESES, 'Cheese map', 'cheese', 'cheeseMapGift'); }
+function openPlaceMap(PLACES, title, noun, giftKey) {
+  // places you've read about come first; the rest fill in
+  const known = PLACES.filter((r) => cardFor(r)), other = PLACES.filter((r) => !cardFor(r));
   const rounds = [...shuffle(known), ...shuffle(other)].slice(0, 5).map((r, i) => ({ r, type: i % 2 ? 'find' : 'name' }));
   let i = 0, score = 0;
   const show = () => {
     const { r, type } = rounds[i];
-    const same = REGIONS.filter((x) => x.map === r.map && x.id !== r.id);
+    const same = PLACES.filter((x) => x.map === r.map && x.id !== r.id);
     if (type === 'name') {
       const opts = shuffle([r, ...shuffle(same).slice(0, 3)]);
-      openSheet('Wine map', `<p class="lead">Round ${i + 1} of 5 · Which region is glowing?</p>${mapSvg(r.map, null, r)}
+      openSheet(title, `<p class="lead">Round ${i + 1} of 5 · ${noun === 'cheese' ? 'Which cheese comes from here?' : 'Which region is glowing?'}</p>${mapSvg(r.map, null, r)}
         <div class="opts">${opts.map((o) => `<button class="opt" data-id="${o.id}">${esc(o.name)}</button>`).join('')}</div><p class="map-fact"></p>`, 'puzzle');
       sheet.querySelectorAll('.opt').forEach((b) => b.onclick = () => answer(b.dataset.id === r.id, b));
     } else {
       const dots = shuffle([r, ...shuffle(same).slice(0, 3)]);
-      openSheet('Wine map', `<p class="lead">Round ${i + 1} of 5 · Tap <b>${esc(r.name)}</b>.</p>${mapSvg(r.map, dots)}<p class="map-fact"></p>`, 'puzzle');
+      openSheet(title, `<p class="lead">Round ${i + 1} of 5 · ${noun === 'cheese' ? `Where is <b>${esc(r.name)}</b> made?` : `Tap <b>${esc(r.name)}</b>.`}</p>${mapSvg(r.map, dots)}<p class="map-fact"></p>`, 'puzzle');
       sheet.querySelectorAll('.pin').forEach((g) => g.onclick = () => answer(dots[+g.dataset.i].id === r.id, g));
     }
   };
@@ -949,8 +951,8 @@ function openWineMap() {
     commit();
     closeSheet();
     setTimeout(async () => {
-      const lines = [score === 5 ? 'Five for five! You could lead a wine tour.' : score >= 3 ? `${score} out of 5. You know your way around a wine list.` : `${score} out of 5. Maps take a few goes. Come back tomorrow.`];
-      if (score === 5 && !S.daily.mapGift) { S.daily.mapGift = true; const g = grantGift('Pepper'); if (g) lines.push(`(Pepper gave you a ${g.toLowerCase()}.)`); }
+      const lines = [score === 5 ? (noun === 'cheese' ? 'Five for five! You could run a cheese counter.' : 'Five for five! You could lead a wine tour.') : score >= 3 ? `${score} out of 5. ${noun === 'cheese' ? 'You know your cheeses.' : 'You know your way around a wine list.'}` : `${score} out of 5. Maps take a few goes. Come back tomorrow.`];
+      if (score === 5 && !S.daily[giftKey]) { S.daily[giftKey] = true; const g = grantGift('Pepper'); if (g) lines.push(`(Pepper gave you a ${g.toLowerCase()}.)`); }
       await talk('pepper', [...lines, ...news]);
     }, 250);
   };
@@ -1000,11 +1002,12 @@ function openTaste() {
 }
 VISIT.market = async () => {
   const t = KEEPER_TALK.pepper;
-  const lines = firstVisit('market') ? [...t.intro, 'I also run two little wine games, if you fancy.'] : [pick(t.idle)];
-  const c = await talk('pepper', lines, ['Wine map', 'Taste test', 'Read about food, wine or cheese', 'Later']);
+  const lines = firstVisit('market') ? [...t.intro, 'I also run a few little games: wine and cheese maps, and a taste test.'] : [pick(t.idle)];
+  const c = await talk('pepper', lines, ['Wine map', 'Cheese map', 'Taste test', 'Read about food, wine or cheese', 'Later']);
   if (c === 0) setTimeout(openWineMap, 200);
-  if (c === 1) setTimeout(openTaste, 200);
-  if (c === 2) { filters = new Set(DISTRICTS.market.cats); setTimeout(() => openLessons(), 200); }
+  if (c === 1) setTimeout(openCheeseMap, 200);
+  if (c === 2) setTimeout(openTaste, 200);
+  if (c === 3) { filters = new Set(DISTRICTS.market.cats); setTimeout(() => openLessons(), 200); }
 };
 
 // ── Focus time (grow a grove) ──────────────────────────────────────────

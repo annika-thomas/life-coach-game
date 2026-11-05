@@ -44,7 +44,7 @@ There are no menu buttons. You visit places on the island, each with a keeper. T
 | **Gym** (Dot) | Log something real: Workout / Walk / Cooked / Read, optional note, this week's strip. +2 energy each. |
 | **Dock** and **Pond** | Fishing, just for fun. 20 species across the sea and the pond, some only at dawn, dusk or night. Watch the shadows (bigger shadow, bigger fish), wait out the nibbles, tap on the bite, then hold to keep the fish in the bar; each species fights differently. Caught species swim in the pond; the journal tracks sizes and hints where to find the rest. |
 | **Town square** (Fennel) | Two puzzles a day on the notice board, built from cards you've read: **Timeline** (drag five events into order) and **Guess of the day** (a number on a slider). Both count as reviews. A perfect score earns a gift. |
-| **Market** (Pepper) | Two wine games. **Wine map**: real maps of Europe and the world; name the glowing region or tap the named one (24 regions, each with what it's known for). **Taste test**: set sweetness, acidity, tannin and body for a classic style (18 styles, typical textbook profiles; within one step counts). Regions you've read about come up first. |
+| **Market** (Pepper) | Wine and cheese games. **Cheese map**: 23 cheeses (Roquefort, Comté, Stilton, Manchego, Feta...) placed where they're made; name the cheese from its spot or tap where it comes from. **Wine map**: real maps of Europe and the world; name the glowing region or tap the named one (24 regions, each with what it's known for). **Taste test**: set sweetness, acidity, tannin and body for a classic style (18 styles, typical textbook profiles; within one step counts). Regions you've read about come up first. |
 | **Home** (the cottage) | Focus time. Pick 10, 25 or 50 minutes, put the phone down, and a flower patch, tree or blossom tree grows in the grove (south-east corner). Nothing withers if you leave; it's on your honour. A full session pays 1, 2 or 3 energy. |
 | **Visitors** | One or two travellers turn up each day. They ask about something you've read, or for advice that draws on a card. A right answer earns a gift. These, with the board puzzles, are how you recall what you've read. |
 | **Workbench** (Bram) | Plans grouped by district. Shows what's ready, what needs more mastery, and what you haven't discovered yet. |
@@ -84,7 +84,7 @@ js/items.js                 districts + build catalogue (cost, unlock rule, tile
 js/lessons.js               original cards, categories, merges the card bank
 js/cards/*.js               the card bank: 20 cards per category + visitor requests
 js/quiz.js                  recall questions (original cards; bank cards carry their own)
-js/wine-games.js            wine regions (real coordinates) and style profiles
+js/wine-games.js            wine regions and cheeses (real coordinates), wine style profiles
 js/wine-maps.js             generated SVG outlines (Natural Earth via world-atlas)
 js/state.js                 localStorage save/load
 sw.js, manifest.webmanifest offline + home-screen install

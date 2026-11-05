@@ -61,3 +61,30 @@ export const TRAITS = [
   { key: 'tannin', label: 'Tannin', lo: 'Smooth', hi: 'Grippy' },
   { key: 'body', label: 'Body', lo: 'Light', hi: 'Full' },
 ];
+
+// Cheeses and where they come from (the town or area they're made in).
+export const CHEESES = [
+  { id: 'roquefort',  name: 'Roquefort',          map: 'europe', lat: 43.97, lon: 2.99,  country: 'France',   known: 'Sheep\'s milk blue, ripened in the natural caves of Mont Combalou.', words: ['roquefort'] },
+  { id: 'comte',      name: 'Comté',              map: 'europe', lat: 46.84, lon: 5.71,  country: 'France',   known: 'Cow\'s milk from the Jura mountains: big, nutty wheels aged for months.', words: ['comté', 'comte'] },
+  { id: 'camembert',  name: 'Camembert',          map: 'europe', lat: 48.89, lon: 0.18,  country: 'France',   known: 'Soft, bloomy-rind cow\'s milk cheese from Normandy.', words: ['camembert'] },
+  { id: 'brie',       name: 'Brie de Meaux',      map: 'europe', lat: 48.96, lon: 2.88,  country: 'France',   known: 'A broad, flat bloomy-rind wheel from east of Paris.', words: ['brie'] },
+  { id: 'reblochon',  name: 'Reblochon',          map: 'europe', lat: 45.88, lon: 6.32,  country: 'France',   known: 'Soft washed-rind cow\'s cheese from the Savoie Alps, the heart of tartiflette.', words: ['reblochon'] },
+  { id: 'epoisses',   name: 'Époisses',           map: 'europe', lat: 47.51, lon: 4.17,  country: 'France',   known: 'Pungent washed rind, rinsed with marc de Bourgogne brandy.', words: ['époisses', 'epoisses'] },
+  { id: 'crottin',    name: 'Crottin de Chavignol', map: 'europe', lat: 47.33, lon: 2.83, country: 'France',  known: 'A small goat\'s cheese from the Loire, classic with Sancerre.', words: ['crottin', 'chavignol'] },
+  { id: 'munster',    name: 'Munster',            map: 'europe', lat: 48.04, lon: 7.13,  country: 'France',   known: 'Washed-rind cow\'s cheese from the Alsace side of the Vosges.', words: ['munster'] },
+  { id: 'parmigiano', name: 'Parmigiano Reggiano', map: 'europe', lat: 44.75, lon: 10.45, country: 'Italy',   known: 'Hard cow\'s milk cheese from around Parma and Reggio Emilia, aged at least 12 months.', words: ['parmigiano', 'parmesan'] },
+  { id: 'gorgonzola', name: 'Gorgonzola',         map: 'europe', lat: 45.53, lon: 9.4,   country: 'Italy',    known: 'Cow\'s milk blue from Lombardy and Piedmont: creamy dolce or firmer piccante.', words: ['gorgonzola'] },
+  { id: 'taleggio',   name: 'Taleggio',           map: 'europe', lat: 45.89, lon: 9.56,  country: 'Italy',    known: 'Square, washed-rind cow\'s cheese from Lombardy\'s Val Taleggio.', words: ['taleggio'] },
+  { id: 'pecorino',   name: 'Pecorino Romano',    map: 'europe', lat: 41.9,  lon: 12.5,  country: 'Italy',    known: 'Salty, hard sheep\'s cheese named for Rome, though most is now made in Sardinia.', words: ['pecorino'] },
+  { id: 'mozzarella', name: 'Mozzarella di Bufala', map: 'europe', lat: 41.07, lon: 14.33, country: 'Italy',  known: 'Fresh stretched-curd cheese from water buffalo milk, from Campania.', words: ['mozzarella', 'bufala'] },
+  { id: 'manchego',   name: 'Manchego',           map: 'europe', lat: 39.2,  lon: -3.0,  country: 'Spain',    known: 'Sheep\'s milk cheese from La Mancha, with a zigzag pattern on the rind.', words: ['manchego'] },
+  { id: 'idiazabal',  name: 'Idiazabal',          map: 'europe', lat: 42.95, lon: -2.3,  country: 'Spain',    known: 'Basque sheep\'s milk cheese, often lightly smoked.', words: ['idiazabal'] },
+  { id: 'estrela',    name: 'Serra da Estrela',   map: 'europe', lat: 40.4,  lon: -7.6,  country: 'Portugal', known: 'Soft sheep\'s cheese, curdled with thistle flowers instead of animal rennet.', words: ['serra da estrela'] },
+  { id: 'gruyere',    name: 'Gruyère',            map: 'europe', lat: 46.58, lon: 7.08,  country: 'Switzerland', known: 'Firm, nutty cow\'s cheese from western Switzerland, a fondue staple.', words: ['gruyère', 'gruyere'] },
+  { id: 'emmental',   name: 'Emmental',           map: 'europe', lat: 46.95, lon: 7.75,  country: 'Switzerland', known: 'Swiss cow\'s cheese famous for its holes.', words: ['emmental', 'swiss cheese'] },
+  { id: 'gouda',      name: 'Gouda',              map: 'europe', lat: 52.01, lon: 4.71,  country: 'Netherlands', known: 'Dutch cow\'s cheese named after the town where it was traded.', words: ['gouda'] },
+  { id: 'edam',       name: 'Edam',               map: 'europe', lat: 52.51, lon: 5.05,  country: 'Netherlands', known: 'A mild Dutch ball, coated in red wax for export.', words: ['edam'] },
+  { id: 'cheddar',    name: 'Cheddar',            map: 'europe', lat: 51.28, lon: -2.78, country: 'England',  known: 'Named after a Somerset village. "Cheddaring" means stacking and turning the curd.', words: ['cheddar'] },
+  { id: 'stilton',    name: 'Stilton',            map: 'europe', lat: 52.77, lon: -0.89, country: 'England',  known: 'English blue made in three counties around Melton Mowbray, and not in the village of Stilton itself.', words: ['stilton'] },
+  { id: 'feta',       name: 'Feta',               map: 'europe', lat: 39.5,  lon: 21.5,  country: 'Greece',   known: 'Brined sheep\'s milk cheese (up to 30% goat), protected to Greece.', words: ['feta'] },
+];
