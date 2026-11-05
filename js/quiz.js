@@ -4,6 +4,8 @@
 // [question, correct answer, [wrong answers], short explanation]
 const Q = (q, a, w, why) => ({ q, a, w, why });
 
+import { CARD_SETS } from './cards/index.js';
+
 export const QUIZ = {
   'news-unsc-veto': [
     Q('How many permanent members does the UN Security Council have?', '5', ['3', '10', '15'], 'The US, UK, France, Russia and China. Each can veto.'),
@@ -174,3 +176,6 @@ export const QUIZ = {
     Q('Thursday is named after which god?', 'Thor', ['Tiw', 'Woden', 'Frigg'], 'French kept Jupiter instead: jeudi.'),
   ],
 };
+
+// Questions for the larger card bank live on each card.
+for (const mod of Object.values(CARD_SETS)) for (const c of mod.default) QUIZ[c.id] = c.quiz;

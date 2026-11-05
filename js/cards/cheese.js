@@ -1,0 +1,331 @@
+export default [
+  {
+    id: 'cheese-how-made',
+    level: 1,
+    title: 'From milk to cheese in four moves',
+    body: [
+      "Nearly every cheese starts the same way. First, friendly bacteria called starter cultures are added to milk, turning some of its sugar into acid. Next comes rennet, an enzyme that makes the milk set into a soft, wobbly gel. That gel is cut into curds, which release a watery liquid called whey.",
+      "Here is the key lever: the smaller the curds are cut, and the more they are heated and pressed, the more whey escapes and the harder the final cheese. Big, gently handled curds give soft cheeses like Camembert; tiny, cooked, pressed curds give hard ones like Comté. Finally the cheese is salted, shaped and left to age. Because so much water leaves, it takes roughly 10 litres of milk to make a kilo of hard cheese.",
+    ],
+    question: 'Cheese was probably discovered by accident. What everyday thing do you think we will stumble on next by accident?',
+    quiz: [
+      { q: 'What is the watery liquid released when milk curds are cut?', a: 'Whey', w: ['Brine', 'Rennet', 'Cream'], why: 'Cutting the curd lets the whey drain out.' },
+      { q: 'Smaller, more heavily pressed curds produce what kind of cheese?', a: 'A harder cheese', w: ['A softer cheese', 'A bluer cheese', 'A saltier cheese'], why: 'More whey is expelled, leaving a drier, harder cheese.' },
+    ],
+    timeline: null,
+    estimate: { q: 'Roughly how many litres of milk does it take to make one kilo of hard cheese?', answer: 10, unit: 'litres', min: 1, max: 40 },
+  },
+  {
+    id: 'cheese-cheddar',
+    level: 2,
+    title: 'What "cheddaring" means',
+    body: [
+      "Cheddar takes its name from a village in Somerset, and it has its own extra step in the cheesemaking process. After the curds form and the whey drains, the curd is cut into large slabs that are stacked, turned and restacked again and again. This is called cheddaring. The weight squeezes out more whey and builds acidity, giving the cheese its dense, slightly flaky texture.",
+      "Because the name was never protected, Cheddar is now made all over the world, from Vermont to New Zealand, at every level of quality. Some traditional versions are wrapped in cloth and aged for a year or more, developing nutty, savoury depth. If you want the old West Country style, look for 'West Country Farmhouse Cheddar', a protected name for cheese made on farms in four south-west English counties. Orange cheddar, by the way, is simply coloured with annatto, a natural seed extract.",
+    ],
+    question: 'Cheddar became global because nobody protected the name. Was that a loss for Somerset or a gift to the world?',
+    quiz: [
+      { q: 'What is "cheddaring"?', a: 'Stacking and turning slabs of curd', w: ['Ageing cheese in caves', 'Washing the rind in brine', 'Smoking cheese over wood'], why: 'Cheddaring stacks and turns slabs of curd to squeeze out whey.' },
+      { q: 'What makes orange cheddar orange?', a: 'Annatto, a seed extract', w: ['Carrot juice', 'Extra-long ageing', 'Milk from special cows'], why: 'Orange cheddar is coloured with annatto.' },
+    ],
+    timeline: null,
+    estimate: null,
+  },
+  {
+    id: 'cheese-roquefort',
+    level: 1,
+    title: 'Roquefort and the caves of Combalou',
+    body: [
+      "Roquefort is a blue cheese made from sheep's milk in southern France, and its story is bound to a mountain. In the village of Roquefort-sur-Soulzon, the cheeses are ripened in natural caves in the Combalou rock, where fissures called fleurines let cool, damp air flow through. The blue mould, Penicillium roqueforti, gives the cheese its green-blue veins and peppery tang.",
+      "In 1925, Roquefort became the first cheese in France to receive an official protected designation of origin, so it can only be ripened in those caves. Its salty, creamy richness has a famous partner: Sauternes, the sweet white wine of Bordeaux. Salt against sugar is one of the great contrasts in food, like salted caramel.",
+    ],
+    question: 'Salt and sweet together, like Roquefort with Sauternes: delicious or confusing to you?',
+    quiz: [
+      { q: 'Roquefort is made from which animal\'s milk?', a: 'Sheep', w: ['Cow', 'Goat', 'Buffalo'], why: 'Roquefort is a sheep\'s milk blue cheese.' },
+      { q: 'Which wine is the classic partner for Roquefort?', a: 'Sauternes', w: ['Chianti', 'Fino sherry', 'Beaujolais'], why: 'Sweet Sauternes balances Roquefort\'s saltiness.' },
+    ],
+    timeline: { event: 'Roquefort gets protected status', year: 1925 },
+    estimate: null,
+  },
+  {
+    id: 'cheese-stilton',
+    level: 2,
+    title: 'The Stilton that cannot be made in Stilton',
+    body: [
+      "Like Roquefort, Stilton gets its blue veins from Penicillium roqueforti. But the mould needs air, so young Stilton cheeses are pierced with long steel needles. Oxygen flows down the channels and the blue spreads outward along them, which is why you can sometimes see the veins radiating from lines.",
+      "Stilton is named after a village in Cambridgeshire where it was sold to travellers on the Great North Road. Yet under its protected status it may only be made in three counties, Derbyshire, Leicestershire and Nottinghamshire, which means it cannot legally be made in Stilton itself. The rules also require pasteurised milk. It is the centrepiece of many British Christmas cheeseboards, traditionally with a glass of port, whose sweetness softens the cheese's salt and bite.",
+    ],
+    question: 'Should a food\'s protected name follow where it was sold, where it was invented, or where it is made today?',
+    quiz: [
+      { q: 'Why are Stilton cheeses pierced with needles?', a: 'To let in air for the blue mould', w: ['To drain out extra salt', 'To test if they are ripe', 'To add flavourings'], why: 'The blue mould needs oxygen, which the needle holes supply.' },
+      { q: 'Which drink is Stilton traditionally served with?', a: 'Port', w: ['Champagne', 'Sauvignon Blanc', 'Cider'], why: 'Sweet port balances Stilton\'s salty bite.' },
+    ],
+    timeline: null,
+    estimate: null,
+  },
+  {
+    id: 'cheese-bloomy',
+    level: 1,
+    title: 'Brie, Camembert and the white bloom',
+    body: [
+      "The soft, white, velvety skin on Brie and Camembert is a living mould, Penicillium camemberti, which is why these are called bloomy-rind cheeses. The mould works from the outside in, breaking down the paste so it ripens towards the centre. A young one has a firm, chalky core; a ripe one is soft and supple right through.",
+      "Brie de Meaux, from near Paris, is a broad, flat wheel; Camembert, from Normandy, is small and round. Their size changes how they ripen, and the true Camembert de Normandie must be made from raw milk. Buy them ripe and eat them soon: a gentle press near the centre should give a little. If the cheese smells sharply of ammonia or the rind turns sticky and brown, it has gone past its best.",
+    ],
+    question: 'Chalky and young, or oozing and ripe: how do you like your Brie, and what does that say about your taste?',
+    quiz: [
+      { q: 'What is the white rind on Brie and Camembert?', a: 'A living mould', w: ['A layer of wax', 'Dried salt', 'Rice flour'], why: 'It is a bloomy rind of Penicillium camemberti.' },
+      { q: 'What does a strong ammonia smell from a Brie suggest?', a: 'It is overripe', w: ['It is too young', 'It is perfectly ripe', 'It was made with goat\'s milk'], why: 'A sharp ammonia smell means it has gone past its best.' },
+    ],
+    timeline: null,
+    estimate: null,
+  },
+  {
+    id: 'cheese-comte',
+    level: 1,
+    title: 'Comté, a cheese that tastes of the season',
+    body: [
+      "Comté is a big, hard cheese from the Jura mountains of eastern France, made from the raw milk of mainly Montbéliarde cows. Farmers deliver their milk each day to small village dairies called fruitières, where it is made into wheels that typically weigh around 40 kilos. Each must age for at least four months, and many are kept for a year or two.",
+      "What makes Comté fascinating is how much it varies. Summer cheeses, made when cows graze mountain flowers and grasses, tend to be more golden and complex; winter ones, from hay-fed cows, are often milder. Young Comté tastes of butter and cream; older wheels develop hazelnut, toasted onion and brothy savouriness, often with little crunchy crystals. The local match is a white wine from the Jura, which shares its nutty character.",
+    ],
+    question: 'Would you rather a food tasted exactly the same every time, or changed with the seasons?',
+    quiz: [
+      { q: 'Comté comes from which French mountain range?', a: 'The Jura', w: ['The Pyrenees', 'The Alps of Savoie', 'The Massif Central'], why: 'Comté is made in the Jura mountains of eastern France.' },
+      { q: 'What is a fruitière?', a: 'A village dairy making Comté', w: ['A fruit served with cheese', 'A type of cheese knife', 'A summer pasture'], why: 'Fruitières are the small dairies where Comté is made.' },
+    ],
+    timeline: null,
+    estimate: { q: 'What is the minimum ageing for Comté, in months?', answer: 4, unit: 'months', min: 0, max: 24 },
+  },
+  {
+    id: 'cheese-goat',
+    level: 1,
+    title: 'Why goat\'s cheese is so white',
+    body: [
+      "Put goat's cheese next to a cow's milk cheese and the goat's is strikingly white. That is because goats convert the yellow pigment beta-carotene from grass into colourless vitamin A, while cows pass some of it into their milk. Goat's milk cheese also has a distinctive tangy, slightly earthy flavour.",
+      "France's Loire Valley is goat's cheese heaven. Crottin de Chavignol is a small drum that hardens and sharpens with age. Sainte-Maure de Touraine is a long log with a piece of straw running through the middle to hold it together. Valençay is a pyramid with its top cut off. They share a perfect regional partner in crisp Loire Sauvignon Blanc, and Chavignol sits right beside the town of Sancerre, so a Crottin with a glass of Sancerre is the classic match.",
+    ],
+    question: 'Goat\'s cheese is often loved or hated. Is there a flavour you think people should give a second chance?',
+    quiz: [
+      { q: 'Why is goat\'s cheese whiter than cow\'s milk cheese?', a: 'Goats convert beta-carotene to vitamin A', w: ['It is bleached after making', 'Goats eat only white plants', 'It is made with added cream'], why: 'Goats turn the yellow pigment into colourless vitamin A.' },
+      { q: 'Which Loire goat\'s cheese has a straw through its middle?', a: 'Sainte-Maure de Touraine', w: ['Crottin de Chavignol', 'Valençay', 'Brie de Meaux'], why: 'Sainte-Maure is a log held together by a straw.' },
+    ],
+    timeline: null,
+    estimate: null,
+  },
+  {
+    id: 'cheese-ash',
+    level: 2,
+    title: 'The mystery of the grey line',
+    body: [
+      "Many goat's cheeses, like Valençay from the Loire, are dusted in fine black ash before their rind develops. It is edible vegetable charcoal mixed with salt. The ash reduces acidity on the surface, which helps the right moulds grow and gives a striking contrast when you cut into the bright white paste.",
+      "Ash also turns up inside cheeses. Morbier, a cow's milk cheese from the Jura, has a thin dark line through its middle; traditionally it separated curd from the evening milking and the next morning's. Today the line is decorative, but the look has inspired new cheeses too. Humboldt Fog, from California, is a soft goat's cheese with a layer of ash running through it like a seam of rock.",
+    ],
+    question: 'Does a cheese\'s look affect how much you expect to enjoy it? Should it?',
+    quiz: [
+      { q: 'What is the black ash on many goat\'s cheeses?', a: 'Edible vegetable charcoal', w: ['Burnt sugar', 'Black pepper', 'Dried blue mould'], why: 'It is vegetable charcoal, usually mixed with salt.' },
+      { q: 'Morbier\'s grey line traditionally separated what?', a: 'Evening and morning curds', w: ['Cow and goat milk', 'Salted and unsalted curd', 'Two different cheeses'], why: 'It traditionally divided curd from two separate milkings.' },
+    ],
+    timeline: null,
+    estimate: null,
+  },
+  {
+    id: 'cheese-mozzarella',
+    level: 1,
+    title: 'Mozzarella, burrata and the stretch',
+    body: [
+      "Mozzarella belongs to a family called pasta filata, Italian for 'spun paste'. The curds are dipped in hot water, then stretched and kneaded until they turn smooth, glossy and elastic, before being shaped into balls. The finest version, Mozzarella di Bufala Campana, is made from water buffalo milk in southern Italy and tastes richer and tangier than cow's milk mozzarella.",
+      "Burrata, from Puglia, takes the idea further: a pouch of fresh mozzarella filled with stracciatella, a mix of shredded curd and cream, which spills out when you cut it. Both are fresh cheeses meant to be eaten within days, not aged. Never serve them straight from the fridge; let them warm up a little so the milky flavour comes through. The firm, lower-moisture mozzarella on pizza is a different, drier product.",
+    ],
+    question: 'Fresh cheeses taste best within days. Is there something you think is better the newer it is?',
+    quiz: [
+      { q: 'What happens to mozzarella curds during making?', a: 'They are stretched in hot water', w: ['They are pierced with needles', 'They are washed in brine for months', 'They are stacked in slabs'], why: 'Pasta filata cheeses are stretched and kneaded in hot water.' },
+      { q: 'What fills the centre of a burrata?', a: 'Shredded curd and cream', w: ['Ricotta and herbs', 'Melted butter', 'Blue cheese'], why: 'Burrata is filled with stracciatella, shredded curd mixed with cream.' },
+    ],
+    timeline: null,
+    estimate: null,
+  },
+  {
+    id: 'cheese-no-melt',
+    level: 1,
+    title: 'Cheeses that refuse to melt',
+    body: [
+      "Put halloumi in a hot pan and something odd happens: it browns but keeps its shape. The traditional cheese of Cyprus, made from sheep's and goat's milk (often with cow's milk too), has its curds poached in hot whey during making. That firms up its protein structure, giving the famous squeak and making it perfect for grilling.",
+      "Paneer, from South Asia, holds its shape for a different reason. It is made by heating milk and adding an acid such as lemon juice or vinegar, with no rennet at all, then pressing the curds. Acid-set cheeses like paneer and Latin American queso fresco generally soften but do not melt, which is why paneer can simmer in a spinach curry like palak paneer and still come out in neat cubes.",
+    ],
+    question: 'Grilled halloumi or melting raclette: are you a team that keeps its shape, or a team that oozes?',
+    quiz: [
+      { q: 'Which cheese is famous for grilling without melting?', a: 'Halloumi', w: ['Brie', 'Mozzarella', 'Raclette'], why: 'Halloumi\'s curds are poached in whey, so it holds its shape.' },
+      { q: 'What is used to set paneer instead of rennet?', a: 'An acid such as lemon juice', w: ['Salt water', 'Blue mould', 'Yeast'], why: 'Paneer is an acid-set cheese made without rennet.' },
+    ],
+    timeline: null,
+    estimate: null,
+  },
+  {
+    id: 'cheese-manchego',
+    level: 1,
+    title: 'Manchego and the zigzag rind',
+    body: [
+      "Manchego comes from La Mancha, the high, dry plain in central Spain made famous by Don Quixote. By law it is made only from the milk of Manchega sheep, which gives it a rich, nutty, slightly sweet flavour. You can recognise it by the zigzag pattern pressed into its rind, which imitates the plaited esparto grass bands once used to mould the cheese.",
+      "Manchego is sold at different ages. Younger cheeses are mild and supple; a 'curado' has been aged for several months; and 'viejo', aged a year or more, is firm, crumbly and intense, with a peppery bite. In Spain it is often served in thin triangles with membrillo, a firm quince paste, whose sweetness and fruitiness set off the salty, nutty cheese beautifully.",
+    ],
+    question: 'Sweet paste with salty cheese is a Spanish tradition. What unexpected combination do you swear by?',
+    quiz: [
+      { q: 'Manchego is made from which milk?', a: 'Manchega sheep\'s milk', w: ['Cow\'s milk', 'Goat\'s milk', 'Buffalo milk'], why: 'By law, Manchego uses only milk from Manchega sheep.' },
+      { q: 'What is membrillo, served with Manchego?', a: 'Quince paste', w: ['Fig jam', 'Spanish honey', 'Pickled peppers'], why: 'Membrillo is a firm, sweet quince paste.' },
+    ],
+    timeline: null,
+    estimate: null,
+  },
+  {
+    id: 'cheese-gouda',
+    level: 1,
+    title: 'Gouda, from mild to butterscotch',
+    body: [
+      "Gouda is named after a Dutch town where farmers traded their cheeses, and the Dutch pronounce it closer to 'how-da'. It has a special step: some of the whey is drained off and replaced with warm water. Washing the curd this way removes some of the milk sugar, so less acid forms, and the cheese ends up mild, smooth and sweetish.",
+      "Young Gouda, often sold in red or yellow wax, is soft and gentle, the kind of cheese children love. But leave it for a year or more and it becomes a different creature: hard, deep amber, with flavours of butterscotch and toasted nuts. Aged Gouda can be eaten in shards like chocolate, and its caramel notes make it a good partner for a dark beer or even a glass of tawny port.",
+    ],
+    question: 'Gouda changes completely with age. Have you changed more or less than you expected over the years?',
+    quiz: [
+      { q: 'What does aged Gouda famously taste of?', a: 'Butterscotch and toasted nuts', w: ['Mushrooms and earth', 'Lemon and grass', 'Smoke and bacon'], why: 'Long ageing gives Gouda caramel and nutty flavours.' },
+      { q: 'Why does washing the curd make Gouda sweeter?', a: 'It removes some milk sugar', w: ['It adds sugar to the curd', 'It kills all the bacteria', 'It adds cream'], why: 'Less milk sugar means less acid forms in the cheese.' },
+    ],
+    timeline: null,
+    estimate: null,
+  },
+  {
+    id: 'cheese-crystals',
+    level: 2,
+    title: 'The crunch in old cheese',
+    body: [
+      "Bite into a piece of well-aged Gouda, Comté or Parmigiano and you may hit tiny crunchy white specks. They are not salt and not a flaw. Over long ageing, the cheese's proteins slowly break down, releasing amino acids. One of them, tyrosine, does not dissolve easily, so it clumps together into little crystals.",
+      "On the surface of aged cheddar you may find a different kind: a whitish film or speckles of calcium lactate, formed from lactic acid and calcium. It is harmless, though sometimes mistaken for mould. Cheese lovers prize the crunch of crystals as a sign of time and patience, and some mature cheddars and Goudas are sold on how crunchy they are.",
+    ],
+    question: 'Crystals in cheese are a sign of patience paying off. What in your life has improved only with time?',
+    quiz: [
+      { q: 'The crunchy crystals in aged Gouda are mostly made of what?', a: 'Tyrosine, an amino acid', w: ['Salt', 'Sugar', 'Mould spores'], why: 'Tyrosine crystallises as proteins break down during ageing.' },
+      { q: 'What are the white speckles on the surface of aged cheddar often made of?', a: 'Calcium lactate', w: ['Blue mould', 'Wax', 'Sea salt'], why: 'Calcium lactate forms harmless crystals on aged cheddar.' },
+    ],
+    timeline: null,
+    estimate: null,
+  },
+  {
+    id: 'cheese-feta',
+    level: 1,
+    title: 'Feta, the brined cheese of Greece',
+    body: [
+      "Feta is a crumbly white cheese stored in salty brine, which keeps it moist and gives it its tangy, salty character. It has been made in Greece for a very long time, and since 2002 its name has been protected in the European Union. To be called feta there, it must come from certain regions of Greece and be made from sheep's milk, or a mix of sheep's milk with up to 30 per cent goat's milk.",
+      "That ruling was controversial, because Denmark and other countries had been making cow's milk 'feta' for years. Those cheeses must now be sold under other names, such as 'salad cheese'. Real feta is creamier and more complex. Keep leftovers submerged in their brine, and try it baked with tomatoes and oregano, or simply in a Greek salad.",
+    ],
+    question: 'Was the EU right to stop Danish cow\'s milk cheese being called feta?',
+    quiz: [
+      { q: 'What is feta traditionally made from?', a: 'Sheep\'s milk, perhaps with some goat\'s', w: ['Cow\'s milk only', 'Buffalo milk', 'Goat\'s milk only'], why: 'Protected feta is sheep\'s milk with up to 30 per cent goat\'s.' },
+      { q: 'How should you store leftover feta?', a: 'Submerged in its brine', w: ['Wrapped tightly in cling film', 'Uncovered in the fridge', 'In the freezer'], why: 'The brine keeps feta moist and seasoned.' },
+    ],
+    timeline: { event: 'Feta name protected in the EU', year: 2002 },
+    estimate: { q: 'What is the maximum percentage of goat\'s milk allowed in protected feta?', answer: 30, unit: '%', min: 0, max: 100 },
+  },
+  {
+    id: 'cheese-pecorino',
+    level: 1,
+    title: 'Pecorino, the sheep cheese of Italy',
+    body: [
+      "Pecorino simply means 'of the sheep', from the Italian 'pecora', and it covers a whole family of Italian sheep's milk cheeses. The most famous, Pecorino Romano, is an ancient style said to have been part of the rations of Roman soldiers. Oddly, most of it is now made on the island of Sardinia rather than around Rome.",
+      "Pecorino Romano is hard, sharp and very salty, built for grating. It is the cheese in a classic Roman cacio e pepe, where it melts with pasta water and black pepper into a silky sauce. Other pecorinos are gentler: Pecorino Toscano, from Tuscany, is often sold young and soft, and is lovely with pears and a drizzle of honey. If a recipe calls for Parmesan and you want more punch, Pecorino Romano is the bolder swap.",
+    ],
+    question: 'Cacio e pepe is just three ingredients. Do you prefer cooking that is simple or elaborate, and why?',
+    quiz: [
+      { q: 'What does "pecorino" refer to?', a: 'Cheese made from sheep\'s milk', w: ['Cheese aged in caves', 'Cheese from Rome only', 'Cheese with pepper inside'], why: 'Pecora is Italian for sheep.' },
+      { q: 'Where is most Pecorino Romano made today?', a: 'Sardinia', w: ['Rome', 'Sicily', 'Tuscany'], why: 'Despite its name, most Pecorino Romano is made in Sardinia.' },
+    ],
+    timeline: null,
+    estimate: null,
+  },
+  {
+    id: 'cheese-rinds',
+    level: 1,
+    title: 'Should you eat the rind?',
+    body: [
+      "It depends on the rind, and the choice is mostly yours. The bloomy white rinds of Brie and Camembert are made to be eaten and add a mushroomy note. Washed rinds, orange and pungent, are edible too, though strong. Natural rinds, which form as a cheese dries, such as on Stilton or clothbound cheddar, are safe but often dry, gritty or bitter, so many people leave them.",
+      "Some coverings are definitely not food: wax on Gouda or Edam, the cloth on traditional cheddar, and any plastic coating. The rind on very hard cheeses like Parmigiano is too tough to chew, but it is edible and wonderful dropped into a simmering soup or risotto for extra savoury depth. At a cheeseboard, nobody should judge you either way: try a bit of rind once, then decide.",
+    ],
+    question: 'Rind eater or rind leaver? Defend your position.',
+    quiz: [
+      { q: 'Which of these rinds should you not eat?', a: 'Wax on Gouda', w: ['The white rind on Brie', 'The rind of Camembert', 'A washed rind'], why: 'Wax, cloth and plastic coatings are not food.' },
+      { q: 'What can you do with a leftover Parmigiano rind?', a: 'Simmer it in soup or risotto', w: ['Grate it over salad', 'Eat it raw as a snack', 'Use it to start a new cheese'], why: 'The hard rind adds savoury depth when simmered.' },
+    ],
+    timeline: null,
+    estimate: null,
+  },
+  {
+    id: 'cheese-raw-milk',
+    level: 1,
+    title: 'Raw milk versus pasteurised',
+    body: [
+      "Pasteurising milk means heating it to kill bacteria, both harmful and harmless ones. Raw-milk cheese skips that step, keeping the milk's own native microbes. Fans argue this gives deeper, more varied flavours that reflect the farm, the season and the animals' diet. Many of Europe's most famous cheeses must be raw by their own rules, including Comté, Roquefort and Camembert de Normandie.",
+      "Rules vary around the world. In the United States, cheese made from raw milk must be aged for at least 60 days before it can be sold, which effectively keeps young, soft raw-milk cheeses off shelves. Curiously, Britain's Stilton goes the other way: its protected rules require pasteurised milk. The debate is about safety, tradition and taste, and good cheesemakers on both sides make excellent cheese.",
+    ],
+    question: 'Should people be free to buy raw-milk cheese, or should governments limit it for safety?',
+    quiz: [
+      { q: 'What does pasteurising milk do?', a: 'Heats it to kill bacteria', w: ['Adds cultures for flavour', 'Removes all the fat', 'Freezes it for storage'], why: 'Pasteurisation heats milk to kill bacteria.' },
+      { q: 'Which famous blue cheese must be made with pasteurised milk?', a: 'Stilton', w: ['Roquefort', 'Comté', 'Camembert de Normandie'], why: 'Stilton\'s protected rules require pasteurised milk.' },
+    ],
+    timeline: null,
+    estimate: { q: 'In the United States, how many days must raw-milk cheese be aged before sale?', answer: 60, unit: 'days', min: 0, max: 365 },
+  },
+  {
+    id: 'cheese-serving',
+    level: 1,
+    title: 'Cold cheese is quiet cheese',
+    body: [
+      "The single biggest improvement you can make to a cheeseboard costs nothing: take the cheese out of the fridge about an hour before serving. Cold mutes flavour and stiffens texture, so a fridge-cold Brie tastes of little and a cold cheddar feels waxy. Keep it covered while it warms so it does not dry out.",
+      "Cutting matters too. Aim for every slice to get a share of rind and centre, because a cheese tastes different from edge to middle. Cut a round like a cake, and slice a wedge of Brie along its length rather than lopping off the tip, the 'nose', which is considered poor manners. To store leftovers, wrap them in waxed or cheese paper, not cling film, which traps moisture and can make cheese sweaty and tainted.",
+    ],
+    question: 'Is cheese etiquette, like not cutting the nose off the Brie, charming tradition or fussy snobbery?',
+    quiz: [
+      { q: 'How long before serving should you take cheese out of the fridge?', a: 'About an hour', w: ['Just before serving', 'A full day', 'About five minutes'], why: 'An hour lets the cheese warm up so its flavour comes through.' },
+      { q: 'What is the best way to wrap leftover cheese?', a: 'Waxed or cheese paper', w: ['Tight cling film', 'Aluminium foil only', 'Nothing at all'], why: 'Paper lets cheese breathe; cling film can make it sweaty.' },
+    ],
+    timeline: null,
+    estimate: null,
+  },
+  {
+    id: 'cheese-board',
+    level: 2,
+    title: 'Building a cheeseboard that works',
+    body: [
+      "Once your cheese is at room temperature, the art is in the selection. Three to five cheeses is plenty; more becomes a blur. Aim for contrast in three ways: milk (cow, goat, sheep), texture (soft, firm, hard) and style. A reliable trio is a soft bloomy cheese like Brie, a firm aged one like Comté or Manchego, and a blue like Stilton. Add a fresh goat's cheese for a fourth.",
+      "Taste from mildest to strongest, finishing with the blue, so the big flavours do not flatten the delicate ones. Give each cheese its own knife. Keep the extras simple: plain crackers or bread, crisp apples or pears, grapes, walnuts, honey for the blue and quince paste for the Manchego. As a rough guide, allow about 100 grams of cheese in total per person after a meal, and more if the board is the meal.",
+    ],
+    question: 'If you could put only three cheeses on your ideal board, which would they be?',
+    quiz: [
+      { q: 'In what order should you taste a cheeseboard?', a: 'Mildest to strongest', w: ['Strongest to mildest', 'Hardest to softest', 'Any order at all'], why: 'Strong cheeses like blues would overwhelm delicate ones.' },
+      { q: 'How many cheeses does the card recommend for a board?', a: 'Three to five', w: ['One or two', 'Eight to ten', 'At least twelve'], why: 'More than about five becomes a blur.' },
+    ],
+    timeline: null,
+    estimate: { q: 'Roughly how many grams of cheese in total should you allow per person on an after-dinner board?', answer: 100, unit: 'grams', min: 0, max: 500 },
+  },
+  {
+    id: 'cheese-wine-pairing',
+    level: 1,
+    title: 'Why white wine often beats red with cheese',
+    body: [
+      "The idea that red wine and cheese are natural partners is only half true. Tannin in red wine can clash with many cheeses, especially soft and creamy ones, leaving the wine tasting harsh and metallic. White wines, with fresh acidity and no tannin, are often the easier match: crisp whites cut through creamy cheese the way a squeeze of lemon would.",
+      "A few rules of thumb help. Match by region: Loire goat's cheese with Sancerre, Comté with a white from the Jura. Match salt with sweet: Roquefort with Sauternes, Stilton with port. Bubbles love rich, creamy cheese, so Champagne with Brie is a treat. If you want red, choose an aged hard cheese like Parmigiano or mature cheddar, whose firm, savoury character can stand up to tannin.",
+    ],
+    question: 'Red wine and cheese is a cliché. Which clichés about food do you think are actually right?',
+    quiz: [
+      { q: 'Why does red wine often clash with soft cheese?', a: 'Its tannin can taste harsh with it', w: ['It is too sweet', 'It is too cold', 'It has too little alcohol'], why: 'Tannin and creamy cheese can clash, tasting harsh or metallic.' },
+      { q: 'Which type of cheese best stands up to a red wine?', a: 'An aged hard cheese', w: ['A fresh goat\'s cheese', 'A ripe Brie', 'A fresh mozzarella'], why: 'Firm, aged cheeses like Parmigiano can handle tannin.' },
+    ],
+    timeline: null,
+    estimate: null,
+  },
+];
+
+export const requests = [
+  { card: 'cheese-board', ask: 'I\'m putting together a cheeseboard for six friends on Saturday. I was going to buy four different cheddars. Thoughts?', q: 'What makes a better board?', a: 'Three to five contrasting cheeses', w: ['Four cheddars of different ages', 'Ten small cheeses of every kind'], why: 'Contrast in milk, texture and style makes a board interesting.' },
+  { card: 'cheese-stilton', ask: 'My grandad is bringing a big wedge of Stilton for Christmas. What should I pour alongside it?', q: 'Which drink is the classic match?', a: 'Port', w: ['A tannic young Cabernet', 'Fresh orange juice'], why: 'Sweet port balances Stilton\'s salty, sharp bite.' },
+  { card: 'cheese-goat', ask: 'I found a lovely little Crottin de Chavignol at the market. What wine would show it off?', q: 'Which wine is the regional match?', a: 'Sancerre', w: ['Vintage port', 'Barolo'], why: 'Crisp Sancerre comes from the same corner of the Loire as the cheese.' },
+  { card: 'cheese-no-melt', ask: 'We\'re having a barbecue and my vegetarian friend wants a cheese she can put straight on the grill. Any ideas?', q: 'Which cheese grills without melting?', a: 'Halloumi', w: ['Brie', 'Fresh mozzarella'], why: 'Halloumi\'s poached curds keep their shape on the grill.' },
+  { card: 'cheese-serving', ask: 'Guests are coming at eight and the cheese is in the fridge. When should I get it out?', q: 'When is best?', a: 'About an hour before serving', w: ['Right as guests sit down', 'The night before, unwrapped'], why: 'Cold mutes flavour; an hour lets it come to life.' },
+  { card: 'cheese-wine-pairing', ask: 'I\'ve got a beautiful ripe Brie and a bottle of big, tannic red. Will they get along?', q: 'What would match the Brie better?', a: 'A crisp white or Champagne', w: ['An even more tannic red', 'A strong black coffee'], why: 'Tannin clashes with creamy cheese; acidity and bubbles cut through it.' },
+];

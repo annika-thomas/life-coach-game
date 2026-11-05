@@ -429,3 +429,34 @@ export const LESSONS = [
     question: 'If you could redesign the week (length, days off, names), what would you change?',
   },
 ];
+
+// Dates (for the Timeline puzzle) and striking numbers (for Guess of the
+// day) on the original cards. Newer cards carry these fields themselves.
+const BASE_TIMELINE = {
+  'fashion-lbd': ['Vogue calls it "Chanel\'s Ford"', 1926], 'fashion-newlook': ['Dior shows the New Look', 1947],
+  'art-impression': ['First Impressionist show', 1874], 'art-monalisa': ['Mona Lisa stolen', 1911],
+  'travel-shinkansen': ['Shinkansen opens', 1964], 'travel-silkroad': ['"Silk Road" coined', 1877], 'travel-venice': ['MOSE barriers in use', 2020],
+  'food-umami': ['Ikeda names umami', 1908], 'hist-ok': ['"o.k." appears in print', 1839], 'hist-cleopatra': ['Great Pyramid built', -2560],
+  'phil-rawls': ['A Theory of Justice', 1971], 'phil-trolley': ['Foot poses the trolley problem', 1967], 'film-rashomon': ['Rashomon released', 1950],
+  'robo-moravec': ['Moravec\'s paradox', 1988], 'cheese-holes': ['Hay-in-milk hole study', 2015], 'news-thucydides': ['Allison names the "Trap"', 2017],
+};
+const BASE_ESTIMATE = {
+  'stats-birthday': { q: 'How many people do you need for a better-than-even chance two share a birthday?', answer: 23, unit: 'people', min: 2, max: 100 },
+  'sci-lightpast': { q: 'How many minutes does sunlight take to reach Earth?', answer: 8.3, unit: 'minutes', min: 0, max: 30 },
+  'cheese-parm': { q: 'Roughly how heavy is a wheel of Parmigiano Reggiano?', answer: 40, unit: 'kg', min: 1, max: 100 },
+  'news-thucydides': { q: 'Of 16 cases of a rising power challenging a ruling one, how many ended in war?', answer: 12, unit: 'cases', min: 0, max: 16 },
+  'stats-baserate': { q: '1 in 100 have a condition; a test catches 90% and flags 9% of healthy people. Chance a positive is real?', answer: 9, unit: '%', min: 0, max: 100 },
+  'robo-dof': { q: 'How many degrees of freedom does a human arm have, shoulder to wrist?', answer: 7, unit: 'degrees of freedom', min: 1, max: 20 },
+};
+for (const l of LESSONS) {
+  if (BASE_TIMELINE[l.id]) l.timeline = { event: BASE_TIMELINE[l.id][0], year: BASE_TIMELINE[l.id][1] };
+  if (BASE_ESTIMATE[l.id]) l.estimate = BASE_ESTIMATE[l.id];
+}
+
+// The larger card bank, one file per category in js/cards/.
+import { CARD_SETS } from './cards/index.js';
+export const REQUESTS = [];
+for (const [cat, mod] of Object.entries(CARD_SETS)) {
+  for (const c of mod.default) LESSONS.push({ ...c, cat, unlocks: undefined });
+  for (const r of mod.requests || []) REQUESTS.push({ ...r, cat });
+}

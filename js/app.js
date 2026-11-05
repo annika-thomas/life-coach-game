@@ -1,5 +1,7 @@
 import { World, PINNED } from './world.js';
 import { ITEMS, ITEM_BY_ID, DISTRICTS, SIGNATURE } from './items.js';
+import { GIFTS } from './world.js';
+import { REQUESTS } from './lessons.js';
 import { LESSONS, CATEGORIES } from './lessons.js';
 import { load, save, reset, dayKey, rhythm } from './state.js';
 import { ICON, leafAmt } from './icons.js';
@@ -70,7 +72,7 @@ const affordable = () => ITEMS.filter((i) => isUnlocked(i) && !isBuilt(i) && i.c
 function reqLabel(it) {
   const r = it.req;
   if (r.type === 'none') return 'Starter plan';
-  if (r.type === 'cat') return r.level === 1 ? `Remember a ${CATEGORIES[r.cat].label} card at the dock` : `${CATEGORIES[r.cat].label} mastery ${r.level}`;
+  if (r.type === 'cat') return r.level === 1 ? `Recall a ${CATEGORIES[r.cat].label} card (visitors and the town board)` : `${CATEGORIES[r.cat].label} mastery ${r.level}`;
   if (r.type === 'lessons') return `${r.n} cards, any topic`;
   if (r.type === 'log') return `Log ${LOG_KINDS[r.kind].label.toLowerCase()} ${r.n} times`;
   return '';
@@ -109,7 +111,7 @@ let talking = null;
 function talk(who, lines, choices = null) {
   if (talking) talking.finish(null);
   return new Promise((resolve) => {
-    const c = CAST[who];
+    const c = typeof who === 'string' ? CAST[who] : who;
     dlgName.textContent = c.name();
     dlgName.style.background = c.color;
     dlgName.hidden = who === 'note';
@@ -193,7 +195,7 @@ const VISIT = {
     const topic = CATEGORIES[next.cat].label.toLowerCase();
     const lines = firstVisit('library')
       ? ['Oh, a reader. I\'m Maple. I look after the shelves here.',
-         'Read a card, and I\'ll send a little energy over to ' + S.creatureName + '. When you go fishing at the dock later, you\'ll get quizzed on what you\'ve read.']
+         'Read a card, and I\'ll send a little energy over to ' + S.creatureName + '. Visitors and Fennel\'s puzzles on the town board will test what you\'ve read.']
       : [pick([
           `I just shelved something on ${topic}. Want a look?`,
           'Quiet day. Perfect for reading.',
@@ -210,15 +212,20 @@ const VISIT = {
     if (await talk('dot', lines, ['Log something', 'Not yet']) === 0) setTimeout(openLog, 200);
   },
   async dock() {
-    const rev = nextReview();
-    const line = !rev ? 'The water is calm.' : rev.due ? 'Something is moving under the water.' : 'The water is calm. Something might still bite.';
-    if (await talk('note', [line], ['Cast a line', 'Leave']) === 0) setTimeout(goFishing, 200);
+    const t = timeOfDay();
+    const line = { dawn: 'The sea is still and pink. Big fish rise early.', day: 'Waves lap at the posts. Shadows move under the water.', dusk: 'The water turns gold. Something large might be out there.', night: 'The sea is dark and quiet. Strange things swim at night.' }[t];
+    if (await talk('note', [line], ['Cast a line', 'Leave']) === 0) setTimeout(() => goFishing('dock'), 200);
+  },
+  async pond() {
+    const n = new Set(S.fish.map((f) => f.species)).size;
+    const line = n ? `${n} kind${n > 1 ? 's' : ''} of fish swim here now. Something new might be hiding.` : 'A quiet pond. Little shadows dart under the lily pads.';
+    if (await talk('note', [line], ['Cast a line', 'Leave']) === 0) setTimeout(() => goFishing('pond'), 200);
   },
   async workbench() {
     const can = affordable();
     const first = firstVisit('workbench');
     const lines = first
-      ? ['Bram. I build things.', 'Reading a card gets you a plan. Remembering it at the dock lets me build it. Energy pays for the wood.']
+      ? ['Bram. I build things.', 'Reading a card gets you a plan. Remembering it, when a visitor asks or on Fennel\'s board, lets me build it. Energy pays for the wood.']
       : [];
     if (can.length) lines.push(pick([`You've got enough for the ${can[0].name.toLowerCase()}. Want to see the plans?`, 'Energy in the pocket. Let\'s make something.', `I could knock out a ${can[0].name.toLowerCase()} today.`]));
     else lines.push(pick(['Not enough energy for anything yet. Maple\'s library is a good place to start.', 'Running a bit low. Dot\'s yard pays double, you know.', 'Nothing we can afford yet. Have a look anyway?']));
@@ -249,7 +256,7 @@ function districtLine(key) {
   const low = cats.slice().sort((a, b) => a.m - b.m)[0];
   const label = CATEGORIES[low.c].label;
   if (low.m >= 3) return 'Every topic here is fully grown. Look at this place!';
-  if (low.m === 0) return `Remember a ${label.toLowerCase()} card at the dock and Bram can build the ${ITEM_BY_ID[SIGNATURE[low.c]].name.toLowerCase()}.`;
+  if (low.m === 0) return `Get a ${label.toLowerCase()} question right, from a visitor or the town board, and Bram can build the ${ITEM_BY_ID[SIGNATURE[low.c]].name.toLowerCase()}.`;
   return `${label} is at level ${low.m}. Keep remembering those cards and something new will turn up.`;
 }
 for (const [key, d] of Object.entries(DISTRICTS)) {
@@ -262,7 +269,17 @@ for (const [key, d] of Object.entries(DISTRICTS)) {
     if (choice === 0) { filters = new Set(d.cats); setTimeout(() => openLessons(), 200); }
   };
 }
-world.on('station', (id) => VISIT[id]());
+// Fennel's notice board: the two daily puzzles, then reading.
+VISIT.square = async () => {
+  const t = KEEPER_TALK.fennel;
+  const lines = firstVisit('square') ? [...t.intro, 'I also pin up two puzzles every day. Have a go.'] : [pick(t.idle)];
+  const tl = S.daily.timeline, gs = S.daily.guess;
+  const choice = await talk('fennel', lines, [`Today's timeline${tl ? ` (${tl.score}/5)` : ''}`, `Guess of the day${gs ? ' (done)' : ''}`, 'Read about news, travel or history', 'Later']);
+  if (choice === 0) setTimeout(openTimeline, 200);
+  if (choice === 1) setTimeout(openGuess, 200);
+  if (choice === 2) { filters = new Set(DISTRICTS.square.cats); setTimeout(() => openLessons(), 200); }
+};
+world.on('station', async (id) => { await maybeKeeperGift(id); VISIT[id](); });
 
 // Tapping Pip or something you built.
 function pipLine() {
@@ -333,7 +350,7 @@ function newlyUnlocked() {
   now.forEach((id) => knownPlans.add(id));
   if (now.length) {
     const it = ITEM_BY_ID[now[0]];
-    toast(it.signature && !isUnlocked(it) ? `New plan: ${it.name}. Remember it at the dock to build.` : `New plan at the workbench: ${it.name}`);
+    toast(it.signature && !isUnlocked(it) ? `New plan: ${it.name}. Recall it to build.` : `New plan at the workbench: ${it.name}`);
   }
 }
 
@@ -400,7 +417,7 @@ function openLessons(first) {
   const feed = $('#feed');
   const shown = [];
   let done = 0;
-  onClose = () => { if (done) talk('maple', [done > 1 ? `${done} cards! Try the dock later and see what stuck.` : pick(['Good reading. Come back anytime.', 'I\'ll keep a few more on the shelf for you.'])]); };
+  onClose = () => { if (done) talk('maple', [done > 1 ? `${done} cards! Fennel\'s board will test you on those.` : pick(['Good reading. Come back anytime.', 'I\'ll keep a few more on the shelf for you.'])]); };
   const append = (l = nextLesson(shown)) => {
     shown.push(l.id);
     feed.insertAdjacentHTML('beforeend', cardHtml(l));
@@ -432,7 +449,7 @@ function openLessons(first) {
       commit();
       floatReward(gain, btn);
       card.classList.add('done');
-      card.querySelector('.card-actions').innerHTML = `<div class="answered">${ICON.check} Got it. You can review this one later at the dock.</div>`;
+      card.querySelector('.card-actions').innerHTML = `<div class="answered">${ICON.check} Got it. It may come up in a puzzle or a visitor\'s question.</div>`;
       ta.readOnly = true;
       newlyUnlocked();
       append();
@@ -495,72 +512,114 @@ function masteryNews() {
   }
   return lines;
 }
-const pondColors = () => [...new Set(S.fish.map((f) => f.species))].map((id) => FISH.find((f) => f.id === id)?.color).filter(Boolean);
 
 // ── Fishing ────────────────────────────────────────────────────────────
-// Cast, wait for a bite, reel it in, then answer a question about something
-// you read to land the fish. Older, well-known cards hook rarer fish.
+// Just fishing: different fish in the sea and the pond, at different times
+// of day. Watch the shadows (bigger shadow, bigger fish), wait out the
+// nibbles, tap on the bite, then keep the fish in the bar. Each species
+// fights differently.
 const FISH = [
-  { id: 'minnow',   name: 'Minnow',        tier: 0, color: '#9fb7c9' },
-  { id: 'bluegill', name: 'Bluegill',      tier: 0, color: '#5b8fd6' },
-  { id: 'perch',    name: 'Perch',         tier: 0, color: '#d8b24a' },
-  { id: 'sardine',  name: 'Sardine',       tier: 0, color: '#a9c3d6' },
-  { id: 'bass',     name: 'Sea Bass',      tier: 1, color: '#6d7f8f' },
-  { id: 'mackerel', name: 'Mackerel',      tier: 1, color: '#4f8fa8' },
-  { id: 'snapper',  name: 'Red Snapper',   tier: 1, color: '#e0604a' },
-  { id: 'puffer',   name: 'Pufferfish',    tier: 1, color: '#e8c35a' },
-  { id: 'trout',    name: 'Rainbow Trout', tier: 2, color: '#e88fb0' },
-  { id: 'koi',      name: 'Koi',           tier: 2, color: '#f08a3c' },
-  { id: 'moonfish', name: 'Moonfish',      tier: 2, color: '#c9d3ff' },
-  { id: 'carp',     name: 'Golden Carp',   tier: 2, color: '#f2c94c' },
+  // sea (the dock)
+  { id: 'sardine',  name: 'Sardine',        where: 'sea',  time: 'any',   tier: 0, color: '#a9c3d6', size: 0.7, cm: [12, 20],   fight: 'darter' },
+  { id: 'mackerel', name: 'Mackerel',       where: 'sea',  time: 'any',   tier: 0, color: '#4f8fa8', size: 0.85, cm: [25, 40],  fight: 'steady' },
+  { id: 'flounder', name: 'Flounder',       where: 'sea',  time: 'day',   tier: 0, color: '#b9a27a', size: 0.9, cm: [25, 45],   fight: 'sinker' },
+  { id: 'bass',     name: 'Sea Bass',       where: 'sea',  time: 'any',   tier: 1, color: '#6d7f8f', size: 1.05, cm: [40, 70], fight: 'steady' },
+  { id: 'snapper',  name: 'Red Snapper',    where: 'sea',  time: 'day',   tier: 1, color: '#e0604a', size: 1.0, cm: [35, 60],   fight: 'darter' },
+  { id: 'puffer',   name: 'Pufferfish',     where: 'sea',  time: 'any',   tier: 1, color: '#e8c35a', size: 0.8, cm: [15, 30],   fight: 'floater' },
+  { id: 'squid',    name: 'Squid',          where: 'sea',  time: 'night', tier: 1, color: '#f0d6e0', size: 0.9, cm: [20, 45],   fight: 'darter' },
+  { id: 'octopus',  name: 'Octopus',        where: 'sea',  time: 'night', tier: 2, color: '#d9734a', size: 1.1, cm: [40, 90],   fight: 'sinker' },
+  { id: 'tuna',     name: 'Bluefin Tuna',   where: 'sea',  time: 'dawn',  tier: 2, color: '#2f5f9e', size: 1.6, cm: [120, 250], fight: 'wild' },
+  { id: 'moonfish', name: 'Moonfish',       where: 'sea',  time: 'night', tier: 2, color: '#c9d3ff', size: 1.4, cm: [80, 180],  fight: 'floater' },
+  { id: 'swordfish',name: 'Swordfish',      where: 'sea',  time: 'dusk',  tier: 2, color: '#5a6f8f', size: 1.6, cm: [150, 300], fight: 'wild' },
+  // pond
+  { id: 'minnow',   name: 'Minnow',         where: 'pond', time: 'any',   tier: 0, color: '#9fb7c9', size: 0.6, cm: [4, 10],    fight: 'darter' },
+  { id: 'bluegill', name: 'Bluegill',       where: 'pond', time: 'day',   tier: 0, color: '#5b8fd6', size: 0.75, cm: [12, 22],  fight: 'steady' },
+  { id: 'perch',    name: 'Perch',          where: 'pond', time: 'any',   tier: 0, color: '#d8b24a', size: 0.8, cm: [15, 30],   fight: 'steady' },
+  { id: 'tadpole',  name: 'Tadpole',        where: 'pond', time: 'day',   tier: 0, color: '#5a6a4a', size: 0.5, cm: [2, 5],     fight: 'floater' },
+  { id: 'catfish',  name: 'Catfish',        where: 'pond', time: 'night', tier: 1, color: '#7a6a5a', size: 1.1, cm: [40, 90],   fight: 'sinker' },
+  { id: 'trout',    name: 'Rainbow Trout',  where: 'pond', time: 'dawn',  tier: 1, color: '#e88fb0', size: 0.95, cm: [30, 60],  fight: 'darter' },
+  { id: 'carp',     name: 'Golden Carp',    where: 'pond', time: 'any',   tier: 2, color: '#f2c94c', size: 1.1, cm: [40, 80],   fight: 'steady' },
+  { id: 'koi',      name: 'Koi',            where: 'pond', time: 'dusk',  tier: 2, color: '#f08a3c', size: 1.1, cm: [40, 75],   fight: 'floater' },
+  { id: 'axolotl',  name: 'Axolotl',        where: 'pond', time: 'night', tier: 2, color: '#f6b8c8', size: 0.8, cm: [15, 25],   fight: 'wild' },
 ];
-const TIER = [
-  { label: 'common', speed: 0.55, zone: 0.34 },
-  { label: 'uncommon', speed: 0.85, zone: 0.28 },
-  { label: 'rare', speed: 1.2, zone: 0.23 },
-];
-function rollFish(box) {
-  const r = Math.random();
-  const tier = box >= 4 ? (r < 0.6 ? 2 : 1) : box === 3 ? (r < 0.15 ? 2 : r < 0.85 ? 1 : 0) : (r < 0.15 ? 1 : 0);
-  return pick(FISH.filter((f) => f.tier === tier));
+const TIER_W = [10, 4, 1.2]; // relative chances: common, uncommon, rare
+const TIME_LABEL = { day: 'in the daytime', night: 'at night', dawn: 'early in the morning', dusk: 'around sunset', any: 'any time' };
+function timeOfDay() {
+  const h = new Date().getHours();
+  return h >= 5 && h < 9 ? 'dawn' : h >= 9 && h < 17 ? 'day' : h >= 17 && h < 21 ? 'dusk' : 'night';
+}
+const fitsTime = (f, t) => f.time === 'any' || f.time === t || (f.time === 'day' && t !== 'night');
+function rollFish(where) {
+  const t = timeOfDay();
+  const pool = FISH.filter((f) => f.where === where && fitsTime(f, t));
+  const total = pool.reduce((a, f) => a + TIER_W[f.tier], 0);
+  let r = Math.random() * total;
+  for (const f of pool) { r -= TIER_W[f.tier]; if (r <= 0) return f; }
+  return pool[0];
 }
 const fishSvg = (color, known = true) => `<svg class="fishsvg" viewBox="0 0 64 36"><path d="M8 18c8-12 26-14 38-6l10-8v28l-10-8C34 32 16 30 8 18z" fill="${known ? color : '#cfc6b0'}" stroke="#4a3b33" stroke-width="3" stroke-linejoin="round"/>${known ? '<circle cx="18" cy="16" r="2.6" fill="#2a2320"/>' : ''}</svg>`;
-
+const pondColors = () => [...new Set(S.fish.map((f) => f.species))].map((id) => FISH.find((f) => f.id === id)?.color).filter(Boolean);
 world.setPondFish(pondColors());
+
 const fishUI = $('#fish'), hint = $('#fish-hint'), reelEl = $('#reel'), zoneEl = $('#zone'), fishyEl = $('#fishy'), meterEl = $('#meter');
 let fishing = false;
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
-// resolves true if tapped within ms
-function tapWithin(ms) {
+// Taps during the wait: tapping on a nibble scares the fish off.
+function watchBobber(fish) {
   return new Promise((resolve) => {
-    const t = setTimeout(() => { fishUI.onpointerdown = null; resolve(false); }, ms);
-    fishUI.onpointerdown = () => { clearTimeout(t); fishUI.onpointerdown = null; resolve(true); };
+    let phase = 'wait', timers = [];
+    const done = (v) => { timers.forEach(clearTimeout); fishUI.onpointerdown = null; resolve(v); };
+    fishUI.onpointerdown = () => done(phase === 'bite' ? 'hooked' : 'early');
+    let t = 1400 + Math.random() * 2600;
+    timers.push(setTimeout(() => { world.shadowChase(0); hint.textContent = 'Something is coming...'; }, t * 0.5));
+    const nibbles = 1 + Math.floor(Math.random() * 3);
+    for (let i = 0; i < nibbles; i++) {
+      timers.push(setTimeout(() => { phase = 'nibble'; world.fishBite(1); hint.textContent = 'Nibble...'; }, t));
+      t += 700 + Math.random() * 600;
+      timers.push(setTimeout(() => { phase = 'wait'; world.fishBite(0); }, t));
+      t += 500 + Math.random() * 900;
+    }
+    timers.push(setTimeout(() => { phase = 'bite'; world.fishBite(2); hint.textContent = 'Tap!'; hint.classList.add('bite'); }, t));
+    timers.push(setTimeout(() => done('slow'), t + 1300 - fish.tier * 150));
   });
 }
 // Hold to raise the green bar; keep the fish inside it until the meter fills.
-function reel(tier) {
+function reel(fish) {
   return new Promise((resolve) => {
-    const T = TIER[tier];
+    const zoneSize = [0.34, 0.28, 0.22][fish.tier];
+    const speed = [0.55, 0.85, 1.15][fish.tier];
     reelEl.classList.add('show');
-    zoneEl.style.height = `${T.zone * 100}%`;
-    let zone = 0.1, vel = 0, fish = 0.5, target = 0.5, nextTarget = 0, progress = 0.3, holding = false, last = performance.now();
+    zoneEl.style.height = `${zoneSize * 100}%`;
+    let zone = 0.1, vel = 0, pos = 0.5, target = 0.5, next = 0, progress = 0.3, holding = false, last = performance.now(), t0 = last;
     fishUI.onpointerdown = () => { holding = true; };
     fishUI.onpointerup = fishUI.onpointercancel = () => { holding = false; };
     const step = (now) => {
       const dt = Math.min(0.05, (now - last) / 1000); last = now;
+      const el = (now - t0) / 1000;
       vel += (holding ? 2.6 : -2.2) * dt;
       vel = Math.max(-1.2, Math.min(1.2, vel));
       zone += vel * dt;
       if (zone < 0) { zone = 0; vel = Math.max(0, vel) * -0.3; }
-      if (zone > 1 - T.zone) { zone = 1 - T.zone; vel = 0; }
-      nextTarget -= dt;
-      if (nextTarget <= 0) { target = Math.random(); nextTarget = 0.5 + Math.random() * (1.4 - T.speed * 0.6); }
-      fish += Math.sign(target - fish) * Math.min(Math.abs(target - fish), T.speed * dt);
-      const inside = fish >= zone && fish <= zone + T.zone;
-      progress += (inside ? 0.32 : -0.22) * dt;
+      if (zone > 1 - zoneSize) { zone = 1 - zoneSize; vel = 0; }
+      next -= dt;
+      let sp = speed;
+      if (next <= 0) {
+        const r = Math.random();
+        if (fish.fight === 'sinker') target = r * 0.55;
+        else if (fish.fight === 'floater') target = 0.45 + r * 0.55;
+        else target = r;
+        next = fish.fight === 'darter' ? 0.35 + Math.random() * 0.5 : 0.7 + Math.random() * 1.0;
+      }
+      if (fish.fight === 'darter') sp *= 1.6;
+      if (fish.fight === 'wild') { target = 0.5 + Math.sin(el * 2.3) * 0.35 + Math.sin(el * 5.1) * 0.12; sp *= 1.3; }
+      pos += Math.sign(target - pos) * Math.min(Math.abs(target - pos), sp * dt);
+      pos = Math.max(0, Math.min(1, pos));
+      const inside = pos >= zone && pos <= zone + zoneSize;
+      progress += (inside ? 0.3 : -0.2) * dt;
       zoneEl.style.bottom = `${zone * 100}%`;
       zoneEl.classList.toggle('on', inside);
-      fishyEl.style.bottom = `calc(${fish * 100}% - 12px)`;
+      fishyEl.style.bottom = `calc(${pos * 100}% - 12px)`;
+      fishyEl.style.background = fish.color;
       meterEl.style.height = `${Math.max(0, Math.min(1, progress)) * 100}%`;
       if (progress >= 1 || progress <= 0) {
         fishUI.onpointerdown = fishUI.onpointerup = fishUI.onpointercancel = null;
@@ -572,64 +631,267 @@ function reel(tier) {
     requestAnimationFrame(step);
   });
 }
-async function goFishing() {
+async function goFishing(spot) {
   if (fishing) return;
-  const rev = nextReview();
-  if (!rev) {
-    await talk('note', ['Nothing is biting yet.', 'Fish here bite on things you\'ve read. Maple\'s library is up the road.']);
-    return;
-  }
   fishing = true;
-  const fish = rollFish(rev.box);
+  const where = spot === 'pond' ? 'pond' : 'sea';
+  const fish = rollFish(where);
+  // a few shadows; the first one (the one that bites) matches the fish's size
+  const others = Array.from({ length: Math.floor(Math.random() * 3) }, () => 0.6 + Math.random() * 0.8);
+  world.spawnShadows(spot, [fish.size, ...others]);
   fishUI.classList.add('show');
-  world.fishStart();
-  hint.textContent = 'Wait for a bite...';
-  await wait(1800 + Math.random() * 3500);
-  world.fishBite(true);
-  hint.textContent = 'Tap!';
-  hint.classList.add('bite');
-  const hooked = await tapWithin(1600);
+  world.fishStart(spot);
+  hint.textContent = 'Wait for it...';
+  const result = await watchBobber(fish);
   hint.classList.remove('bite');
-  world.fishBite(false);
+  world.fishBite(0);
   let landed = false;
-  if (hooked) {
+  if (result === 'hooked') {
     hint.textContent = 'Hold to raise the bar. Keep the fish inside it.';
-    landed = await reel(fish.tier);
+    landed = await reel(fish);
   }
   hint.textContent = '';
   fishUI.classList.remove('show');
-  if (!hooked || !landed) {
+  if (!landed) {
     world.fishEnd(null);
     fishing = false;
-    const again = await talk('note', [hooked ? 'It got away!' : 'Too slow. It took the bait and left.'], ['Cast again', 'Done']);
-    if (again === 0) goFishing();
+    const msg = result === 'early' ? 'Too early! You pulled before it bit.' : result === 'slow' ? 'Too slow. It took the bait and left.' : 'It got away!';
+    if (await talk('note', [msg], ['Cast again', 'Done']) === 0) goFishing(spot);
     return;
   }
-  // On the line: answer to land it.
-  const q = rev.q;
-  const opts = shuffle([q.a, ...q.w]);
-  const src = LESSONS.find((l) => l.id === rev.id);
-  const pickIdx = await talk('note', [`Something ${TIER[fish.tier].label} is on the line! From "${src.title}": ${q.q}`], opts);
-  const right = pickIdx !== null && opts[pickIdx] === q.a;
-  grade(rev.id, right);
-  const lesson = LESSONS.find((l) => l.id === rev.id);
-  if (right) {
-    const first = !S.fish.some((f) => f.species === fish.id);
-    S.fish.push({ species: fish.id, card: rev.id, ts: Date.now() });
+  const cm = Math.round(fish.cm[0] + Math.random() * (fish.cm[1] - fish.cm[0]));
+  const first = !S.fish.some((f) => f.species === fish.id);
+  const best = Math.max(0, ...S.fish.filter((f) => f.species === fish.id).map((f) => f.cm || 0));
+  S.fish.push({ species: fish.id, cm, ts: Date.now() });
+  save(S);
+  world.fishEnd(fish.color, fish.size);
+  world.setPondFish(pondColors());
+  fishing = false;
+  const lines = [`You caught a ${fish.name}! ${cm} cm.${first ? ' New to your collection.' : cm > best ? ' Your biggest yet.' : ''}`];
+  if (first && fish.tier === 2) lines.push('That\'s a rare one.');
+  // now and then something else is tangled in the line
+  if (Math.random() < 0.06) { const g = grantGift('the sea'); if (g) lines.push(`Something else was caught on the line: a ${g.toLowerCase()}! It's on the island now.`); }
+  if (await talk('note', lines, ['Cast again', 'Done']) === 0) goFishing(spot);
+}
+
+// ── Gifts ──────────────────────────────────────────────────────────────
+// Little decorations from visitors, keepers, puzzles and the sea. Each one
+// lands somewhere free on the island.
+S.gifts = S.gifts || [];
+S.gifts.forEach((g) => world.placeGift(g.id, g.gift, g.spot));
+function grantGift(from) {
+  const used = new Set(S.gifts.map((g) => g.spot.join(',')));
+  const spot = world.giftSpots().find((p) => !used.has(p.join(',')));
+  if (!spot) return null;
+  const owned = new Set(S.gifts.map((g) => g.gift));
+  const pool = Object.keys(GIFTS).filter((k) => !owned.has(k));
+  const gift = pick(pool.length ? pool : Object.keys(GIFTS));
+  const id = `g${Date.now()}${Math.floor(Math.random() * 1000)}`;
+  S.gifts.push({ id, gift, spot, from, ts: Date.now() });
+  save(S);
+  world.placeGift(id, gift, spot, true);
+  world.focusOn(spot[0] + 0.5, spot[1] + 0.5);
+  return GIFTS[gift].name;
+}
+world.on('giftTap', (id) => {
+  const g = S.gifts.find((x) => x.id === id);
+  if (g) talk('note', [`${GIFTS[g.gift].name}. A gift from ${g.from}.`]);
+});
+
+// ── Each day ───────────────────────────────────────────────────────────
+// A fresh day brings visitors, two puzzles on the town board, and a chance
+// of a surprise from each keeper.
+function seeded(str) {
+  let h = 2166136261;
+  for (const ch of str) h = Math.imul(h ^ ch.charCodeAt(0), 16777619);
+  return () => { h = Math.imul(h ^ (h >>> 15), 2246822507); h = Math.imul(h ^ (h >>> 13), 3266489909); return ((h ^= h >>> 16) >>> 0) / 4294967296; };
+}
+const VISITOR_CAST = [
+  { kind: 'rabbit', name: 'Clover', color: '#e27fb0' }, { kind: 'cat', name: 'Juniper', color: '#4a9b6e' },
+  { kind: 'bear', name: 'Basil', color: '#c99a2a' }, { kind: 'pig', name: 'Rosie', color: '#3f7fc4' },
+  { kind: 'mouse', name: 'Wren', color: '#e5483b' }, { kind: 'duck', name: 'Puddle', color: '#3fa7b8' },
+  { kind: 'deer', name: 'Hazel', color: '#8a72b8' },
+];
+const VISITOR_SPOTS = [[6.5, 11.5], [14.5, 11.5], [10.5, 16.5]];
+function planDay() {
+  const r = seeded(today());
+  const n = S.lessons.length ? (r() < 0.55 ? 2 : 1) : 1;
+  const cast = VISITOR_CAST.slice().sort(() => r() - 0.5).slice(0, n);
+  const spots = VISITOR_SPOTS.slice().sort(() => r() - 0.5);
+  return cast.map((c, i) => ({ id: `v${i}`, kind: c.kind, name: c.name, color: c.color, spot: spots[i], type: !S.lessons.length ? 'hello' : r() < 0.5 ? 'request' : 'review', done: false }));
+}
+const today = () => dayKey(Date.now());
+function ensureDay() {
+  if (S.daily?.date === today()) return;
+  S.daily = { date: today(), visitors: planDay(), timeline: null, guess: null, keeperGifts: {} };
+  save(S);
+}
+ensureDay();
+world.setVisitors(S.daily.visitors.filter((v) => !v.done));
+setInterval(() => { if (S.daily.date !== today() && !talking && !sheet.classList.contains('open')) { ensureDay(); world.setVisitors(S.daily.visitors.filter((v) => !v.done)); } }, 60000);
+
+// What a visitor asks: advice drawing on a card you've read, a review
+// question that's due, or (before you've read anything) just hello.
+function visitorAsk(v) {
+  const read = new Set(S.lessons.map((l) => l.id));
+  if (v.type === 'request') {
+    const reqs = REQUESTS.filter((q) => read.has(q.card));
+    if (reqs.length) { const q = reqs[Math.floor(seeded(today() + v.id)() * reqs.length)]; return { card: q.card, intro: q.ask, q: q.q, a: q.a, w: q.w, why: q.why }; }
+  }
+  const rev = nextReview();
+  if (!rev) return null;
+  return { card: rev.id, intro: pick(['Oh, hello! Quick question, if you don\'t mind.', 'Excuse me! You look like someone who reads.', 'I\'ve been arguing with myself about something all morning.', 'Hi! Settle something for me?']), ...rev.q };
+}
+world.on('visitor', async (id) => {
+  const v = S.daily.visitors.find((x) => x.id === id);
+  if (!v || v.done) return;
+  const who = { name: () => v.name, color: v.color };
+  const ask = v.type === 'hello' ? null : visitorAsk(v);
+  if (!ask) {
+    await talk(who, [`Hi! I'm ${v.name}, just passing through.`, 'This island is lovely. Here, a little something for it.']);
+    const g = grantGift(v.name);
+    if (g) await talk('note', [`${v.name} gave you a ${g.toLowerCase()}. It's on the island now.`]);
+  } else {
+    const opts = shuffle([ask.a, ...ask.w]);
+    const k = await talk(who, [ask.intro, ask.q], opts);
+    const right = k !== null && opts[k] === ask.a;
+    if (S.reviews[ask.card]) grade(ask.card, right);
+    const news = masteryNews();
+    if (right) {
+      await talk(who, [pick(['That\'s it! Thank you.', 'Perfect, that\'s exactly what I needed.', 'Oh, of course! Thanks.']), ask.why, 'Here, take this for your island.']);
+      const g = grantGift(v.name);
+      const extra = [...(g ? [`${v.name} gave you a ${g.toLowerCase()}. It's on the island now.`] : []), ...news];
+      if (extra.length) await talk('note', extra);
+    } else {
+      const src = LESSONS.find((l) => l.id === ask.card);
+      await talk(who, [`Hmm, I read somewhere it's "${ask.a}". ${ask.why}`, `It was in "${src.title}", I think. Thanks for chatting anyway!`]);
+      commit();
+    }
+  }
+  v.done = true;
+  commit();
+  world.removeVisitor(id);
+});
+
+// Keepers sometimes have a little something for you (once a day each).
+const KEEPER_OF = { library: 'maple', gym: 'dot', workbench: 'bram', square: 'fennel', market: 'pepper', observatory: 'sage' };
+async function maybeKeeperGift(id) {
+  const who = KEEPER_OF[id];
+  if (!who || S.daily.keeperGifts[id]) return;
+  S.daily.keeperGifts[id] = true; save(S);
+  if (Math.random() > 0.22) return;
+  const g = grantGift(CAST[who].name());
+  if (g) await talk(who, [pick(['Oh! Before I forget, this is for you.', 'I made you something. Well, found it. Same thing.', 'Here, I think this would look nice on your island.']), `(${CAST[who].name()} gave you a ${g.toLowerCase()}.)`]);
+}
+
+// ── Town board puzzles ─────────────────────────────────────────────────
+// Timeline: put five events from your cards in order. Guess of the day: a
+// number from a card, on a slider. Both count as reviews of those cards.
+function dailyTimeline() {
+  const r = seeded(today() + 'tl');
+  const read = new Set(S.lessons.map((l) => l.id));
+  const all = LESSONS.filter((l) => l.timeline);
+  const pickFrom = (arr, n, taken) => arr.slice().sort(() => r() - 0.5).filter((l) => { if (taken.has(l.timeline.year)) return false; taken.add(l.timeline.year); return true; }).slice(0, n);
+  const years = new Set();
+  const mine = pickFrom(all.filter((l) => read.has(l.id)), 5, years);
+  const rest = mine.length < 5 ? pickFrom(all.filter((l) => !read.has(l.id)), 5 - mine.length, years) : [];
+  return [...mine, ...rest].sort(() => r() - 0.5);
+}
+const yearLabel = (y) => (y < 0 ? `${-y} BC` : `${y}`);
+function openTimeline() {
+  const events = dailyTimeline();
+  const done = S.daily.timeline;
+  openSheet('Timeline', `
+    <p class="lead">${done ? `You got ${done.score} of 5 today. A new one tomorrow.` : 'Put these in order, earliest at the top. Drag to rearrange.'}</p>
+    <ol class="tl">${(done ? done.order.map((id) => events.find((e) => e.id === id)).filter(Boolean) : events).map((l) => `<li class="tl-row" data-id="${l.id}"><span class="grip"><i></i><i></i><i></i></span><span class="tl-text">${esc(l.timeline.event)}</span><b class="tl-year"></b></li>`).join('')}</ol>
+    ${done ? '' : '<button id="tl-go" class="btn primary wide">Check my order</button>'}
+  `, 'puzzle');
+  const list = sheet.querySelector('.tl');
+  const reveal = () => {
+    const rows = [...list.children];
+    const sorted = rows.map((r) => events.find((e) => e.id === r.dataset.id)).slice().sort((a, b) => a.timeline.year - b.timeline.year);
+    let score = 0;
+    rows.forEach((row, i) => {
+      const ev = events.find((e) => e.id === row.dataset.id);
+      const ok = sorted[i].id === ev.id;
+      score += ok;
+      row.classList.add(ok ? 'ok' : 'bad');
+      row.querySelector('.tl-year').textContent = yearLabel(ev.timeline.year);
+    });
+    return score;
+  };
+  if (done) { reveal(); return; }
+  // drag to reorder
+  let drag = null;
+  list.addEventListener('pointerdown', (e) => { const row = e.target.closest('.tl-row'); if (!row) return; drag = row; row.classList.add('dragging'); row.setPointerCapture(e.pointerId); });
+  list.addEventListener('pointermove', (e) => {
+    if (!drag) return;
+    const over = [...list.children].find((r) => { const b = r.getBoundingClientRect(); return r !== drag && e.clientY > b.top && e.clientY < b.bottom; });
+    if (!over) return;
+    const kids = [...list.children];
+    if (kids.indexOf(drag) < kids.indexOf(over)) over.after(drag); else over.before(drag);
+  });
+  const drop = () => { if (drag) drag.classList.remove('dragging'); drag = null; };
+  list.addEventListener('pointerup', drop); list.addEventListener('pointercancel', drop);
+  $('#tl-go').onclick = () => {
+    const score = reveal();
+    const order = [...list.children].map((r) => r.dataset.id);
+    S.daily.timeline = { score, order };
+    // each event placed right counts as a good review of its card
+    order.forEach((id, i) => { if (S.reviews[id]) grade(id, list.children[i].classList.contains('ok')); });
     const news = masteryNews();
     commit();
-    world.fishEnd(fish.color);
-    world.setPondFish(pondColors());
-    fishing = false;
-    const again = await talk('note', [`You caught a ${fish.name}!${first ? ' It\'s swimming in your pond now.' : ''}`, q.why, ...news], ['Cast again', 'Done']);
-    if (again === 0) goFishing();
-  } else {
-    save(S);
-    world.fishEnd(null);
-    fishing = false;
-    const again = await talk('note', ['The fish slipped away!', `The answer was "${q.a}". ${q.why}`, `This one's from "${lesson.title}". It'll come back around soon.`], ['Cast again', 'Done']);
-    if (again === 0) goFishing();
-  }
+    $('#tl-go').remove();
+    sheet.querySelector('.lead').textContent = score === 5 ? 'Perfect! Every one in place.' : `${score} of 5 in the right place. Years are shown now.`;
+    onClose = async () => {
+      const lines = [score === 5 ? 'All five! I\'m pinning that on the board.' : score >= 3 ? 'Not bad at all. History is slippery.' : 'Tricky one today. Tomorrow\'s will be kinder. Maybe.'];
+      const g = score === 5 ? grantGift('Fennel') : null;
+      if (g) lines.push(`(Fennel gave you a ${g.toLowerCase()} for a perfect timeline.)`);
+      await talk('fennel', [...lines, ...news]);
+    };
+  };
+}
+function dailyGuess() {
+  const r = seeded(today() + 'g');
+  const read = new Set(S.lessons.map((l) => l.id));
+  const all = LESSONS.filter((l) => l.estimate);
+  const mine = all.filter((l) => read.has(l.id));
+  const pool = mine.length ? mine : all;
+  return pool[Math.floor(r() * pool.length)];
+}
+function openGuess() {
+  const card = dailyGuess();
+  const e = card.estimate;
+  const done = S.daily.guess;
+  const span = e.max - e.min;
+  const step = span <= 20 ? (Number.isInteger(e.answer) ? 1 : 0.1) : span <= 200 ? 1 : Math.pow(10, Math.floor(Math.log10(span)) - 2);
+  const fmt = (n) => `${Number(n).toLocaleString(undefined, { maximumFractionDigits: 1 })} ${e.unit}`;
+  const start = done ? done.value : e.min + span / 2;
+  openSheet('Guess of the day', `
+    <p class="guess-big">${esc(e.q)}</p>
+    <div class="slider"><input id="gs" type="range" min="${e.min}" max="${e.max}" step="${step}" value="${start}" ${done ? 'disabled' : ''}><b id="gv">${fmt(start)}</b></div>
+    <p class="lead" id="g-res">${done ? `You guessed ${fmt(done.value)}. The answer: ${fmt(e.answer)}. From "${esc(card.title)}".` : 'Slide to your best guess.'}</p>
+    ${done ? '' : '<button id="g-go" class="btn primary wide">Lock it in</button>'}
+  `, 'puzzle');
+  const gs = $('#gs');
+  gs.oninput = () => { $('#gv').textContent = fmt(gs.value); };
+  if (done) return;
+  $('#g-go').onclick = () => {
+    const value = Number(gs.value);
+    const off = Math.abs(value - e.answer) / span;
+    const verdict = off <= 0.03 ? 'Spot on!' : off <= 0.1 ? 'Very close.' : off <= 0.25 ? 'Not bad.' : 'Way off, but now you know.';
+    S.daily.guess = { value, off };
+    if (S.reviews[card.id]) grade(card.id, off <= 0.1);
+    const news = masteryNews();
+    commit();
+    gs.disabled = true; $('#g-go').remove();
+    $('#g-res').innerHTML = `<b>${verdict}</b> The answer is ${esc(fmt(e.answer))}. From "${esc(card.title)}".`;
+    onClose = async () => {
+      const g = off <= 0.03 ? grantGift('Fennel') : null;
+      const lines = [off <= 0.1 ? 'Ha! You were close.' : 'Numbers are funny like that.', ...(g ? [`(Fennel gave you a ${g.toLowerCase()} for nailing it.)`] : []), ...news];
+      await talk('fennel', lines);
+    };
+  };
 }
 
 // ── Gym: log real-world actions ───────────────────────────────────────
@@ -742,7 +1004,9 @@ function openJournal() {
     <div class="topics">${cats.map(({ k, c, n }) => `<div class="topic" style="--c:${c.color}"><i></i><span>${c.label}</span><small>${n} read</small><b class="lv">${[1, 2, 3].map((l) => `<u class="${mastery(k) >= l ? 'on' : ''}"></u>`).join('')}</b></div>`).join('')}</div>
     <p class="lead small">Dots are mastery: remember a topic's cards at the dock to fill them.</p>
     <h4>Fish caught</h4>
-    <div class="fishgrid">${FISH.map((f) => { const n = S.fish.filter((x) => x.species === f.id).length; return `<div class="fishcell ${n ? '' : 'unknown'}">${fishSvg(f.color, n > 0)}<small>${n ? `${esc(f.name)} ×${n}` : '???'}</small></div>`; }).join('')}</div>
+    <p class="lead small">${new Set(S.fish.map((f) => f.species)).size} of ${FISH.length} species. Unknown ones show where and when to look.</p>
+    <div class="fishgrid">${FISH.map((f) => { const mine = S.fish.filter((x) => x.species === f.id); const n = mine.length; const best = Math.max(0, ...mine.map((x) => x.cm || 0)); return `<div class="fishcell ${n ? '' : 'unknown'}">${fishSvg(f.color, n > 0)}<small>${n ? `${esc(f.name)}${best ? ` · ${best} cm` : ` ×${n}`}` : `${f.where === 'pond' ? 'Pond' : 'Sea'}, ${TIME_LABEL[f.time]}`}</small></div>`; }).join('')}</div>
+    <p class="lead small">${S.gifts.length} gift${S.gifts.length === 1 ? '' : 's'} on your island.</p>
     <h4>Your answers</h4>
     <div class="answers">${S.lessons.length ? S.lessons.slice().reverse().map((a) => {
       const l = LESSONS.find((x) => x.id === a.id);

@@ -1036,6 +1036,17 @@ function fishMesh(color) {
   sph(0.03, '#2a2320', 0.15, 0.04, 0.07, g, 6);
   return g;
 }
+function pondModel() {
+  const g = new THREE.Group(); // origin at the pond centre
+  const hit = new THREE.Mesh(new THREE.PlaneGeometry(3, 2), new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false }));
+  hit.rotation.x = -Math.PI / 2; hit.position.y = -0.08; g.add(hit);
+  [[-0.9, 0.35], [0.8, -0.4], [1.0, 0.45]].forEach(([x, z], i) => {
+    const pad = mesh(new THREE.CircleGeometry(0.16, 12, 0.3, Math.PI * 1.8), M('#4fa53a', { side: THREE.DoubleSide }), x, -0.07, z, g);
+    pad.rotation.x = -Math.PI / 2; pad.castShadow = false;
+    if (i === 0) sph(0.05, '#ff8fc8', x + 0.03, -0.03, z, g, 8);
+  });
+  return g;
+}
 function noticeBoardModel() {
   const g = new THREE.Group();
   for (const x of [-0.38, 0.38]) box(0.07, 1.3, 0.07, '#7a4e2c', x, 0.65, 0, g);
@@ -1108,6 +1119,7 @@ const STATIONS = {
   gym:         { model: gymModel,         tiles: [[18, 9], [19, 9], [18, 10], [19, 10]], at: [19.0, 10.0], approach: [19, 11], labelY: 1.7, keeper: makeDot,    keeperAt: [17, 10], pin: true },
   workbench:   { model: workbenchModel,   tiles: [[12, 7]],                              at: [12.5, 7.5],  approach: [12, 8],  labelY: 1.4, keeper: makeBram,   keeperAt: [13, 7], pin: true },
   dock:        { model: dockModel,        tiles: [],                                     at: [10.5, 20.5], approach: [10, 21], labelY: 1.1, pin: true },
+  pond:        { model: pondModel,        tiles: [],                                     at: [16.5, 15.9], approach: [16, 14], labelY: 0.8 },
   square:      { model: noticeBoardModel, tiles: [[7, 8]],                               at: [7.5, 8.5],   approach: [8, 8],   labelY: 1.8, keeper: makeFennel, keeperAt: [7, 9] },
   market:      { model: stallModel,       tiles: [[11, 13]],                             at: [11.5, 13.5], approach: [10, 13], labelY: 1.8, keeper: makePepper, keeperAt: [11, 14] },
   observatory: { model: chalkboardModel,  tiles: [[13, 3]],                              at: [13.5, 3.5],  approach: [12, 3],  labelY: 2.0, keeper: makeSage,   keeperAt: [14, 3] },
@@ -1246,6 +1258,57 @@ function makeSage() {
   });
 }
 
+// ── Visitors: travellers who drop by with a request ───────────────────
+function makeVisitor(kind) {
+  const ear = (head, fur, fn) => fn(head, fur);
+  const K = {
+    rabbit: { fur: '#f4f1ea', top: ['#e27fb0', '#fbe3ee'], ears: false, extra: (h, b, f) => { for (const s of [-1, 1]) { const e = sph(0.07, f, s * 0.1, 0.38, -0.02, h, 10); e.scale.set(0.7, 2.4, 0.5); sph(0.04, '#f3a9a0', s * 0.1, 0.38, 0.015, h, 8).scale.set(0.6, 2.2, 0.3); } } },
+    cat:    { fur: '#c9a27a', top: ['#4a9b6e', '#d8f0c8'], ears: false, extra: (h, b, f) => { for (const s of [-1, 1]) { const e = mesh(new THREE.ConeGeometry(0.08, 0.16, 4), f, s * 0.18, 0.26, 0, h); e.rotation.z = s * -0.3; } const t = cyl(0.025, 0.025, 0.35, f, 0, 0.22, -0.2, b, 6); t.rotation.x = -0.9; } },
+    bear:   { fur: '#a0704a', top: ['#f2c94c', '#fff3c4'], extra: (h) => { sph(0.1, '#d9b48a', 0, -0.08, 0.22, h, 12).scale.set(1.3, 0.8, 0.8); sph(0.03, '#2a2320', 0, -0.05, 0.31, h, 8); } },
+    pig:    { fur: '#f6b8b8', top: ['#3f7fc4', '#d8ecff'], ears: false, extra: (h, b, f) => { cyl(0.07, 0.07, 0.05, '#ee9f9f', 0, -0.06, 0.28, h, 14).rotation.x = Math.PI / 2; for (const s of [-1, 1]) { const e = mesh(new THREE.ConeGeometry(0.07, 0.12, 4), f, s * 0.2, 0.24, 0, h); e.rotation.z = s * -0.6; } } },
+    mouse:  { fur: '#b9b2a6', top: ['#e5483b', '#ffd6cf'], ears: false, extra: (h, b, f) => { for (const s of [-1, 1]) { const e = sph(0.13, f, s * 0.22, 0.24, -0.04, h, 12); e.scale.set(1, 1, 0.4); sph(0.09, '#f3a9a0', s * 0.22, 0.24, 0.0, h, 10).scale.set(1, 1, 0.2); } } },
+    duck:   { fur: '#fbf6ec', top: ['#3fa7b8', '#d8f4f8'], ears: false, feet: '#f2a33a', extra: (h) => { const bk = box(0.18, 0.05, 0.12, '#f2a33a', 0, -0.06, 0.3, h); void bk; sph(0.05, '#fbf6ec', 0, 0.3, 0, h, 8); } },
+    deer:   { fur: '#c98f55', top: ['#8a5a9e', '#eadcf2'], extra: (h) => { for (const s of [-1, 1]) { const a = cyl(0.015, 0.02, 0.18, '#7a4e2c', s * 0.1, 0.36, -0.02, h, 5); a.rotation.z = s * -0.3; const t = cyl(0.012, 0.012, 0.08, '#7a4e2c', s * 0.15, 0.42, -0.02, h, 4); t.rotation.z = s * 0.8; } for (let i = 0; i < 3; i++) sph(0.02, '#fbf6ec', -0.05 + i * 0.05, 0.1, 0.27, h, 6); } },
+  }[kind];
+  void ear;
+  return makeCritter(K);
+}
+export const VISITOR_KINDS = ['rabbit', 'cat', 'bear', 'pig', 'mouse', 'duck', 'deer'];
+
+// ── Gifts: little decorations people give you ──────────────────────────
+export const GIFTS = {
+  potplant:     { name: 'Potted plant' },
+  birdhouse:    { name: 'Birdhouse' },
+  mushstool:    { name: 'Mushroom stool' },
+  umbrella:     { name: 'Garden umbrella table' },
+  windchime:    { name: 'Wind chime' },
+  stonelantern: { name: 'Stone lantern' },
+  wheelbarrow:  { name: 'Wheelbarrow of flowers' },
+  haybale:      { name: 'Hay bale' },
+  scarecrow:    { name: 'Scarecrow' },
+  gramophone:   { name: 'Gramophone' },
+  beachball:    { name: 'Beach ball' },
+  rockingchair: { name: 'Rocking chair' },
+  birdbath:     { name: 'Birdbath' },
+  pumpkins:     { name: 'Pumpkins' },
+};
+const GIFT_MODELS = {
+  potplant: () => { const g = new THREE.Group(); cyl(0.16, 0.12, 0.25, '#c46a4a', 0, 0.12, 0, g, 12); for (let i = 0; i < 5; i++) { const l = sph(0.1, LEAF_MAT, Math.sin(i * 1.3) * 0.08, 0.35 + (i % 2) * 0.1, Math.cos(i * 1.3) * 0.08, g, 8); l.scale.y = 1.4; } return g; },
+  birdhouse: () => { const g = new THREE.Group(); box(0.05, 1.0, 0.05, '#7a4e2c', 0, 0.5, 0, g); box(0.26, 0.26, 0.24, '#3fa7b8', 0, 1.1, 0, g); const r = mesh(new THREE.CylinderGeometry(0.2, 0.2, 0.3, 3), M('#e5483b'), 0, 1.3, 0, g); r.rotation.z = Math.PI / 2; r.rotation.y = Math.PI / 2; r.scale.set(0.7, 1, 0.6); cyl(0.04, 0.04, 0.02, '#2a2320', 0, 1.12, 0.12, g, 10).rotation.x = Math.PI / 2; return g; },
+  mushstool: () => { const g = new THREE.Group(); cyl(0.08, 0.1, 0.28, '#f4ead2', 0, 0.14, 0, g, 10); const c = mesh(new THREE.SphereGeometry(0.2, 14, 8, 0, Math.PI * 2, 0, Math.PI / 2), M('#e5483b'), 0, 0.27, 0, g); void c; for (let i = 0; i < 4; i++) sph(0.03, '#ffffff', Math.sin(i * 1.6) * 0.12, 0.38, Math.cos(i * 1.6) * 0.12, g, 6); return g; },
+  umbrella: () => { const g = new THREE.Group(); cyl(0.25, 0.25, 0.04, '#f4f1e8', 0, 0.45, 0, g, 16); cyl(0.02, 0.02, 1.3, '#7a7f8a', 0, 0.65, 0, g, 6); mesh(new THREE.ConeGeometry(0.6, 0.25, 8), new THREE.MeshLambertMaterial({ map: stripeTex('#ffffff', '#3fa7b8', 8) }), 0, 1.3, 0, g); for (const a of [0, 2.1, 4.2]) cyl(0.08, 0.08, 0.25, '#f4f1e8', Math.sin(a) * 0.45, 0.13, Math.cos(a) * 0.45, g, 10); return g; },
+  windchime: () => { const g = new THREE.Group(); box(0.05, 1.2, 0.05, '#7a4e2c', 0, 0.6, 0, g); box(0.35, 0.04, 0.04, '#7a4e2c', 0.15, 1.18, 0, g); const h = new THREE.Group(); h.position.set(0.28, 1.15, 0); g.add(h); for (let i = 0; i < 4; i++) cyl(0.012, 0.012, 0.18 + i * 0.03, '#c7ccd4', -0.06 + i * 0.04, -0.12 - i * 0.015, 0, h, 6); g.userData.chime = h; return g; },
+  stonelantern: () => { const g = new THREE.Group(); const st = M('#b9b2a6', { flatShading: true }); box(0.3, 0.08, 0.3, st, 0, 0.04, 0, g); cyl(0.06, 0.08, 0.35, st, 0, 0.25, 0, g, 6); box(0.26, 0.2, 0.26, st, 0, 0.52, 0, g); box(0.14, 0.1, 0.27, new THREE.MeshLambertMaterial({ color: '#fff3c4', emissive: '#ffd36b', emissiveIntensity: 0.6 }), 0, 0.52, 0, g); mesh(new THREE.ConeGeometry(0.26, 0.16, 4), st, 0, 0.7, 0, g).rotation.y = Math.PI / 4; return g; },
+  wheelbarrow: () => { const g = new THREE.Group(); box(0.5, 0.18, 0.34, '#c46a4a', 0, 0.3, 0, g); const w = cyl(0.1, 0.1, 0.05, '#33363d', 0.3, 0.1, 0, g, 12); w.rotation.x = Math.PI / 2; for (const z of [-0.12, 0.12]) { box(0.04, 0.2, 0.04, '#7a4e2c', -0.2, 0.12, z, g); const hnd = box(0.4, 0.03, 0.03, '#7a4e2c', -0.35, 0.3, z, g); void hnd; } const pal = ['#ff4d4d', '#ffd23f', '#ff8fc8', '#ffffff']; for (let i = 0; i < 7; i++) sph(0.05, pal[i % 4], -0.15 + (i % 4) * 0.1, 0.42, -0.08 + Math.floor(i / 4) * 0.14, g, 6); return g; },
+  haybale: () => { const g = new THREE.Group(); const b = cyl(0.25, 0.25, 0.45, '#e8c56a', 0, 0.25, 0, g, 16); b.rotation.z = Math.PI / 2; for (const x of [-0.12, 0.12]) { const r = mesh(new THREE.TorusGeometry(0.25, 0.012, 4, 20), M('#c49a3a'), x, 0.25, 0, g); r.rotation.y = Math.PI / 2; } return g; },
+  scarecrow: () => { const g = new THREE.Group(); box(0.05, 1.1, 0.05, '#7a4e2c', 0, 0.55, 0, g); box(0.7, 0.05, 0.05, '#7a4e2c', 0, 0.85, 0, g); box(0.3, 0.35, 0.16, '#4a9b6e', 0, 0.78, 0, g); sph(0.14, '#e8c56a', 0, 1.15, 0, g, 10); cyl(0.22, 0.22, 0.02, '#8a5a35', 0, 1.25, 0, g, 12); cyl(0.1, 0.12, 0.12, '#8a5a35', 0, 1.31, 0, g, 10); return g; },
+  gramophone: () => { const g = new THREE.Group(); box(0.32, 0.18, 0.32, '#8a5a35', 0, 0.09, 0, g); cyl(0.13, 0.13, 0.015, '#2a2320', 0, 0.19, 0, g, 16); cyl(0.012, 0.012, 0.3, '#c7a24a', 0.1, 0.33, -0.1, g, 6); const horn = mesh(new THREE.ConeGeometry(0.17, 0.32, 14, 1, true), M('#c7a24a', { side: THREE.DoubleSide }), 0.12, 0.55, -0.05, g); horn.rotation.z = 0.9; horn.rotation.y = 0.4; return g; },
+  beachball: () => { const g = new THREE.Group(); const b = new THREE.Mesh(new THREE.SphereGeometry(0.22, 16, 12), new THREE.MeshLambertMaterial({ map: canvasTex(64, (c, sz) => { ['#e5483b', '#ffffff', '#3f7fc4', '#ffffff', '#f2c94c', '#ffffff'].forEach((col, i) => { c.fillStyle = col; c.fillRect((i * sz) / 6, 0, sz / 6 + 1, sz); }); }) })); b.position.y = 0.22; b.castShadow = true; g.add(b); return g; },
+  rockingchair: () => { const g = new THREE.Group(); for (const s of [-1, 1]) { const r = mesh(new THREE.TorusGeometry(0.35, 0.02, 4, 16, Math.PI * 0.5), M('#7a4e2c'), s * 0.18, 0.36, 0, g); r.rotation.y = Math.PI / 2; r.rotation.z = Math.PI * 1.25; box(0.03, 0.3, 0.03, '#7a4e2c', s * 0.18, 0.2, 0.12, g); box(0.03, 0.6, 0.03, '#7a4e2c', s * 0.18, 0.35, -0.14, g); } box(0.4, 0.04, 0.32, '#c98f55', 0, 0.32, 0, g); box(0.4, 0.3, 0.03, '#c98f55', 0, 0.55, -0.15, g); box(0.34, 0.03, 0.28, '#e5483b', 0, 0.35, 0, g); return g; },
+  birdbath: () => { const g = new THREE.Group(); const st = M('#c7c0b3'); cyl(0.14, 0.18, 0.08, st, 0, 0.04, 0, g, 12); cyl(0.06, 0.08, 0.45, st, 0, 0.3, 0, g, 10); cyl(0.28, 0.2, 0.08, st, 0, 0.56, 0, g, 16); cyl(0.24, 0.24, 0.01, '#7fd3e8', 0, 0.6, 0, g, 16); const bird = new THREE.Group(); bird.position.set(0.18, 0.66, 0); g.add(bird); sph(0.05, '#3f7fc4', 0, 0, 0, bird, 8).scale.set(1.3, 1, 1); sph(0.035, '#3f7fc4', 0.05, 0.04, 0, bird, 8); mesh(new THREE.ConeGeometry(0.012, 0.04, 4), M('#f2a33a'), 0.09, 0.04, 0, bird).rotation.z = -Math.PI / 2; g.userData.bird = bird; return g; },
+  pumpkins: () => { const g = new THREE.Group(); [[0, 0, 0.2], [0.25, 0.1, 0.14], [-0.2, 0.15, 0.12]].forEach(([x, z, r]) => { const p = sph(r, '#ef8a3c', x, r * 0.8, z, g, 14); p.scale.y = 0.75; cyl(0.015, 0.02, 0.06, '#4fa53a', x, r * 1.4, z, g, 6); }); return g; },
+};
+
 // ── The world ──────────────────────────────────────────────────────────
 export class World {
   constructor(canvas) {
@@ -1267,7 +1330,7 @@ export class World {
     this.stick = new THREE.Vector2();   // joystick input, length 0..1
     this.anims = [];
     this.energy = 0;
-    this.listeners = { creatureTap: [], itemTap: [], station: [] };
+    this.listeners = { creatureTap: [], itemTap: [], station: [], visitor: [], giftTap: [] };
 
     LEAF_MAT = new THREE.MeshLambertMaterial({ map: leafTex('#4cae3f', '#6ccb52', '#3c9632') });
     LEAF_MAT_DARK = new THREE.MeshLambertMaterial({ color: '#3f8f4a' });
@@ -1624,6 +1687,91 @@ export class World {
     return url;
   }
 
+  // ── Visitors ───────────────────────────────────────────────────────
+  setVisitors(list) {
+    this.visitors = this.visitors || new Map();
+    for (const v of this.visitors.values()) this.scene.remove(v);
+    this.visitors.clear();
+    for (const { id, kind, spot } of list) {
+      const v = makeVisitor(kind);
+      v.position.set(spot[0], tileH(Math.floor(spot[0]), Math.floor(spot[1])), spot[1]);
+      v.traverse((o) => { o.userData.visitor = id; });
+      v.userData.phase = Math.random() * 6;
+      v.userData.ai = { act: 'look', points: [spot, [spot[0] + 0.35, spot[1]], [spot[0] - 0.3, spot[1] + 0.1]], face: null, prop: new THREE.Group(), at: 0, mode: 'act', timer: 3, target: null };
+      v.add(v.userData.ai.prop);
+      this.scene.add(v);
+      this.visitors.set(id, v);
+    }
+  }
+  // Walk up to a visitor, then announce it (the app starts the conversation).
+  visitVisitor(id) {
+    const v = this.visitors?.get(id);
+    if (!v || this.state === 'build') return;
+    if (this.state === 'nap') this._wake();
+    this.stick.set(0, 0);
+    const vx = Math.floor(v.position.x), vz = Math.floor(v.position.z);
+    const arrive = () => {
+      this.state = 'idle'; this.idleTimer = 6;
+      this._faceToward(v.position);
+      v.userData.greetUntil = this.clock.elapsedTime + 8;
+      this.hop();
+      this._emit('visitor', id);
+    };
+    const path = this._findPath(this._tileOf(this.pos), (x, z) => Math.abs(x - vx) + Math.abs(z - vz) === 1);
+    if (path && path.length > 1) this._walk(path, arrive); else arrive();
+  }
+  // A visitor waves and hops away.
+  removeVisitor(id) {
+    const v = this.visitors?.get(id);
+    if (!v) return;
+    this.visitors.delete(id);
+    const start = v.position.clone();
+    this._anim(1.4, (t) => {
+      v.position.set(start.x + t * 2.5, start.y + Math.abs(Math.sin(t * Math.PI * 4)) * 0.15, start.z + t * 0.6);
+      v.rotation.y = Math.PI / 2;
+      v.scale.setScalar(1.35 * (1 - Math.max(0, t - 0.7) / 0.3));
+      if (t === 1) this.scene.remove(v);
+    });
+  }
+
+  // ── Gifts ──────────────────────────────────────────────────────────
+  // Free spots for gifts: open grass or sand that no build, place, keeper
+  // or path uses. Stable order so a saved gift always lands in the same spot.
+  giftSpots() {
+    if (this._giftSpots) return this._giftSpots;
+    const slots = new Set(ITEMS.map((i) => i.slot.join(',')));
+    const near = new Set();
+    for (const st of Object.values(STATIONS)) for (const [dx, dz] of [[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1]]) near.add(`${st.approach[0] + dx},${st.approach[1] + dz}`);
+    for (const R of Object.values(ROUTINES)) for (const [x, z] of R.points) near.add(`${Math.floor(x)},${Math.floor(z)}`);
+    const out = [];
+    for (let z = 1; z < D - 2; z++) for (let x = 0; x < W; x++) {
+      const t = tileAt(x, z), k = `${x},${z}`;
+      if ((t !== '.' && t !== 's' && t !== 'H') || this.occupied.has(k) || slots.has(k) || near.has(k) || DOCK.has(k)) continue;
+      if (t === 'H' && z < 1) continue;
+      out.push([x, z]);
+    }
+    const r = rng(77);
+    for (let i = out.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [out[i], out[j]] = [out[j], out[i]]; }
+    this._giftSpots = out;
+    return out;
+  }
+  placeGift(key, giftId, [x, z], animate = false) {
+    this.gifts = this.gifts || new Map();
+    if (this.gifts.has(key) || !GIFT_MODELS[giftId]) return;
+    const g = GIFT_MODELS[giftId]();
+    g.position.set(x + 0.5, tileH(x, z), z + 0.5);
+    g.rotation.y = ((x * 7 + z * 3) % 5) * 0.4 - 0.8;
+    g.traverse((o) => { o.userData.gift = key; });
+    this.scene.add(g);
+    this.gifts.set(key, g);
+    if (animate) {
+      g.scale.setScalar(0.001);
+      this._anim(0.7, (t) => { g.scale.setScalar(Math.max(0.001, t === 1 ? 1 : 1 - Math.pow(2, -10 * t) * Math.cos(t * 10))); });
+      this._puff(g.position);
+    }
+  }
+  focusOn(x, z) { this.lookAt = new THREE.Vector3(x, 0, z); this.lookUntil = this.clock.elapsedTime + 3; }
+
   // ── Keepers' little routines ───────────────────────────────────────
   _keeperTick(k, dt, time) {
     const u = k.userData, ai = u.ai;
@@ -1717,6 +1865,10 @@ export class World {
           arms[1].position.set(0.08 + Math.cos(a) * 0.04, 0.3, 0.2 + Math.sin(a) * 0.04);
         } else { head.rotation.y = Math.sin(t * 0.8) * 0.4; }
         break;
+      case 'look':
+        ai.prop.visible = false;
+        head.rotation.y = Math.sin(t * 0.7) * 0.5;
+        break;
       case 'stargaze':
         if ((t % 8) < 4) { head.rotation.x = -0.45; ai.prop.visible = false; }
         else { arms[1].position.set(0.14 + Math.sin(t * 6) * 0.04, 0.34 + Math.cos(t * 9) * 0.02, 0.14); ai.prop.position.copy(arms[1].position); }
@@ -1725,7 +1877,29 @@ export class World {
   }
 
   // ── Fishing ─────────────────────────────────────────────────────────
-  fishStart() {
+  // Where each fishing spot casts to, and where its fish shadows swim.
+  fishSpot(spot) {
+    return spot === 'pond'
+      ? { cast: new THREE.Vector3(16.5, -0.1, 15.75), centre: new THREE.Vector3(16.5, -0.09, 15.95), rx: 1.15, rz: 0.55 }
+      : { cast: new THREE.Vector3(10.6, -0.3, 23.4), centre: new THREE.Vector3(10.5, -0.29, 23.6), rx: 1.8, rz: 1.1 };
+  }
+  // Dark fish-shaped shadows drifting in the water; size hints at the fish.
+  spawnShadows(spot, sizes) {
+    this.clearShadows();
+    const S = this.fishSpot(spot);
+    this.shadowSpot = S;
+    this.shadows = sizes.map((sz, i) => {
+      const m = new THREE.Mesh(new THREE.CircleGeometry(0.16, 16), new THREE.MeshBasicMaterial({ color: '#163e4a', transparent: true, opacity: 0.42, depthWrite: false }));
+      m.rotation.x = -Math.PI / 2; m.scale.set(1.7 * sz, 0.75 * sz, 1);
+      m.userData = { a: Math.random() * 6, speed: 0.25 + Math.random() * 0.25, dir: i % 2 ? 1 : -1, size: sz, chase: false };
+      this.scene.add(m);
+      return m;
+    });
+  }
+  clearShadows() { for (const m of this.shadows || []) this.scene.remove(m); this.shadows = []; }
+  // One shadow swims over to the bobber.
+  shadowChase(i) { const m = this.shadows?.[i]; if (m) m.userData.chase = true; }
+  fishStart(spot = 'dock') {
     this.state = 'fish';
     this.faceAngle = 0;
     const { body } = this.creature.userData;
@@ -1743,7 +1917,7 @@ export class World {
     body.add(this.rod);
     this.rod.visible = this.bobber.visible = this.line.visible = true;
     const from = this.pos.clone().add(new THREE.Vector3(0.2, 1.4, 0.3));
-    const to = new THREE.Vector3(this.pos.x + 0.1, -0.3, this.pos.z + 2.0);
+    const to = this.fishSpot(spot).cast.clone();
     this.bobberRest = to.clone();
     this.biting = false;
     this.casting = true;
@@ -1754,19 +1928,21 @@ export class World {
       if (t === 1) { this.casting = false; this._marker(Math.floor(to.x), Math.floor(to.z), to); }
     });
   }
-  fishBite(on = true) { this.biting = on; }
-  fishEnd(color) {
-    this.biting = false;
+  fishBite(level = 2) { this.biting = level; } // 0 none, 1 nibble, 2 bite
+  fishEnd(color, size = 1) {
+    this.biting = 0;
+    this.clearShadows();
     if (this.rod) this.rod.visible = this.bobber.visible = this.line.visible = false;
     this.state = 'idle'; this.idleTimer = 5;
     if (!color) return;
     const f = fishMesh(color);
+    f.userData.size = Math.max(0.7, Math.min(1.6, size));
     this.scene.add(f);
     this.hop();
     this._anim(2.6, (t) => {
       f.position.set(this.pos.x, this.pos.y + 1.55 + Math.sin(t * Math.PI * 6) * 0.03, this.pos.z + 0.1);
       f.rotation.z = Math.sin(t * Math.PI * 10) * 0.25 * (1 - t);
-      f.scale.setScalar(t < 0.1 ? t * 10 : t > 0.9 ? (1 - t) * 10 : 1);
+      f.scale.setScalar((t < 0.1 ? t * 10 : t > 0.9 ? (1 - t) * 10 : 1) * f.userData.size);
       if (t === 1) this.scene.remove(f);
     });
   }
@@ -2000,10 +2176,14 @@ export class World {
       const ndc = new THREE.Vector2(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
       ray.setFromCamera(ndc, this.camera);
       if (ray.intersectObject(this.creature, true).length) { this.hop(); this._emit('creatureTap'); return; }
+      const vis = ray.intersectObjects([...(this.visitors?.values() || [])], true);
+      if (vis.length) { this.visitVisitor(vis[0].object.userData.visitor); return; }
       const st = ray.intersectObjects([...this.stations.values(), ...this.keepers.values()], true);
       if (st.length) { this.visit(st[0].object.userData.station); return; }
       const items = ray.intersectObjects([...this.built.values()], true);
       if (items.length) { this._emit('itemTap', items[0].object.userData.itemId); return; }
+      const gifts = ray.intersectObjects([...(this.gifts?.values() || [])], true);
+      if (gifts.length) { this._emit('giftTap', gifts[0].object.userData.gift); return; }
       const g = ray.intersectObjects(this.ground, false);
       if (g.length) {
         const p = g[0].point;
@@ -2080,11 +2260,34 @@ export class World {
 
     if (this.rod && this.rod.visible) {
       if (this.bobberRest && !this.casting) {
-        const dip = this.biting ? (Math.sin(time * 18) > 0.3 ? -0.12 : -0.02) : Math.sin(time * 2.5) * 0.015;
+        const dip = this.biting === 2 ? (Math.sin(time * 18) > 0.3 ? -0.12 : -0.02) : this.biting === 1 ? (Math.sin(time * 9) > 0.7 ? -0.04 : 0) : Math.sin(time * 2.5) * 0.015;
         this.bobber.position.set(this.bobberRest.x, this.bobberRest.y + dip, this.bobberRest.z);
       }
       const tip = this.rodTip.getWorldPosition(new THREE.Vector3());
       this.line.geometry.setFromPoints([tip, this.bobber.position.clone().add(new THREE.Vector3(0, 0.1, 0))]);
+    }
+
+    // fish shadows drifting, one may swim to the bobber
+    if (this.shadows?.length) {
+      const S = this.shadowSpot;
+      for (const m of this.shadows) {
+        const u = m.userData;
+        if (u.chase && this.bobber) {
+          const b = this.bobber.position;
+          m.position.x += (b.x - m.position.x) * Math.min(1, dt * 1.5);
+          m.position.z += (b.z + 0.15 - m.position.z) * Math.min(1, dt * 1.5);
+          m.rotation.z = Math.atan2(b.z - m.position.z, b.x - m.position.x) * -1;
+        } else {
+          u.a += dt * u.speed * u.dir;
+          m.position.set(S.centre.x + Math.cos(u.a) * S.rx * (0.5 + 0.5 * Math.sin(u.a * 0.7)), S.centre.y, S.centre.z + Math.sin(u.a) * S.rz);
+          m.rotation.z = -u.a * u.dir;
+        }
+      }
+    }
+    for (const v of this.visitors?.values() || []) this._keeperTick(v, dt, time);
+    for (const g of this.gifts?.values() || []) {
+      if (g.userData.chime) g.userData.chime.rotation.z = Math.sin(time * 1.7) * 0.12;
+      if (g.userData.bird) g.userData.bird.position.y = 0.66 + Math.abs(Math.sin(time * 3)) * ((time % 6) < 1 ? 0.04 : 0);
     }
 
     // fish swimming in the pond
@@ -2118,6 +2321,7 @@ export class World {
     const follow = new THREE.Vector3(
       Math.max(4.5, Math.min(W - 4.5, this.pos.x)), 0,
       Math.max(5, Math.min(D - 2.5, this.pos.z - 1)));
+    if (this.lookAt && time < this.lookUntil) follow.set(Math.max(4.5, Math.min(W - 4.5, this.lookAt.x)), 0, Math.max(5, Math.min(D - 2.5, this.lookAt.z - 1)));
     this.target.lerp(follow, Math.min(1, dt * 3));
     const pitch = THREE.MathUtils.degToRad(42);
     this.camera.position.set(this.target.x, Math.sin(pitch) * this.dist, this.target.z + Math.cos(pitch) * this.dist);

@@ -1,0 +1,331 @@
+export default [
+  {
+    id: 'wine-colour',
+    level: 1,
+    title: 'Where the colour comes from',
+    body: [
+      "Squeeze almost any grape, red or green, and the juice runs clear. The colour of red wine comes from the skins. For a red, crushed grapes ferment with their skins for days or weeks, and the alcohol draws out colour, tannin and flavour. For a white, the grapes are pressed first and only the juice is fermented.",
+      "That one choice explains a lot. It is why a Champagne labelled 'blanc de noirs' can be pale gold even though it is made from black grapes. Rosé usually gets just a few hours of skin contact, enough to turn it pink. And 'orange wine' flips the rule: white grapes left to ferment on their skins like a red, giving an amber colour and a grippy, slightly tannic texture.",
+    ],
+    question: 'Orange wine divides people. Do you like the idea of rule-breaking styles, or do you prefer wine that tastes like what you expect?',
+    quiz: [
+      { q: 'Where does the colour in red wine come from?', a: 'The grape skins', w: ['The grape juice', 'Oak barrels', 'Added fruit extract'], why: 'Nearly all grape juice is clear; colour is drawn from the skins during fermentation.' },
+      { q: 'What is orange wine?', a: 'White grapes fermented on their skins', w: ['A blend of red and white wine', 'Wine flavoured with orange peel', 'Rosé aged in oak'], why: 'Orange wine treats white grapes like a red, leaving them on their skins.' },
+    ],
+    timeline: null,
+    estimate: null,
+  },
+  {
+    id: 'wine-tasting',
+    level: 1,
+    title: 'Your nose does most of the tasting',
+    body: [
+      "Your tongue picks up only a handful of basic tastes: sweet, sour, salty, bitter and savoury umami. Almost everything else you call flavour, the cherry, the vanilla, the cut grass, is smell. Some of it arrives through your nose as you sniff, and more travels up the back of your throat as you swallow. That is why food tastes of nothing when you have a cold.",
+      "So the ritual of tasting is not showing off. Look at the colour, swirl the glass to release aromas, take a proper sniff, then sip and let the wine roll around your mouth. The fastest way to build a palate is comparison: two wines side by side, say a French and a New Zealand Sauvignon Blanc, teach you more than ten tasted on separate nights.",
+    ],
+    question: 'Which smell from your childhood could you still recognise blindfolded, and why do you think it stuck?',
+    quiz: [
+      { q: 'Most of what we call "flavour" in wine actually comes from what?', a: 'Smell', w: ['Taste buds on the tongue', 'The temperature of the wine', 'The colour of the wine'], why: 'The tongue detects only basic tastes; aromas supply the rest.' },
+      { q: 'What does the card suggest is the fastest way to build a palate?', a: 'Tasting two wines side by side', w: ['Drinking only expensive wine', 'Tasting with your eyes closed', 'Memorising flavour wheels'], why: 'Direct comparison makes differences obvious.' },
+    ],
+    timeline: null,
+    estimate: null,
+  },
+  {
+    id: 'wine-restaurant-ritual',
+    level: 1,
+    title: 'Why the waiter pours you a sip',
+    body: [
+      "In a restaurant, the waiter shows you the bottle, opens it and pours a small taste. This is not a test of your taste. Check the label is the wine and vintage you ordered, then give it a sniff to check for faults. You are not deciding whether you like it; if it is sound, a nod is enough.",
+      "The classic fault is cork taint, caused by a chemical called TCA. A 'corked' wine smells musty, like wet cardboard or a damp cellar, and tastes flat. It has nothing to do with bits of cork floating in the glass. Only a small share of bottles sealed with natural cork are affected, and screwcaps avoid it altogether, which is one reason New Zealand and Australia adopted them so widely. If you suspect a fault, say so politely; a good restaurant will replace it.",
+    ],
+    question: 'Would you send back a bottle you suspected was faulty, or would you drink it to avoid a fuss?',
+    quiz: [
+      { q: 'When a waiter pours you a small taste, what are you mainly checking for?', a: 'Faults in the wine', w: ['Whether you like the style', 'Whether it is cold enough', 'How much alcohol it has'], why: 'The taste is to confirm the wine is sound, not to judge your preference.' },
+      { q: 'What does a "corked" wine smell like?', a: 'Musty, like wet cardboard', w: ['Of vinegar and nail polish', 'Of fresh oak and vanilla', 'Of burnt matches'], why: 'Cork taint (TCA) gives a damp, musty smell.' },
+    ],
+    timeline: null,
+    estimate: null,
+  },
+  {
+    id: 'wine-labels',
+    level: 1,
+    title: 'Place on the label, grape in the glass',
+    body: [
+      "New World bottles from places like Australia, Chile or California usually tell you the grape: Shiraz, Chardonnay, Merlot. Traditional European wines more often name the place and expect you to know what grows there. It feels like a secret code until you learn a few keys.",
+      "Chablis is Chardonnay. Sancerre is Sauvignon Blanc. Beaujolais is Gamay. Chianti is mostly Sangiovese, Rioja is mostly Tempranillo, and Barolo is Nebbiolo. Learn those six and a large part of a European wine list suddenly opens up. The logic behind the code is that the place matters more than the grape: a Chablis and a buttery Californian Chardonnay share a variety but taste like different drinks, so the region is the more useful clue.",
+    ],
+    question: 'Should European wines put the grape on the front label to help newcomers, or would that lose something?',
+    quiz: [
+      { q: 'If you order a Chablis, which grape are you drinking?', a: 'Chardonnay', w: ['Sauvignon Blanc', 'Riesling', 'Pinot Grigio'], why: 'Chablis is a region in Burgundy that makes white wine from Chardonnay.' },
+      { q: 'Which grape is Beaujolais made from?', a: 'Gamay', w: ['Pinot Noir', 'Merlot', 'Syrah'], why: 'Beaujolais is the home of Gamay.' },
+    ],
+    timeline: null,
+    estimate: null,
+  },
+  {
+    id: 'wine-bordeaux-1855',
+    level: 1,
+    title: 'The 1855 ranking that never changed',
+    body: [
+      "For the Paris Exposition of 1855, Bordeaux's wine brokers were asked to rank the region's best red wines. They did it the practical way: by price. The result sorted the top châteaux of the Médoc, plus Haut-Brion from Graves, into five tiers called growths, or crus.",
+      "Astonishingly, the list is nearly frozen. Today it holds 61 châteaux, and only one has ever moved up a tier: Château Mouton Rothschild, promoted to first growth in 1973 after decades of lobbying. The first growths are Lafite Rothschild, Latour, Margaux, Haut-Brion and Mouton. Critics point out that some fifth growths now outperform some seconds, but a 'cru classé' on the label still carries enormous prestige and price.",
+    ],
+    question: 'Should a ranking from 1855 still matter today, or should wine classifications be revised every few years?',
+    quiz: [
+      { q: 'How were Bordeaux wines ranked in the 1855 classification?', a: 'By their market price', w: ['By a blind tasting panel', 'By the age of the vineyard', 'By the size of the estate'], why: 'Brokers ranked châteaux by the prices their wines fetched.' },
+      { q: 'Which château was promoted to first growth in 1973?', a: 'Mouton Rothschild', w: ['Lafite Rothschild', 'Château Margaux', 'Château Latour'], why: 'Mouton Rothschild is the only château ever promoted a tier.' },
+    ],
+    timeline: { event: 'Bordeaux classification', year: 1855 },
+    estimate: { q: 'How many châteaux are in the 1855 classification of red Bordeaux today?', answer: 61, unit: 'châteaux', min: 0, max: 200 },
+  },
+  {
+    id: 'wine-bordeaux-banks',
+    level: 2,
+    title: 'Left Bank, Right Bank',
+    body: [
+      "Red Bordeaux is nearly always a blend, and which grape leads depends on which side of the river you are on. The Left Bank, home of the Médoc and Graves (and of the 1855 classification), has warm, free-draining gravel soils that suit late-ripening Cabernet Sauvignon. Its wines tend to be firm, tannic and slow to mature, with cassis and cedar.",
+      "Across the water on the Right Bank, in Saint-Émilion and Pomerol, cooler clay and limestone soils favour Merlot. These wines are usually plusher and softer, with plum and chocolate, and are often approachable sooner. Pomerol has no official classification at all, yet its most famous estate, Pétrus, made mainly from Merlot, is among the most expensive wines on earth. Saint-Émilion runs its own ranking, revised roughly once a decade.",
+    ],
+    question: 'Firm and structured, or soft and plush: which side of the river would you rather drink from?',
+    quiz: [
+      { q: 'Which grape usually leads the blend on Bordeaux\'s Left Bank?', a: 'Cabernet Sauvignon', w: ['Merlot', 'Pinot Noir', 'Malbec'], why: 'Warm gravel soils on the Left Bank suit Cabernet Sauvignon.' },
+      { q: 'Pétrus comes from which Right Bank appellation?', a: 'Pomerol', w: ['Margaux', 'Pauillac', 'Sauternes'], why: 'Pétrus is in Pomerol, which has no official classification.' },
+    ],
+    timeline: null,
+    estimate: null,
+  },
+  {
+    id: 'wine-phylloxera',
+    level: 1,
+    title: 'The aphid that nearly ended European wine',
+    body: [
+      "In 1863, vines in southern France began to wither and die, and nobody knew why. The culprit turned out to be phylloxera, a tiny aphid-like insect accidentally brought over from North America. It feeds on vine roots, and European vines had no defence. Over the following decades it spread through almost every wine region in Europe, ruining growers and destroying a large share of the continent's vineyards.",
+      "The fix was surprising: native American vines had evolved alongside the pest and could tolerate it. So European varieties were grafted onto American rootstocks, a Cabernet or Chardonnay top on American roots. That is still how most of the world's vines are planted today. A few places escaped, notably Chile and parts of Australia, which is why they still have vines on their own roots.",
+    ],
+    question: 'The cure for phylloxera came from the same place as the pest. Can you think of other problems solved this way?',
+    quiz: [
+      { q: 'What is phylloxera?', a: 'An insect that attacks vine roots', w: ['A fungus that rots grapes', 'A virus spread by birds', 'A frost that kills buds'], why: 'Phylloxera is a tiny aphid-like insect that feeds on roots.' },
+      { q: 'How did growers finally beat phylloxera?', a: 'Grafting onto American rootstocks', w: ['Spraying with copper', 'Flooding the vineyards each year', 'Planting only white grapes'], why: 'American roots tolerate the insect, so European vines were grafted onto them.' },
+    ],
+    timeline: { event: 'Phylloxera appears in France', year: 1863 },
+    estimate: null,
+  },
+  {
+    id: 'wine-judgement-paris',
+    level: 1,
+    title: 'The Judgement of Paris',
+    body: [
+      "In 1976 a British wine merchant in Paris, Steven Spurrier, set up a blind tasting. Top French wines from Burgundy and Bordeaux went up against little-known bottles from California, and the judges were mostly French wine experts. Everyone expected a French sweep.",
+      "Instead, the top white was a 1973 Chardonnay from Chateau Montelena, and the top red was a 1973 Cabernet Sauvignon from Stag's Leap Wine Cellars, both from Napa Valley. A journalist from Time magazine was in the room, and the story went round the world. It did not prove California was better, but it proved that great wine could come from outside Europe, and it gave confidence to winemakers from Oregon to New Zealand. The tasting has since been dramatised in film.",
+    ],
+    question: 'Do you think blind tasting is the fairest way to judge wine, or does knowing the label rightly add something?',
+    quiz: [
+      { q: 'In the 1976 Judgement of Paris, where did the winning wines come from?', a: 'California', w: ['Burgundy', 'Bordeaux', 'Australia'], why: 'Napa Valley wines topped both the red and white tastings.' },
+      { q: 'Which grape made the winning white wine in 1976?', a: 'Chardonnay', w: ['Sauvignon Blanc', 'Riesling', 'Chenin Blanc'], why: 'The winning white was Chateau Montelena\'s 1973 Chardonnay.' },
+    ],
+    timeline: { event: 'Judgement of Paris tasting', year: 1976 },
+    estimate: null,
+  },
+  {
+    id: 'wine-oak',
+    level: 1,
+    title: 'What the barrel adds',
+    body: [
+      "Oak barrels do two jobs. First, flavour: new oak gives vanilla, toast, clove and coconut, because barrels are toasted over fire when they are made. French oak tends to be subtle and spicy; American oak is bolder, with more vanilla and coconut. Second, oxygen: a barrel breathes very slowly, softening tannins and rounding the wine over months.",
+      "The classic Bordeaux barrel, the barrique, holds 225 litres. Each time a barrel is reused it gives less flavour, so winemakers mix new and old barrels like a cook adjusting seasoning. Oak is not a mark of quality in itself: crisp whites such as most Sauvignon Blanc and Riesling usually see none at all. When you taste vanilla or toast in a Chardonnay, though, you are tasting the cooper's work.",
+    ],
+    question: 'Do you like a strong flavour of oak in wine, or does it feel like a disguise?',
+    quiz: [
+      { q: 'Which flavour does new oak commonly give wine?', a: 'Vanilla', w: ['Lemon', 'Blackcurrant', 'Pepper'], why: 'Toasted new oak adds vanilla, toast and spice notes.' },
+      { q: 'Compared with French oak, American oak tends to give more of what?', a: 'Vanilla and coconut', w: ['Acidity', 'Tannin from grape seeds', 'Citrus aromas'], why: 'American oak is typically bolder, with vanilla and coconut.' },
+    ],
+    timeline: null,
+    estimate: { q: 'How many litres does a classic Bordeaux barrique hold?', answer: 225, unit: 'litres', min: 0, max: 1000 },
+  },
+  {
+    id: 'wine-rioja-ageing',
+    level: 2,
+    title: 'Crianza, Reserva, Gran Reserva',
+    body: [
+      "Rioja, in northern Spain, built its reputation on oak. Its red wines are based mainly on Tempranillo and traditionally aged in American oak, which gives the classic Rioja scent of vanilla, dill and coconut. What makes Rioja easy to shop for is that the label tells you how long the wine was aged before release.",
+      "A Crianza has at least two years of ageing, with at least one in barrel. A Reserva gets at least three years, again with at least one in barrel. A Gran Reserva needs at least five years, at least two of them in oak, and is made only in good vintages. So you climb from fruity and fresh to mellow, leathery and savoury. Many people find a good Reserva the sweet spot: plenty of character for the money.",
+    ],
+    question: 'Would you rather pay extra for age, or buy a younger wine and age it yourself?',
+    quiz: [
+      { q: 'Which Rioja label means the longest minimum ageing?', a: 'Gran Reserva', w: ['Crianza', 'Reserva', 'Joven'], why: 'Gran Reserva needs at least five years of ageing.' },
+      { q: 'Which grape is the backbone of red Rioja?', a: 'Tempranillo', w: ['Garnacha Blanca', 'Malbec', 'Nebbiolo'], why: 'Red Rioja is based mainly on Tempranillo.' },
+    ],
+    timeline: null,
+    estimate: { q: 'How many years of ageing, at minimum, does a red Rioja Gran Reserva need?', answer: 5, unit: 'years', min: 0, max: 15 },
+  },
+  {
+    id: 'wine-riesling',
+    level: 1,
+    title: 'Riesling, the misunderstood genius',
+    body: [
+      "Many people avoid Riesling because they think it is always sweet. In fact it ranges from bone dry to luscious dessert wine, and its trademark is piercing acidity that keeps even the sweet ones refreshing. Germany's Mosel valley makes delicate, low-alcohol styles; Alsace and Australia's Clare and Eden Valleys are famous for dry ones.",
+      "German labels can help once you know the words. 'Trocken' means dry. Terms like Kabinett, Spätlese and Auslese describe how ripe the grapes were at harvest, rising in that order, so they hint at richness but do not guarantee sweetness. With some age, Riesling can develop a curious note that tasters call petrol, which fans love. Its mix of acidity and a touch of sweetness also makes off-dry Riesling a favourite with spicy Thai or Chinese food.",
+    ],
+    question: 'Is there a food or drink you wrote off early in life and later came round to?',
+    quiz: [
+      { q: 'What does "trocken" mean on a German wine label?', a: 'Dry', w: ['Sweet', 'Sparkling', 'Old vines'], why: 'Trocken is German for dry.' },
+      { q: 'What do German terms like Kabinett and Spätlese describe?', a: 'Ripeness of grapes at harvest', w: ['The age of the vines', 'Time spent in oak', 'The size of the bottle'], why: 'They are ripeness levels, which hint at but do not guarantee sweetness.' },
+    ],
+    timeline: null,
+    estimate: null,
+  },
+  {
+    id: 'wine-sauvignon-blanc',
+    level: 1,
+    title: 'Sauvignon Blanc, two ways',
+    body: [
+      "Sauvignon Blanc is one of the easiest grapes to recognise: sharp, aromatic and never shy. Its home is France's Loire Valley, where Sancerre and Pouilly-Fumé make lean, mineral versions with notes of grass, lemon and flint. They are rarely oaked, and the label names only the place.",
+      "Then, from the 1970s onward, growers planted it in Marlborough, at the top of New Zealand's South Island. Bright sun and cool nights gave something louder: passion fruit, gooseberry and fresh-cut grass that leap out of the glass. Marlborough Sauvignon became a worldwide hit and put New Zealand wine on the map. A classic pairing comes straight from the Loire: Sancerre with fresh goat's cheese from nearby Chavignol, the wine's acidity matching the cheese's tang.",
+    ],
+    question: 'Restrained and mineral, or loud and fruity: which do you reach for, and does your choice say anything about you?',
+    quiz: [
+      { q: 'Sancerre is made from which grape?', a: 'Sauvignon Blanc', w: ['Chardonnay', 'Chenin Blanc', 'Pinot Grigio'], why: 'Sancerre and Pouilly-Fumé are Loire Sauvignon Blancs.' },
+      { q: 'Which New Zealand region made Sauvignon Blanc famous?', a: 'Marlborough', w: ['Hawke\'s Bay', 'Barossa Valley', 'Napa Valley'], why: 'Marlborough on the South Island is New Zealand\'s Sauvignon heartland.' },
+    ],
+    timeline: null,
+    estimate: null,
+  },
+  {
+    id: 'wine-barolo',
+    level: 1,
+    title: 'Barolo: tar and roses',
+    body: [
+      "Barolo, from Piedmont in north-west Italy, is made from Nebbiolo, a grape whose name probably comes from 'nebbia', the autumn fog that settles over the hills at harvest. Pour a glass and it looks surprisingly pale, a light brick-red. Then you taste it, and it is full of fierce tannin and high acidity. The traditional description of its aroma is 'tar and roses', with cherry and dried herbs alongside.",
+      "Because it is so firm when young, Barolo must be aged for at least 38 months before release, 18 of them in wood. Even then, good bottles often need years more to soften. Its neighbour Barbaresco, also Nebbiolo, has shorter rules and is often a touch more approachable. Both shine with rich local food: braised beef, mushrooms and pasta shaved with white truffle.",
+    ],
+    question: 'Barolo teaches that looks can deceive. Have you ever misjudged something by appearance alone?',
+    quiz: [
+      { q: 'Barolo looks pale in the glass. How does it taste?', a: 'Very tannic and high in acid', w: ['Light and sweet', 'Soft and low in tannin', 'Fizzy and fruity'], why: 'Nebbiolo is pale in colour but powerful in tannin and acidity.' },
+      { q: 'Which grape is Barolo made from?', a: 'Nebbiolo', w: ['Sangiovese', 'Barbera', 'Montepulciano'], why: 'Barolo and Barbaresco are both made from Nebbiolo.' },
+    ],
+    timeline: null,
+    estimate: { q: 'How many months, at minimum, must Barolo be aged before release?', answer: 38, unit: 'months', min: 0, max: 120 },
+  },
+  {
+    id: 'wine-malbec',
+    level: 1,
+    title: 'Malbec moves to the mountains',
+    body: [
+      "Malbec is French by birth. It comes from south-west France, where it is the main grape of Cahors, an old appellation known for dark, sturdy reds, and locals often call it Côt. It was once common in Bordeaux too, but it has largely faded from the blends there.",
+      "Its second life began in Argentina. In Mendoza, vineyards sit high in the foothills of the Andes, where intense sunshine is balanced by cold nights. There Malbec ripens into deep purple wine with plum, blackberry and a floral, violet note, with softer, rounder tannins than in Cahors. It became Argentina's signature grape and a reliable crowd-pleaser on wine lists everywhere. The natural pairing is the Argentine one: beef from the grill, the wine's juicy fruit standing up to char and fat.",
+    ],
+    question: 'Malbec found its best home far from where it started. Do you think people can do the same?',
+    quiz: [
+      { q: 'Malbec became the signature grape of which country?', a: 'Argentina', w: ['Chile', 'Spain', 'South Africa'], why: 'Mendoza in Argentina made Malbec famous worldwide.' },
+      { q: 'Which French appellation is Malbec\'s traditional home?', a: 'Cahors', w: ['Chablis', 'Sancerre', 'Beaujolais'], why: 'Cahors in south-west France is built on Malbec.' },
+    ],
+    timeline: null,
+    estimate: null,
+  },
+  {
+    id: 'wine-port',
+    level: 1,
+    title: 'Port: the wine that was stopped halfway',
+    body: [
+      "Port comes from the steep, terraced Douro Valley in northern Portugal. Its trick is fortification: partway through fermentation, a clear grape spirit is added. The alcohol kills the yeast before it has eaten all the sugar, so the wine stays sweet and ends up much stronger than table wine, typically around 20 per cent.",
+      "England helped create the trade. When wars cut supplies of French wine, the Methuen Treaty of 1703 gave Portuguese wine lower duties, and British merchants settled in Porto, which is why so many port houses have names like Taylor's, Graham's and Cockburn's. Ruby port is young and fruity; tawny is aged in wood and turns nutty and amber. Vintage port is declared only in the best years and needs decades in bottle. Port with Stilton is a classic British pairing.",
+    ],
+    question: 'Port was shaped by trade and politics as much as taste. What else on your table owes its existence to history?',
+    quiz: [
+      { q: 'How does port stay sweet?', a: 'Spirit is added to stop fermentation', w: ['Sugar is added after bottling', 'Grapes are frozen before pressing', 'Honey is blended in'], why: 'Adding spirit kills the yeast before all the sugar is used up.' },
+      { q: 'What style is port aged in wood until it turns nutty and amber?', a: 'Tawny', w: ['Ruby', 'Vintage', 'White'], why: 'Tawny port gains its colour and nutty flavour from time in wood.' },
+    ],
+    timeline: { event: 'Methuen Treaty boosts port', year: 1703 },
+    estimate: null,
+  },
+  {
+    id: 'wine-sherry',
+    level: 2,
+    title: 'Sherry and the blanket of yeast',
+    body: [
+      "Like port, sherry is fortified, but most of it is bone dry. It comes from around Jerez in Andalusia, mainly from the Palomino grape. The magic happens in the barrel: for the palest styles, Fino and Manzanilla, a layer of living yeast called flor grows on the surface of the wine. It shields the wine from air and gives a tangy, salty, bread-dough character.",
+      "Without flor, sherry is exposed to oxygen and becomes Oloroso: dark, nutty and rich, yet still dry unless sweetened. Sherry is aged in a solera, a system where younger wine tops up older barrels, so every bottle contains a blend of many years. Serve Fino and Manzanilla well chilled, finish an opened bottle within days, and drink it the Andalusian way, with almonds, olives and cured ham.",
+    ],
+    question: 'Sherry has an old-fashioned image in some countries and is a bar staple in others. What makes a drink feel cool or uncool?',
+    quiz: [
+      { q: 'What is flor, in sherry making?', a: 'A layer of yeast on the wine', w: ['A type of oak barrel', 'A sweet grape syrup', 'A cellar in Jerez'], why: 'Flor is a living yeast film that protects Fino and Manzanilla from air.' },
+      { q: 'What is a solera?', a: 'A system blending younger and older wines', w: ['A sweet dessert sherry', 'The vineyard soil in Jerez', 'A sherry glass'], why: 'In a solera, younger wine tops up older barrels over the years.' },
+    ],
+    timeline: null,
+    estimate: null,
+  },
+  {
+    id: 'wine-serving-temp',
+    level: 1,
+    title: 'Too cold whites, too warm reds',
+    body: [
+      "Most people serve white wine too cold and red wine too warm. A fridge is around 4 or 5°C, which mutes a white's aromas. Light whites, rosé and sparkling wine are happiest at roughly 6 to 10°C, and fuller whites like oaked Chardonnay a little warmer. Full-bodied reds are best at about 15 to 18°C.",
+      "The old advice to serve red at 'room temperature' dates from draughty houses before central heating. In a warm modern room, a red tastes soupy and alcoholic. An easy fix: take whites out of the fridge about 20 minutes before pouring, and put reds in for about 20 minutes. Light, low-tannin reds such as Beaujolais or Pinot Noir are lovely slightly chilled on a summer day.",
+    ],
+    question: 'Do you have a drink you insist on serving at a precise temperature? What happens if someone gets it wrong?',
+    quiz: [
+      { q: 'What is the common mistake with red wine temperature?', a: 'Serving it too warm', w: ['Serving it too cold', 'Serving it in small glasses', 'Opening it too early'], why: 'Modern rooms are warmer than the old "room temperature" assumed.' },
+      { q: 'Which red is lovely served slightly chilled?', a: 'Beaujolais', w: ['Barolo', 'Vintage port', 'Left Bank Bordeaux'], why: 'Light, low-tannin reds like Beaujolais suit a little chill.' },
+    ],
+    timeline: null,
+    estimate: null,
+  },
+  {
+    id: 'wine-decanting',
+    level: 2,
+    title: 'When to decant',
+    body: [
+      "Once you are serving wine at the right temperature, the next question is whether to decant it. There are two quite different reasons. The first is sediment: old reds and vintage port throw a gritty deposit as they age. Stand the bottle upright for a day so the sediment sinks, then pour slowly and steadily into a decanter, watching the neck against a light, and stop when the sludge appears.",
+      "The second reason is air. Young, tannic reds, such as a young Barolo or Cabernet Sauvignon, often taste tight when first opened; pouring them into a wide decanter an hour or so before dinner lets them open up and soften. Be gentle with very old, fragile wines, though: they can fade within minutes of meeting air, so decant them just before serving, if at all.",
+    ],
+    question: 'Is decanting a genuinely useful step or a bit of theatre? Does the theatre matter?',
+    quiz: [
+      { q: 'Before decanting an old red with sediment, what should you do?', a: 'Stand the bottle upright for a day', w: ['Shake it gently', 'Chill it in the freezer', 'Leave it lying on its side'], why: 'Standing it upright lets the sediment settle at the bottom.' },
+      { q: 'Why might you decant a young, tannic red?', a: 'To expose it to air and soften it', w: ['To remove sediment', 'To make it colder', 'To add bubbles'], why: 'Air helps young, tight reds open up.' },
+    ],
+    timeline: null,
+    estimate: null,
+  },
+  {
+    id: 'wine-pairing-rules',
+    level: 1,
+    title: 'Four pairing rules worth knowing',
+    body: [
+      "Food and wine pairing has a few principles that actually work. First, match weight: delicate food with lighter wine, rich food with fuller wine. Second, acidity loves fat and salt: a crisp white or Champagne cuts through fried food and creamy sauces the way a squeeze of lemon does. Third, any wine served with dessert should be at least as sweet as the dessert, or it will taste thin and sour.",
+      "Fourth, tannin needs protein and fat. A tannic Cabernet Sauvignon feels softer next to a juicy steak, but the same wine clashes with chilli heat, which high alcohol and tannin make burn hotter. With spicy food, reach instead for an off-dry, lower-alcohol white. And when in doubt, there is the old shortcut: what grows together goes together, such as Chianti with Tuscan food.",
+    ],
+    question: 'What is the best food and drink combination you have ever had, and why do you think it worked?',
+    quiz: [
+      { q: 'With a sweet dessert, how sweet should the wine be?', a: 'At least as sweet as the dessert', w: ['Completely dry', 'Less sweet than the dessert', 'It makes no difference'], why: 'A less sweet wine tastes thin and sour next to dessert.' },
+      { q: 'What does tannic red wine pair well with?', a: 'Steak and other fatty protein', w: ['Very spicy curry', 'Lemon sorbet', 'Delicate white fish'], why: 'Protein and fat soften the drying feel of tannin.' },
+    ],
+    timeline: null,
+    estimate: null,
+  },
+  {
+    id: 'wine-red-with-fish',
+    level: 2,
+    title: 'Can you drink red with fish?',
+    body: [
+      "The old rule says white wine with fish, and there is a real reason behind it. Strong tannin and fish oils can clash, leaving an unpleasant metallic taste. But the rule is about tannin, not colour. Following the idea of matching weight, a meaty, oily fish such as salmon or seared tuna can handle a red, as long as it is a light, low-tannin one.",
+      "Pinot Noir with salmon is the classic example: its bright red fruit and gentle tannin suit the fish's richness. Gamay from Beaujolais works too, especially slightly chilled. Save big, tannic reds such as Cabernet Sauvignon for red meat. With delicate white fish in a butter or lemon sauce, a crisp or creamy white is still the safer bet.",
+    ],
+    question: 'Which food rule do you happily break, and which do you think is actually worth keeping?',
+    quiz: [
+      { q: 'Which red is a classic match for salmon?', a: 'Pinot Noir', w: ['Cabernet Sauvignon', 'Barolo', 'Vintage port'], why: 'Pinot Noir is light and low in tannin, so it suits oily fish.' },
+      { q: 'What can heavy tannin do when paired with fish?', a: 'Create a metallic taste', w: ['Make the fish taste sweeter', 'Remove all fishy smell', 'Make the wine taste fizzy'], why: 'Tannin and fish oils can clash and taste metallic.' },
+    ],
+    timeline: null,
+    estimate: null,
+  },
+];
+
+export const requests = [
+  { card: 'wine-red-with-fish', ask: 'I\'m roasting a whole side of salmon for friends, and half of them only drink red. Is that a disaster?', q: 'Which red would suit the salmon best?', a: 'A light Pinot Noir', w: ['A big Cabernet Sauvignon', 'A young Barolo'], why: 'Light, low-tannin reds like Pinot Noir suit oily fish; tannic reds can taste metallic.' },
+  { card: 'wine-pairing-rules', ask: 'I\'m making a fiery Thai green curry tonight. I was going to open my strongest red. Good plan?', q: 'What is the better choice with very spicy food?', a: 'An off-dry, lower-alcohol white', w: ['A high-alcohol, tannic red', 'A bone-dry, heavily oaked red'], why: 'High alcohol and tannin make chilli burn hotter; off-dry, lighter whites calm it.' },
+  { card: 'wine-sherry', ask: 'I\'m putting out olives, salted almonds and some cured ham before dinner. What should I pour?', q: 'Which drink suits these Spanish nibbles?', a: 'Chilled Fino or Manzanilla sherry', w: ['Sweet tawny port', 'A Gran Reserva Rioja at room temperature'], why: 'Dry, tangy Fino and Manzanilla are the classic partners for almonds, olives and ham.' },
+  { card: 'wine-decanting', ask: 'My uncle gave me a twenty-year-old red and there\'s gunk in the bottle. How do I serve it without the grit?', q: 'What is the best approach?', a: 'Stand it upright a day, then decant slowly', w: ['Shake it to mix the sediment in', 'Pour it through a paper coffee filter while warm'], why: 'Standing it lets sediment settle, so you can pour clear wine off the top.' },
+  { card: 'wine-serving-temp', ask: 'Our house gets really warm in summer, and my red always tastes a bit soupy. Any tips?', q: 'What simple fix does the card suggest?', a: 'Put it in the fridge for about 20 minutes', w: ['Add an ice cube to each glass', 'Leave it near the oven to breathe'], why: 'Reds are best around 15 to 18°C, cooler than a warm modern room.' },
+  { card: 'wine-restaurant-ritual', ask: 'Next week I\'m hosting a dinner at a smart restaurant, and I panic when the waiter pours me that little taste. What am I meant to do?', q: 'What is the taste for?', a: 'Checking the wine is not faulty', w: ['Deciding if you like the grape', 'Judging if the price is fair'], why: 'You confirm the bottle is right and sound, such as not corked; liking it is not the test.' },
+];
