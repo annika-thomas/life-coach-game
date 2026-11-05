@@ -1574,7 +1574,7 @@ export class World {
       const [kx, kz] = st.keeperAt;
       k.position.set(kx + 0.5, tileH(kx, kz), kz + 0.5);
       k.rotation.y = 0.35 * (kx > st.approach[0] ? -1 : 1);
-      k.traverse((o) => { o.userData.station = id; });
+      k.traverse((o) => { o.userData.station = id; o.userData.keeperOf = id; });
       k.userData.phase = Math.random() * 6;
       const R = ROUTINES[id];
       if (R) {
@@ -2229,7 +2229,7 @@ export class World {
     this.onArrive = onArrive;
   }
   // Walk to a station, then announce arrival (the app opens its screen).
-  visit(id) {
+  visit(id, mode = 'open') {
     const st = STATIONS[id];
     if (!st || this.state === 'build') return;
     if (this.state === 'nap') this._wake();
@@ -2243,7 +2243,7 @@ export class World {
         k.userData.greetUntil = this.clock.elapsedTime + 8;
       } else this.faceAngle = 0; // the dock: face the sea
       this.hop();
-      this._emit('station', id);
+      this._emit('station', id, mode);
     };
     const path = this._findPath(this._tileOf(this.pos), (x, z) => x === ax && z === az);
     if (path && path.length > 1) this._walk(path, arrive);
@@ -2416,7 +2416,7 @@ export class World {
       const vis = ray.intersectObjects([...(this.visitors?.values() || [])], true);
       if (vis.length) { this.visitVisitor(vis[0].object.userData.visitor); return; }
       const st = ray.intersectObjects([...this.stations.values(), ...this.keepers.values()], true);
-      if (st.length) { this.visit(st[0].object.userData.station); return; }
+      if (st.length) { const o = st[0].object.userData; this.visit(o.station, o.keeperOf ? 'chat' : 'open'); return; }
       const ft = ray.intersectObjects([...this.fruitTrees.values()].map((t) => t.g), true);
       if (ft.length) { this._emit('treeTap', ft[0].object.userData.fruitTree); return; }
       const items = ray.intersectObjects([...this.built.values()], true);

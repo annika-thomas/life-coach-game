@@ -36,7 +36,9 @@ Then open `http://localhost:8080`, or `http://<laptop-ip>:8080` from your phone 
 
 ## How it plays
 
-There are no menu buttons. You visit places on the island, each with a keeper. Tap a building or its keeper: Pip walks over, the keeper talks in the dialogue box, and you pick from the choices. There are no permanent signs; a place's name fades in when Pip is standing next to it, and a "!" floats over Bram when something can be built.
+**Today** (top left, under the clock) is the heart of it: a short, mixed session of a few new cards (each with a quick guess first) and reviews of what's due, in whichever format suits the card: a map, a Timeline, a number slider or a recall question. Topics are mixed on purpose. It ends with a summary of what you learned and what's getting stronger.
+
+Places open straight away when you tap them; keepers just say a line if you tap them (and occasionally have a small gift). Visitors drop by to say hello.
 
 | Place | What it does |
 |---|---|
@@ -46,7 +48,6 @@ There are no menu buttons. You visit places on the island, each with a keeper. T
 | **Town square** (Fennel) | Two puzzles a day on the notice board, built from cards you've read: **Timeline** (drag five events into order) and **Guess of the day** (a number on a slider). Both count as reviews. A perfect score earns a gift. |
 | **Market** (Pepper) | Wine and cheese games. **Cheese map**: 23 cheeses (Roquefort, Comté, Stilton, Manchego, Feta...) placed where they're made; name the cheese from its spot or tap where it comes from. **Wine map**: real maps of Europe and the world; name the glowing region or tap the named one (24 regions, each with what it's known for). **Taste test**: set sweetness, acidity, tannin and body for a classic style (18 styles, typical textbook profiles; within one step counts). Regions you've read about come up first. |
 | **Home** (the cottage) | Focus time. Pick 10, 25 or 50 minutes, put the phone down, and a flower patch, tree or blossom tree grows in the grove (south-east corner). Nothing withers if you leave; it's on your honour. A full session pays 1, 2 or 3 energy. |
-| **Visitors** | One or two travellers turn up each day. They ask about something you've read, or for advice that draws on a card. A right answer earns a gift. These, with the board puzzles, are how you recall what you've read. |
 | **Workbench** (Bram) | Plans grouped by district. Shows what's ready, what needs more mastery, and what you haven't discovered yet. |
 | **District keepers** | Fennel (town square), Pepper (market street) and Sage (observatory hill) tell you how their district is growing and open the library filtered to their topics. Any keeper might have a little gift for you, at most once a day. |
 | **Journal** (top right) | Topic mastery dots, fish collection, your takes, settings, export/reset. |
@@ -66,9 +67,9 @@ Each topic has three items:
 2. **Second item** unlocks at mastery 2.
 3. **Third item** unlocks at mastery 3.
 
-Mastery comes from the review schedule (visitor questions and board puzzles): each card earns points as it moves up the boxes, and a topic reaches level 1, 2, 3 at 1, 3, 6 points. Only reviews that are actually due move a card up, so it can't be rushed, and mastery never goes down.
+Mastery comes from the review schedule (Today's reviews and the board puzzles): each card earns points as it moves up the boxes, and a topic reaches level 1, 2, 3 at 1, 3, 6 points. Only reviews that are actually due move a card up, so it can't be rushed, and mastery never goes down.
 
-Energy (from reading and real-world logs) is what you spend at the workbench. Visitors and puzzles pay in mastery and gifts; fishing pays in fish.
+Energy (from reading and real-world logs) is what you spend at the workbench. Reviews and puzzles pay in mastery; finishing Today pays 1 energy; fishing pays in fish.
 
 Around the island: the sky follows your real clock (pink dawn, orange sunset, blue night with lit windows and lamps), the season follows the month (spring green, autumn leaves, winter snow), and the weather changes daily (sun, cloud, rain, snow). Each day weeds pop up to pull (clear them all for a thank-you; some hide four-leaf clovers), shells wash up on the beach, and butterflies or moths come out depending on the hour and season (catch them with a net). Tap a fruit tree to shake it; fruit grows back the next day, and Pepper trades five fruit for a gift.
 

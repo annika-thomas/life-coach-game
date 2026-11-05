@@ -74,7 +74,7 @@ const affordable = () => ITEMS.filter((i) => isUnlocked(i) && !isBuilt(i) && i.c
 function reqLabel(it) {
   const r = it.req;
   if (r.type === 'none') return 'Starter plan';
-  if (r.type === 'cat') return r.level === 1 ? `Recall a ${CATEGORIES[r.cat].label} card (visitors and the town board)` : `${CATEGORIES[r.cat].label} mastery ${r.level}`;
+  if (r.type === 'cat') return r.level === 1 ? `Remember a ${CATEGORIES[r.cat].label} card in a review` : `${CATEGORIES[r.cat].label} mastery ${r.level}`;
   if (r.type === 'lessons') return `${r.n} cards, any topic`;
   if (r.type === 'log') return `Log ${LOG_KINDS[r.kind].label.toLowerCase()} ${r.n} times`;
   return '';
@@ -258,7 +258,7 @@ function districtLine(key) {
   const low = cats.slice().sort((a, b) => a.m - b.m)[0];
   const label = CATEGORIES[low.c].label;
   if (low.m >= 3) return 'Every topic here is fully grown. Look at this place!';
-  if (low.m === 0) return `Get a ${label.toLowerCase()} question right, from a visitor or the town board, and Bram can build the ${ITEM_BY_ID[SIGNATURE[low.c]].name.toLowerCase()}.`;
+  if (low.m === 0) return `Remember a ${label.toLowerCase()} card in Today's reviews and Bram can build the ${ITEM_BY_ID[SIGNATURE[low.c]].name.toLowerCase()}.`;
   return `${label} is at level ${low.m}. Keep remembering those cards and something new will turn up.`;
 }
 for (const [key, d] of Object.entries(DISTRICTS)) {
@@ -281,7 +281,7 @@ VISIT.square = async () => {
   if (choice === 1) setTimeout(openGuess, 200);
   if (choice === 2) { filters = new Set(DISTRICTS.square.cats); setTimeout(() => openLessons(), 200); }
 };
-world.on('station', async (id) => { await maybeKeeperGift(id); VISIT[id](); });
+world.on('station', (id, mode) => (mode === 'chat' ? keeperChat(id) : VISIT[id]()));
 
 // Tapping Pip or something you built.
 function pipLine() {
@@ -419,7 +419,7 @@ function openLessons(first) {
   const feed = $('#feed');
   const shown = [];
   let done = 0;
-  onClose = () => { if (done) talk('maple', [done > 1 ? `${done} cards! Fennel\'s board will test you on those.` : pick(['Good reading. Come back anytime.', 'I\'ll keep a few more on the shelf for you.'])]); };
+  onClose = null;
   const append = (l = nextLesson(shown)) => {
     shown.push(l.id);
     feed.insertAdjacentHTML('beforeend', cardHtml(l));
@@ -451,7 +451,7 @@ function openLessons(first) {
       commit();
       floatReward(gain, btn);
       card.classList.add('done');
-      card.querySelector('.card-actions').innerHTML = `<div class="answered">${ICON.check} Got it. It may come up in a puzzle or a visitor\'s question.</div>`;
+      card.querySelector('.card-actions').innerHTML = `<div class="answered">${ICON.check} Got it. It will come back in a review.</div>`;
       ta.readOnly = true;
       newlyUnlocked();
       append();
@@ -720,7 +720,7 @@ function planDay() {
   const n = S.lessons.length ? (r() < 0.55 ? 2 : 1) : 1;
   const cast = VISITOR_CAST.slice().sort(() => r() - 0.5).slice(0, n);
   const spots = VISITOR_SPOTS.slice().sort(() => r() - 0.5);
-  return cast.map((c, i) => ({ id: `v${i}`, kind: c.kind, name: c.name, color: c.color, spot: spots[i], type: !S.lessons.length ? 'hello' : r() < 0.5 ? 'request' : 'review', done: false }));
+  return cast.map((c, i) => ({ id: `v${i}`, kind: c.kind, name: c.name, color: c.color, spot: spots[i], type: 'hello', done: false }));
 }
 const today = () => dayKey(Date.now());
 function ensureDay() {
@@ -750,7 +750,7 @@ world.on('visitor', async (id) => {
   const who = { name: () => v.name, color: v.color };
   const ask = v.type === 'hello' ? null : visitorAsk(v);
   if (!ask) {
-    await talk(who, [`Hi! I'm ${v.name}, just passing through.`, 'This island is lovely. Here, a little something for it.']);
+    await talk(who, [pick([`Hi! I'm ${v.name}, just passing through.`, `${v.name}, on my way somewhere sunny.`, `Oh, hello! I'm ${v.name}. What a pretty island.`]), 'Here, a little something for it.']);
     const g = grantGift(v.name);
     if (g) await talk('note', [`${v.name} gave you a ${g.toLowerCase()}. It's on the island now.`]);
   } else {
@@ -909,7 +909,8 @@ const mapSvg = (map, dots, glow) => {
   </svg>`;
 };
 const readText = () => S.lessons.map((l) => LESSONS.find((x) => x.id === l.id)).filter(Boolean).map((l) => ({ id: l.id, text: (l.title + ' ' + l.body.join(' ')).toLowerCase() }));
-const cardFor = (region) => readText().find((c) => region.words.some((w) => c.text.includes(w)))?.id;
+const wordRe = (w) => new RegExp(`(^|[^a-zà-ÿ])${w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}($|[^a-zà-ÿ])`, 'i');
+const cardFor = (region) => readText().find((c) => region.words.some((w) => wordRe(w).test(c.text)))?.id;
 function openWineMap() { openPlaceMap(REGIONS, 'Wine map', 'region', 'mapGift'); }
 function openCheeseMap() { openPlaceMap(CHEESES, 'Cheese map', 'cheese', 'cheeseMapGift'); }
 function openPlaceMap(PLACES, title, noun, giftKey) {
@@ -1225,6 +1226,221 @@ setInterval(() => {
   if (world._bugPeriod !== isNight()) spawnToday();
 }, 30000);
 
+// ── Places open straight away ──────────────────────────────────────────
+// Tapping a building opens it. Tapping a keeper gets a friendly line (and
+// now and then a small gift). No conversations stand between you and the
+// learning.
+function placeMenu(title, lead, buttons) {
+  openSheet(title, `<p class="lead">${lead}</p><div class="menu">${buttons.map((b, i) => `<button class="menu-btn" data-i="${i}"><b>${esc(b.label)}</b>${b.sub ? `<small>${esc(b.sub)}</small>` : ''}</button>`).join('')}</div>`, 'menu-sheet');
+  sheet.querySelectorAll('.menu-btn').forEach((el) => el.onclick = () => { const b = buttons[+el.dataset.i]; closeSheet(); setTimeout(b.fn, 260); });
+}
+VISIT.library = () => { filters = new Set(); openLessons(); };
+VISIT.gym = () => openLog();
+VISIT.workbench = () => openBuild();
+VISIT.dock = () => goFishing('dock');
+VISIT.pond = () => goFishing('pond');
+VISIT.observatory = () => { filters = new Set(DISTRICTS.observatory.cats); openLessons(); };
+VISIT.square = () => placeMenu('Town board', 'Two puzzles a day, built from cards you\'ve read.', [
+  { label: `Today's timeline${S.daily.timeline ? ` · ${S.daily.timeline.score}/5` : ''}`, sub: 'Put five events in order', fn: openTimeline },
+  { label: `Guess of the day${S.daily.guess ? ' · done' : ''}`, sub: 'A number from one of your cards', fn: openGuess },
+  { label: 'Read about news, travel or history', fn: () => { filters = new Set(DISTRICTS.square.cats); openLessons(); } },
+]);
+VISIT.market = () => placeMenu('Market', 'Wine and cheese, from the map to the glass.', [
+  { label: 'Wine map', sub: 'Name or find 24 wine regions', fn: openWineMap },
+  { label: 'Cheese map', sub: 'Where 23 cheeses are made', fn: openCheeseMap },
+  { label: 'Taste test', sub: 'Sweetness, acidity, tannin, body', fn: openTaste },
+  ...(fruitTotal() >= 5 ? [{ label: 'Trade 5 fruit', sub: `You have ${fruitTotal()}`, fn: tradeFruit }] : []),
+  { label: 'Read about food, wine or cheese', fn: () => { filters = new Set(DISTRICTS.market.cats); openLessons(); } },
+]);
+VISIT.home = () => placeMenu('Focus time', S.grove.length ? `Put the phone down and grow something. ${S.grove.length} grown so far.` : 'Put the phone down and grow something for the grove.', [
+  { label: '10 minutes', sub: 'A flower patch · +1 energy', fn: () => startFocus(10) },
+  { label: '25 minutes', sub: 'A tree · +2 energy', fn: () => startFocus(25) },
+  { label: '50 minutes', sub: 'A blossom tree · +3 energy', fn: () => startFocus(50) },
+]);
+const CHAT = {
+  library: ['maple', ['Quiet day. Perfect for reading.', 'I just shelved some new cards.', 'Mind the steps, I polished them.']],
+  gym: ['dot', ['Hey hey! Looking strong.', 'Every bit counts!', 'Stretch first. Always stretch.']],
+  workbench: ['bram', ['Measure twice, cut once.', 'Got any energy? I\'ve got ideas.', 'Fine day for building.']],
+  square: ['fennel', ['Fresh puzzles on the board.', 'No letters for you. Stories, though.', 'Everyone passes through the square eventually.']],
+  market: ['pepper', ['The market smells great today.', 'Fancy a taste test?', 'Busy morning on the street.']],
+  observatory: ['sage', ['Slow and steady, as they say.', 'Clear skies tonight, I hope.', 'A good question outlives its answer.']],
+};
+async function keeperChat(id) {
+  const [who, lines] = CHAT[id] || [];
+  if (!who) return VISIT[id]();
+  await talk(who, [pick(lines)]);
+  await maybeKeeperGift(id);
+}
+
+// ── Today ──────────────────────────────────────────────────────────────
+// One short, mixed session: new cards to read, and reviews of what's due,
+// each in whichever format suits the card (map, timeline, slider or a plain
+// recall question). Topics are mixed on purpose.
+function planToday() {
+  const now = Date.now();
+  const due = Object.keys(S.reviews).filter((id) => QUIZ[id] && S.reviews[id].due <= now).sort((a, b) => S.reviews[a].due - S.reviews[b].due);
+  const reviews = due.slice(0, 5);
+  const fresh = [];
+  const keep = filters; filters = new Set(); // Today mixes every topic
+  const usedCats = new Set(reviews.map((id) => CAT_OF[id]));
+  for (let i = 0; i < (reviews.length >= 4 ? 2 : 3); i++) {
+    let pickd = null;
+    for (let tries = 0; tries < 12 && !pickd; tries++) { const c = nextLesson(fresh.map((l) => l.id)); if (!usedCats.has(c.cat) || tries === 11) pickd = c; }
+    fresh.push(pickd); usedCats.add(pickd.cat);
+  }
+  filters = keep;
+  const steps = [];
+  const readTimeline = S.lessons.map((l) => LESSONS.find((x) => x.id === l.id)).filter((l) => l?.timeline);
+  const timelineReady = new Set(readTimeline.map((l) => l.timeline.year)).size >= 4;
+  // interleave: review, new, review, new...
+  const revSteps = reviews.map((id) => ({ kind: 'review', id }));
+  while (revSteps.length || fresh.length) {
+    if (revSteps.length) steps.push(revSteps.shift());
+    if (fresh.length) steps.push({ kind: 'new', card: fresh.shift() });
+  }
+  if (timelineReady) steps.splice(Math.min(steps.length, 3), 0, { kind: 'timeline' });
+  return steps;
+}
+// Pick the most fitting format for reviewing a card.
+function reviewFormat(id) {
+  const l = LESSONS.find((x) => x.id === id);
+  const place = [...REGIONS, ...CHEESES].find((p) => cardFor(p) === id);
+  const n = S.reviews[id]?.n || 0;
+  if (place && n % 2 === 0) return { kind: 'map', place };
+  if (l.estimate && n % 3 === 1) return { kind: 'estimate' };
+  return { kind: 'recall' };
+}
+const todayEl = $('#today');
+function renderTodayTag() {
+  const done = S.daily.todayDone;
+  todayEl.classList.toggle('done', !!done);
+  todayEl.innerHTML = done ? `${ICON.check}<b>Today</b>` : `<b>Today</b><small>${planToday().length} steps</small>`;
+}
+todayEl.onclick = () => startToday();
+function startToday() {
+  const steps = planToday();
+  if (!steps.length) { toast('Nothing to do yet. Read a card at the library first.'); return; }
+  const log = { newCards: 0, reviews: 0, right: 0, topics: new Set() };
+  let i = 0;
+  const frame = (title, inner) => {
+    openSheet('Today', `<div class="today-bar"><i style="width:${(i / steps.length) * 100}%"></i></div><p class="today-kind">${title}</p><div id="tstep">${inner}</div>`, 'today-sheet');
+  };
+  const next = () => { i += 1; if (i < steps.length) show(); else finish(); };
+  const cont = (label = 'Continue') => {
+    const b = document.createElement('button');
+    b.className = 'btn primary wide'; b.textContent = label;
+    b.onclick = next;
+    $('#tstep').appendChild(b);
+    b.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  };
+  const recordReview = (id, right) => { grade(id, right); log.reviews += 1; log.right += right ? 1 : 0; log.topics.add(CAT_OF[id]); };
+  const show = () => {
+    const st = steps[i];
+    if (st.kind === 'new') {
+      const l = st.card, g = QUIZ[l.id][0];
+      frame(`New · ${CATEGORIES[l.cat].label}`, `<article class="card">
+        <h3>${esc(l.title)}</h3>
+        <div class="guess"><span class="guess-label">Quick guess</span><span class="guess-sub">Nobody's expected to know this.</span>
+          <p class="guess-q">${esc(g.q)}</p>
+          <div class="opts">${shuffle([g.a, ...g.w]).map((o) => `<button class="opt" data-right="${o === g.a ? 1 : 0}">${esc(o)}</button>`).join('')}</div>
+          <p class="guess-result"></p><button class="guess-skip">Skip the guess</button></div>
+        <div class="reading">${l.body.map((p) => `<p>${esc(p)}</p>`).join('')}</div></article>`);
+      const card = $('#tstep .card');
+      const reveal = (txt) => { card.querySelectorAll('.opt').forEach((x) => { x.disabled = true; if (x.dataset.right === '1') x.classList.add('right'); }); card.querySelector('.guess-result').textContent = txt; card.classList.add('guessed'); };
+      card.querySelectorAll('.opt').forEach((o) => o.onclick = () => { const r = o.dataset.right === '1'; if (!r) o.classList.add('wrong'); reveal(r ? 'Nice guess.' : 'Most people miss this one. Here\'s why.'); });
+      card.querySelector('.guess-skip').onclick = () => reveal('');
+      const got = document.createElement('button');
+      got.className = 'btn primary wide'; got.innerHTML = `Got it <span class="amt">${ICON.leaf}+1</span>`;
+      got.onclick = () => {
+        S.lessons.push({ id: l.id, cat: l.cat, answer: '', ts: Date.now() });
+        scheduleNew(l.id);
+        S.energy += 1; log.newCards += 1; log.topics.add(l.cat);
+        commit(); floatReward(1, got); newlyUnlocked();
+        next();
+      };
+      card.querySelector('.reading').appendChild(got);
+    } else if (st.kind === 'review') {
+      const id = st.id, l = LESSONS.find((x) => x.id === id), fmt = reviewFormat(id);
+      const from = `<p class="today-from">From "${esc(l.title)}"</p>`;
+      if (fmt.kind === 'map') {
+        const r = fmt.place, pool = REGIONS.includes(r) ? REGIONS : CHEESES;
+        const opts = shuffle([r, ...shuffle(pool.filter((x) => x.map === r.map && x.id !== r.id)).slice(0, 3)]);
+        frame(`Review · ${CATEGORIES[l.cat].label}`, `<p class="guess-q">${pool === CHEESES ? 'Which cheese comes from here?' : 'Which region is glowing?'}</p>${mapSvg(r.map, null, r)}
+          <div class="opts">${opts.map((o) => `<button class="opt" data-id="${o.id}">${esc(o.name)}</button>`).join('')}</div><p class="map-fact"></p>${from}`);
+        $('#tstep').querySelectorAll('.opt').forEach((b) => b.onclick = () => {
+          const right = b.dataset.id === r.id;
+          $('#tstep').querySelectorAll('.opt').forEach((x) => { x.disabled = true; if (x.dataset.id === r.id) x.classList.add('right'); });
+          if (!right) b.classList.add('wrong');
+          $('#tstep .map-fact').innerHTML = `<b>${esc(r.name)}, ${esc(r.country)}.</b> ${esc(r.known)}`;
+          recordReview(id, right); cont();
+        });
+      } else if (fmt.kind === 'estimate') {
+        const e = l.estimate, span = e.max - e.min;
+        const step = span <= 20 ? (Number.isInteger(e.answer) ? 1 : 0.1) : span <= 200 ? 1 : Math.pow(10, Math.floor(Math.log10(span)) - 2);
+        const f = (n) => `${Number(n).toLocaleString(undefined, { maximumFractionDigits: 1 })} ${e.unit}`;
+        frame(`Review · ${CATEGORIES[l.cat].label}`, `<p class="guess-q">${esc(e.q)}</p>
+          <div class="slider"><input id="ts" type="range" min="${e.min}" max="${e.max}" step="${step}" value="${e.min + span / 2}"><b id="tv">${f(e.min + span / 2)}</b></div>
+          <button class="btn primary wide" id="tgo">Lock it in</button><p class="map-fact"></p>${from}`);
+        const ts = $('#ts'); ts.oninput = () => { $('#tv').textContent = f(ts.value); };
+        $('#tgo').onclick = () => {
+          const off = Math.abs(+ts.value - e.answer) / span;
+          ts.disabled = true; $('#tgo').remove();
+          $('#tstep .map-fact').innerHTML = `<b>${off <= 0.03 ? 'Spot on!' : off <= 0.1 ? 'Very close.' : off <= 0.25 ? 'Not bad.' : 'Way off.'}</b> The answer is ${esc(f(e.answer))}.`;
+          recordReview(id, off <= 0.1); cont();
+        };
+      } else {
+        const qs = QUIZ[id], q = qs[((S.reviews[id]?.n || 0) + 1) % qs.length];
+        const opts = shuffle([q.a, ...q.w]);
+        frame(`Review · ${CATEGORIES[l.cat].label}`, `<p class="guess-q">${esc(q.q)}</p><div class="opts">${opts.map((o) => `<button class="opt">${esc(o)}</button>`).join('')}</div><p class="map-fact"></p>${from}`);
+        $('#tstep').querySelectorAll('.opt').forEach((b) => b.onclick = () => {
+          const right = b.textContent === q.a;
+          $('#tstep').querySelectorAll('.opt').forEach((x) => { x.disabled = true; if (x.textContent === q.a) x.classList.add('right'); });
+          if (!right) b.classList.add('wrong');
+          $('#tstep .map-fact').innerHTML = `<b>${right ? 'Yes!' : 'Not quite.'}</b> ${esc(q.why)}`;
+          recordReview(id, right); cont();
+        });
+      }
+    } else if (st.kind === 'timeline') {
+      const pool = S.lessons.map((x) => LESSONS.find((y) => y.id === x.id)).filter((x) => x?.timeline);
+      const years = new Set();
+      const evs = shuffle(pool).filter((x) => !years.has(x.timeline.year) && years.add(x.timeline.year)).slice(0, 4);
+      frame('Timeline', `<p class="guess-q">Put these in order, earliest at the top.</p>
+        <ol class="tl">${shuffle(evs).map((x) => `<li class="tl-row" data-id="${x.id}"><span class="grip"><i></i><i></i><i></i></span><span class="tl-text">${esc(x.timeline.event)}</span><b class="tl-year"></b></li>`).join('')}</ol>
+        <button class="btn primary wide" id="tlgo">Check</button>`);
+      const list = $('#tstep .tl');
+      let drag = null;
+      list.addEventListener('pointerdown', (e) => { const row = e.target.closest('.tl-row'); if (!row) return; drag = row; row.classList.add('dragging'); row.setPointerCapture(e.pointerId); });
+      list.addEventListener('pointermove', (e) => { if (!drag) return; const over = [...list.children].find((r) => { const bb = r.getBoundingClientRect(); return r !== drag && e.clientY > bb.top && e.clientY < bb.bottom; }); if (!over) return; const kids = [...list.children]; if (kids.indexOf(drag) < kids.indexOf(over)) over.after(drag); else over.before(drag); });
+      const drop = () => { if (drag) drag.classList.remove('dragging'); drag = null; };
+      list.addEventListener('pointerup', drop); list.addEventListener('pointercancel', drop);
+      $('#tlgo').onclick = () => {
+        const rows = [...list.children], sorted = evs.slice().sort((a, b) => a.timeline.year - b.timeline.year);
+        rows.forEach((row, k) => { const ev = evs.find((x) => x.id === row.dataset.id); const ok = sorted[k].id === ev.id; row.classList.add(ok ? 'ok' : 'bad'); row.querySelector('.tl-year').textContent = yearLabel(ev.timeline.year); if (S.reviews[ev.id]?.due <= Date.now()) recordReview(ev.id, ok); });
+        $('#tlgo').remove(); cont();
+      };
+    }
+  };
+  const finish = () => {
+    const first = !S.daily.todayDone;
+    S.daily.todayDone = true;
+    if (first) S.energy += 1;
+    const news = masteryNews();
+    commit(); renderTodayTag();
+    const topics = [...log.topics].map((c) => CATEGORIES[c].label);
+    openSheet('Today', `<div class="today-done">
+      <p class="today-big">Done for today${first ? ` <span class="amt">${ICON.leaf}+1</span>` : ''}</p>
+      <div class="stats"><div><b>${log.newCards}</b><small>new cards</small></div><div><b>${log.right}/${log.reviews}</b><small>remembered</small></div><div><b>${topics.length}</b><small>topics</small></div></div>
+      ${topics.length ? `<p class="lead">${esc(topics.join(', '))}</p>` : ''}
+      ${news.map((n) => `<p class="today-news">${esc(n)}</p>`).join('')}
+      <button class="btn primary wide" id="tmore">Keep going</button>
+      <button class="btn ghost wide" id="tclose">Back to the island</button></div>`, 'today-sheet');
+    $('#tmore').onclick = () => startToday();
+    $('#tclose').onclick = closeSheet;
+  };
+  show();
+}
+renderTodayTag();
+
 // ── Gym: log real-world actions ───────────────────────────────────────
 function weekStrip() {
   const today = new Date(); today.setHours(0, 0, 0, 0);
@@ -1377,11 +1593,10 @@ if (!S.introDone) {
   setTimeout(async () => {
     await talk('pip', [
       'Oh! You\'re here.',
-      'The island\'s a little empty. I can build things, but only with energy.',
-      'Maple at the library and Dot at the gym can help with that.',
+      'Tap Today up top whenever you want to learn something. I\'ll build the island while you do.',
     ]);
     S.introDone = true; save(S);
-    toast('Tap a building or someone to visit. Tap the ground to walk.');
+    toast('Tap a building to go in. Tap the ground to walk.');
   }, 2600);
 }
 
