@@ -1,5 +1,5 @@
-import { World } from './world.js';
-import { ITEMS, ITEM_BY_ID } from './items.js';
+import { World, PINNED } from './world.js';
+import { ITEMS, ITEM_BY_ID, DISTRICTS, SIGNATURE } from './items.js';
 import { LESSONS, CATEGORIES } from './lessons.js';
 import { load, save, reset, dayKey, rhythm } from './state.js';
 import { ICON, leafAmt } from './icons.js';
@@ -13,7 +13,28 @@ const commit = () => { save(S); renderHud(); };
 
 const world = new World($('#world'));
 if (window.__expose) window.__world = world; // test hook
-S.built.forEach((b) => world.placeBuilt(b.id));
+// ── Mastery ────────────────────────────────────────────────────────────
+// A topic's mastery comes from remembering its cards at the dock: each card
+// earns (box - 1) points; levels at 1, 3 and 6 points. It never goes down.
+const CAT_OF = Object.fromEntries(LESSONS.map((l) => [l.id, l.cat]));
+const LEVEL_AT = [1, 3, 6];
+S.reviews = S.reviews || {};
+S.mastery = S.mastery || {};
+S.fish = S.fish || [];
+const topicPoints = (cat) => Object.entries(S.reviews).reduce((a, [id, r]) => a + (CAT_OF[id] === cat ? r.box - 1 : 0), 0);
+function updateMastery() {
+  const ups = [];
+  for (const cat of Object.keys(CATEGORIES)) {
+    const lvl = LEVEL_AT.filter((n) => topicPoints(cat) >= n).length;
+    if (lvl > (S.mastery[cat] || 0)) { ups.push({ cat, from: S.mastery[cat] || 0, to: lvl }); S.mastery[cat] = lvl; }
+  }
+  return ups;
+}
+updateMastery();
+const mastery = (cat) => S.mastery[cat] || 0;
+const stageFor = (it) => (it.signature ? Math.max(1, Math.min(3, mastery(it.req.cat))) : 3);
+
+S.built.forEach((b) => world.placeBuilt(b.id, false, stageFor(ITEM_BY_ID[b.id] || {})));
 world.setEnergy(S.energy);
 
 // ── Cast ───────────────────────────────────────────────────────────────
@@ -22,6 +43,9 @@ const CAST = {
   maple: { name: () => 'Maple', color: '#8a5a9e' },
   dot:   { name: () => 'Dot', color: '#e5483b' },
   bram:  { name: () => 'Bram', color: '#3f6fb0' },
+  fennel: { name: () => 'Fennel', color: '#d9732a' },
+  pepper: { name: () => 'Pepper', color: '#7a5638' },
+  sage:  { name: () => 'Sage', color: '#5f7a32' },
   note:  { name: () => '', color: '' },
 };
 
@@ -36,7 +60,7 @@ const isBuilt = (it) => S.built.some((b) => b.id === it.id);
 function progress(it) {
   const r = it.req;
   if (r.type === 'none') return { have: 0, need: 0 };
-  if (r.type === 'cat') return { have: S.lessons.filter((l) => l.cat === r.cat).length, need: r.n };
+  if (r.type === 'cat') return { have: mastery(r.cat), need: r.level };
   if (r.type === 'lessons') return { have: S.lessons.length, need: r.n };
   if (r.type === 'log') return { have: S.logs.filter((l) => l.kind === r.kind).length, need: r.n };
   return { have: 0, need: 1 };
@@ -46,11 +70,13 @@ const affordable = () => ITEMS.filter((i) => isUnlocked(i) && !isBuilt(i) && i.c
 function reqLabel(it) {
   const r = it.req;
   if (r.type === 'none') return 'Starter plan';
-  if (r.type === 'cat') return `${r.n} ${CATEGORIES[r.cat].label} card${r.n > 1 ? 's' : ''}`;
+  if (r.type === 'cat') return r.level === 1 ? `Remember a ${CATEGORIES[r.cat].label} card at the dock` : `${CATEGORIES[r.cat].label} mastery ${r.level}`;
   if (r.type === 'lessons') return `${r.n} cards, any topic`;
   if (r.type === 'log') return `Log ${LOG_KINDS[r.kind].label.toLowerCase()} ${r.n} times`;
   return '';
 }
+// You know an item's plan once you've read a card in its topic.
+const hasPlan = (it) => it.req.type !== 'cat' || S.lessons.some((l) => l.cat === it.req.cat);
 function unlockSource(it) {
   if (it.req.type !== 'cat') return null;
   const first = S.lessons.find((l) => l.cat === it.req.cat);
@@ -151,6 +177,8 @@ function positionPlaces() {
     const top = 120, bottom = vh - 40, left = 46, right = vw - 46;
     const off = !p.visible || p.x < left || p.x > right || p.y < top || p.y > bottom;
     const x = Math.max(left + 14, Math.min(right - 14, p.x)), y = Math.max(top, Math.min(bottom, p.y));
+    // only the main places pin to the screen edge; district keepers just hide
+    if (off && !PINNED.includes(el.dataset.place)) { el.classList.add('hidden'); continue; }
     el.classList.toggle('edge', off);
     el.dataset.dir = p.x > right ? 'r' : p.x < left ? 'l' : p.y < top ? 'u' : 'd';
     el.style.transform = `translate(${Math.round(off ? x : p.x)}px, ${Math.round(off ? y : p.y)}px) translate(-50%, ${off ? '-50%' : '-100%'})`;
@@ -173,7 +201,7 @@ const VISIT = {
           `There's a card on ${topic} I think you'll want to argue with.`,
           'Back again? Good. I saved you a seat.',
         ])];
-    if (await talk('maple', lines, ['Read something', 'Maybe later']) === 0) setTimeout(() => openLessons(next), 200);
+    if (await talk('maple', lines, ['Read something', 'Maybe later']) === 0) { filters = new Set(); setTimeout(() => openLessons(next), 200); }
   },
   async gym() {
     const lines = firstVisit('gym')
@@ -191,13 +219,50 @@ const VISIT = {
     const can = affordable();
     const first = firstVisit('workbench');
     const lines = first
-      ? ['Bram. I build things.', 'Bring me energy and I\'ll turn it into something for the island. ' + S.creatureName + ' does the hammering.']
+      ? ['Bram. I build things.', 'Reading a card gets you a plan. Remembering it at the dock lets me build it. Energy pays for the wood.']
       : [];
     if (can.length) lines.push(pick([`You've got enough for the ${can[0].name.toLowerCase()}. Want to see the plans?`, 'Energy in the pocket. Let\'s make something.', `I could knock out a ${can[0].name.toLowerCase()} today.`]));
     else lines.push(pick(['Not enough energy for anything yet. Maple\'s library is a good place to start.', 'Running a bit low. Dot\'s yard pays double, you know.', 'Nothing we can afford yet. Have a look anyway?']));
     if (await talk('bram', lines, ['See the plans', 'Later']) === 0) setTimeout(openBuild, 200);
   },
 };
+// District keepers: a line about how their district is growing, then the
+// library filtered to their topics.
+const KEEPER_TALK = {
+  fennel: {
+    intro: ['Fennel, postmaster. Welcome to the square.', 'News, travel and history are my beat. The square grows as you remember those.'],
+    idle: ['Fresh off the press.', 'No letters for you. Stories, though.', 'Everyone passes through the square eventually.'],
+  },
+  pepper: {
+    intro: ['Oh! A customer. I\'m Pepper.', 'Food, wine and cheese. Learn them, remember them, and this street fills up with good things.'],
+    idle: ['The market smells great today.', 'Taste this. No? Then read this.', 'Busy morning on the street.'],
+  },
+  sage: {
+    intro: ['Ah. Hello. I\'m Sage. I keep the instruments up here.', 'Science, probability, robotics and philosophy. Remember them and the hill fills up.'],
+    idle: ['Slow and steady, as they say.', 'I\'ve been watching the sky. And the questions.', 'A good question outlives its answer.'],
+  },
+};
+function districtLine(key) {
+  const d = DISTRICTS[key];
+  const cats = d.cats.map((c) => ({ c, m: mastery(c), read: S.lessons.some((l) => l.cat === c) }));
+  const unread = cats.find((x) => !x.read);
+  if (unread) return `Nobody's read about ${CATEGORIES[unread.c].label.toLowerCase()} around here yet.`;
+  const low = cats.slice().sort((a, b) => a.m - b.m)[0];
+  const label = CATEGORIES[low.c].label;
+  if (low.m >= 3) return 'Every topic here is fully grown. Look at this place!';
+  if (low.m === 0) return `Remember a ${label.toLowerCase()} card at the dock and Bram can build the ${ITEM_BY_ID[SIGNATURE[low.c]].name.toLowerCase()}.`;
+  return `${label} is at level ${low.m}. Keep remembering those cards and something new will turn up.`;
+}
+for (const [key, d] of Object.entries(DISTRICTS)) {
+  if (key === 'arts') continue; // Maple's library covers the arts corner
+  VISIT[key] = async () => {
+    const t = KEEPER_TALK[d.keeper];
+    const lines = firstVisit(key) ? [...t.intro, districtLine(key)] : [pick(t.idle), districtLine(key)];
+    const topics = d.cats.map((c) => CATEGORIES[c].label.toLowerCase());
+    const choice = await talk(d.keeper, lines, [`Read about ${topics.slice(0, -1).join(', ')} or ${topics.at(-1)}`, 'Later']);
+    if (choice === 0) { filters = new Set(d.cats); setTimeout(() => openLessons(), 200); }
+  };
+}
 world.on('station', (id) => VISIT[id]());
 
 // Tapping Pip or something you built.
@@ -263,11 +328,14 @@ function toast(t) {
   clearTimeout(el._t);
   el._t = setTimeout(() => el.classList.remove('show'), 3200);
 }
-let knownUnlocked = new Set(ITEMS.filter(isUnlocked).map((i) => i.id));
+let knownPlans = new Set(ITEMS.filter((i) => hasPlan(i) || isUnlocked(i)).map((i) => i.id));
 function newlyUnlocked() {
-  const now = ITEMS.filter(isUnlocked).map((i) => i.id).filter((id) => !knownUnlocked.has(id));
-  now.forEach((id) => knownUnlocked.add(id));
-  if (now.length) toast(`New plan at the workbench: ${ITEM_BY_ID[now[0]].name}`);
+  const now = ITEMS.filter((i) => hasPlan(i) && (i.req.type !== 'cat' || i.req.level === 1 || isUnlocked(i)) && (i.req.type === 'cat' || isUnlocked(i))).map((i) => i.id).filter((id) => !knownPlans.has(id));
+  now.forEach((id) => knownPlans.add(id));
+  if (now.length) {
+    const it = ITEM_BY_ID[now[0]];
+    toast(it.signature && !isUnlocked(it) ? `New plan: ${it.name}. Remember it at the dock to build.` : `New plan at the workbench: ${it.name}`);
+  }
 }
 
 // ── Library: the endless feed ─────────────────────────────────────────
@@ -392,9 +460,7 @@ function openLessons(first) {
 // ── Spaced review (drives the fishing questions) ──────────────────────
 // Leitner boxes: right answers push a card further out, wrong ones reset it.
 const DAY = 864e5;
-const BOX_DAYS = { 1: 1 / 48, 2: 1, 3: 3, 4: 7, 5: 21 };
-S.reviews = S.reviews || {};
-S.fish = S.fish || [];
+const BOX_DAYS = { 1: 0, 2: 1, 3: 3, 4: 7, 5: 21 };
 for (const l of S.lessons) if (!S.reviews[l.id]) S.reviews[l.id] = { box: 1, due: Date.now(), n: 0, last: 0 };
 function scheduleNew(id) {
   if (!S.reviews[id]) S.reviews[id] = { box: 1, due: Date.now() + BOX_DAYS[1] * DAY, n: 0, last: Date.now() };
@@ -409,12 +475,28 @@ function nextReview() {
   const qs = QUIZ[id];
   return { id, box: r.box, q: qs[(r.n + 1) % qs.length], due: !!due.length };
 }
+// Only a review that was due moves a card up, so mastery can't be rushed by
+// fishing the same card over and over. A miss always brings it back soon.
 function grade(id, right) {
-  const r = S.reviews[id];
-  r.box = right ? Math.min(5, r.box + 1) : 1;
-  r.due = Date.now() + (right ? BOX_DAYS[r.box] : 1 / 144) * DAY;
-  r.n += 1; r.last = Date.now();
+  const r = S.reviews[id], now = Date.now();
+  if (right && r.due <= now) { r.box = Math.min(5, r.box + 1); r.due = now + BOX_DAYS[r.box] * DAY; }
+  else if (!right) { r.box = 1; r.due = now + DAY / 144; }
+  r.n += 1; r.last = now;
 }
+// After a review: grow signature items and announce new plans.
+function masteryNews() {
+  const lines = [];
+  for (const up of updateMastery()) {
+    const label = CATEGORIES[up.cat].label;
+    const sig = ITEM_BY_ID[SIGNATURE[up.cat]];
+    if (isBuilt(sig)) world.setStage(sig.id, stageFor(sig));
+    const unlocked = ITEMS.filter((i) => i.req.type === 'cat' && i.req.cat === up.cat && i.req.level > up.from && i.req.level <= up.to);
+    if (up.to === 1) lines.push(`${label} mastery 1! The ${sig.name.toLowerCase()} can be built now.`);
+    else lines.push(`${label} mastery ${up.to}!${isBuilt(sig) ? ` The ${sig.name.toLowerCase()} grew.` : ''}${unlocked.length ? ` New plan: ${unlocked.map((i) => i.name.toLowerCase()).join(', ')}.` : ''}`);
+  }
+  return lines;
+}
+const pondColors = () => [...new Set(S.fish.map((f) => f.species))].map((id) => FISH.find((f) => f.id === id)?.color).filter(Boolean);
 
 // ── Fishing ────────────────────────────────────────────────────────────
 // Cast, wait for a bite, reel it in, then answer a question about something
@@ -445,6 +527,7 @@ function rollFish(box) {
 }
 const fishSvg = (color, known = true) => `<svg class="fishsvg" viewBox="0 0 64 36"><path d="M8 18c8-12 26-14 38-6l10-8v28l-10-8C34 32 16 30 8 18z" fill="${known ? color : '#cfc6b0'}" stroke="#4a3b33" stroke-width="3" stroke-linejoin="round"/>${known ? '<circle cx="18" cy="16" r="2.6" fill="#2a2320"/>' : ''}</svg>`;
 
+world.setPondFish(pondColors());
 const fishUI = $('#fish'), hint = $('#fish-hint'), reelEl = $('#reel'), zoneEl = $('#zone'), fishyEl = $('#fishy'), meterEl = $('#meter');
 let fishing = false;
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -533,12 +616,12 @@ async function goFishing() {
   if (right) {
     const first = !S.fish.some((f) => f.species === fish.id);
     S.fish.push({ species: fish.id, card: rev.id, ts: Date.now() });
-    S.energy += 1;
+    const news = masteryNews();
     commit();
-    floatReward(1);
     world.fishEnd(fish.color);
+    world.setPondFish(pondColors());
     fishing = false;
-    const again = await talk('note', [`You caught a ${fish.name}!${first ? ' New to your collection.' : ''}`, q.why], ['Cast again', 'Done']);
+    const again = await talk('note', [`You caught a ${fish.name}!${first ? ' It\'s swimming in your pond now.' : ''}`, q.why, ...news], ['Cast again', 'Done']);
     if (again === 0) goFishing();
   } else {
     save(S);
@@ -595,34 +678,51 @@ function openLog() {
 }
 
 // ── Workbench ──────────────────────────────────────────────────────────
+// The workbench lists plans by district. States:
+//   ready / short   you can build it (or need more energy)
+//   plan            you've read about it; remember the topic to unlock it
+//   locked          read a card in its topic to get the plan
+//   built           on the island (shows its current growth stage)
+const GROUPS = [
+  ...Object.entries(DISTRICTS).map(([k, d]) => ({ name: d.name, test: (it) => it.req.type === 'cat' && d.cats.includes(it.req.cat) })),
+  { name: 'Around the island', test: (it) => it.req.type !== 'cat' },
+];
+function itemRow(it) {
+  const built = isBuilt(it), unlocked = isUnlocked(it), p = progress(it), plan = hasPlan(it);
+  const src = unlockSource(it);
+  const state = built ? 'built' : unlocked ? (S.energy >= it.cost ? 'ready' : 'short') : plan ? 'plan' : 'locked';
+  const stage = stageFor(it);
+  const note = built ? (it.signature ? `On the island · stage ${stage} of 3` : 'On the island')
+    : unlocked ? (src && it.signature ? `From "${esc(src)}"` : reqLabel(it))
+    : plan ? `${reqLabel(it)} (${p.have}/${p.need})`
+    : it.req.type === 'cat' ? `Read a ${CATEGORIES[it.req.cat].label} card for the plan` : `${reqLabel(it)} (${p.have}/${p.need})`;
+  return { state, html: `<button class="item ${state}" data-id="${it.id}">
+    <span class="thumb"><img alt="" src="${world.thumbnail(it.id, stage)}">${state === 'locked' ? `<span class="lock">${ICON.lock}</span>` : ''}</span>
+    <span class="item-text"><b>${state === 'locked' ? '???' : esc(it.name)}</b><small>${note}</small></span>
+    <span class="item-cost">${built ? ICON.check : leafAmt(it.cost)}</span>
+  </button>` };
+}
 function openBuild() {
-  const rows = ITEMS.map((it) => {
-    const built = isBuilt(it), unlocked = isUnlocked(it), p = progress(it);
-    const src = unlockSource(it);
-    const state = built ? 'built' : unlocked ? (S.energy >= it.cost ? 'ready' : 'short') : 'locked';
-    const note = built ? 'On the island'
-      : unlocked ? (src ? `From "${esc(src)}"` : reqLabel(it))
-      : `${reqLabel(it)} (${p.have}/${p.need})`;
-    return { state, html: `<button class="item ${state}" data-id="${it.id}">
-      <span class="thumb"><img alt="" src="${world.thumbnail(it.id)}">${state === 'locked' ? `<span class="lock">${ICON.lock}</span>` : ''}</span>
-      <span class="item-text"><b>${unlocked || built ? esc(it.name) : '???'}</b><small>${note}</small></span>
-      <span class="item-cost">${built ? ICON.check : leafAmt(it.cost)}</span>
-    </button>` };
-  });
-  const order = { ready: 0, short: 1, built: 2, locked: 3 };
-  rows.sort((a, b) => order[a.state] - order[b.state]);
-  openSheet('Workbench', `<p class="lead">You have ${leafAmt(S.energy)} to spend.</p><div class="items">${rows.map((r) => r.html).join('')}</div>`, 'build');
+  const order = { ready: 0, short: 1, plan: 2, built: 3, locked: 4 };
+  const ready = ITEMS.filter((it) => !isBuilt(it) && isUnlocked(it)).map(itemRow).sort((a, b) => order[a.state] - order[b.state]);
+  const groups = GROUPS.map((g) => {
+    const rows = ITEMS.filter((it) => g.test(it) && !(!isBuilt(it) && isUnlocked(it))).map(itemRow).sort((a, b) => order[a.state] - order[b.state]);
+    return rows.length ? `<h4>${g.name}</h4><div class="items">${rows.map((r) => r.html).join('')}</div>` : '';
+  }).join('');
+  openSheet('Workbench', `<p class="lead">You have ${leafAmt(S.energy)} to spend.</p>
+    ${ready.length ? `<h4>Ready to build</h4><div class="items">${ready.map((r) => r.html).join('')}</div>` : ''}${groups}`, 'build');
   sheet.querySelectorAll('.item').forEach((b) => b.onclick = () => {
     const it = ITEM_BY_ID[b.dataset.id];
-    if (b.classList.contains('built')) return toast(`${it.name} is already on the island.`);
-    if (b.classList.contains('locked')) return toast(`To unlock: ${reqLabel(it)}`);
+    if (b.classList.contains('built')) return toast(it.signature ? `It grows as your ${CATEGORIES[it.req.cat].label} mastery rises.` : `${it.name} is already on the island.`);
+    if (b.classList.contains('locked')) return toast(it.req.type === 'cat' ? `Read a ${CATEGORIES[it.req.cat].label} card at the library first.` : `To unlock: ${reqLabel(it)}`);
+    if (b.classList.contains('plan')) return toast(`To build: ${reqLabel(it)}.`);
     if (b.classList.contains('short')) return toast(`You need ${it.cost - S.energy} more energy.`);
     S.energy -= it.cost;
     S.built.push({ id: it.id, ts: Date.now() });
     commit();
     onClose = () => {
       talk('bram', [pick([`One ${it.name.toLowerCase()}, coming up.`, 'Right. Let\'s get to work.'])]);
-      world.build(it.id, () => setTimeout(() => talk('pip', [pick(['Ta-da!', 'Done! What do you think?', 'Look at that.'])]), 300));
+      world.build(it.id, () => setTimeout(() => talk('pip', [pick(['Ta-da!', 'Done! What do you think?', 'Look at that.'])]), 300), stageFor(it));
     };
     closeSheet();
   });
@@ -638,7 +738,9 @@ function openJournal() {
       <div><b>${S.fish.length}</b><small>fish</small></div>
       <div><b>${S.built.length}</b><small>built</small></div>
     </div>
-    <div class="catbars">${cats.map(({ c, n }) => `<span class="catbar" style="--c:${c.color}"><i></i>${c.label} ${n}</span>`).join('')}</div>
+    <h4>Topics</h4>
+    <div class="topics">${cats.map(({ k, c, n }) => `<div class="topic" style="--c:${c.color}"><i></i><span>${c.label}</span><small>${n} read</small><b class="lv">${[1, 2, 3].map((l) => `<u class="${mastery(k) >= l ? 'on' : ''}"></u>`).join('')}</b></div>`).join('')}</div>
+    <p class="lead small">Dots are mastery: remember a topic's cards at the dock to fill them.</p>
     <h4>Fish caught</h4>
     <div class="fishgrid">${FISH.map((f) => { const n = S.fish.filter((x) => x.species === f.id).length; return `<div class="fishcell ${n ? '' : 'unknown'}">${fishSvg(f.color, n > 0)}<small>${n ? `${esc(f.name)} ×${n}` : '???'}</small></div>`; }).join('')}</div>
     <h4>Your answers</h4>

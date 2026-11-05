@@ -1,41 +1,89 @@
-// Everything the creature can build. `slot` is the island tile [x, z] it is
-// placed on (see MAP in world.js). Learning things sit near the library,
-// workout things near the gym, food along the south path. `req` decides when it unlocks:
-//   { type: 'none' }                         always available
-//   { type: 'cat', cat, n }                  n answered lessons in a category
-//   { type: 'lessons', n }                   n answered lessons in total
-//   { type: 'log', kind, n }                 n logged real-world actions of a kind
+// Everything the creature can build, grouped into districts.
+//
+// Topic items: three per curriculum category.
+//   level 1  the signature item. Its plan appears after you read a card in
+//            that topic; you can build it once you've recalled the topic at
+//            the dock. It grows (stages 1-3) as your mastery rises.
+//   level 2  unlocks at topic mastery 2
+//   level 3  unlocks at topic mastery 3
+// Other items: starters, real-world logs, and milestones.
+//
+// `slot` is the island tile [x, z] (see MAP in world.js).
+export const DISTRICTS = {
+  square:      { name: 'Town square',      keeper: 'fennel', cats: ['news', 'travel', 'history'] },
+  arts:        { name: 'Arts corner',      keeper: 'maple',  cats: ['art', 'film', 'fashion', 'culture'] },
+  market:      { name: 'Market street',    keeper: 'pepper', cats: ['food', 'wine', 'cheese'] },
+  observatory: { name: 'Observatory hill', keeper: 'sage',   cats: ['science', 'stats', 'robotics', 'philosophy'] },
+};
+
+const T = (id, name, cat, level, cost, slot) => ({ id, name, cost, slot, req: { type: 'cat', cat, level }, signature: level === 1 });
+
 export const ITEMS = [
   // Starters, so there is something to spend the very first energy on.
-  { id: 'flowerbed', name: 'Flower bed',  cost: 1, slot: [7, 6],  req: { type: 'none' } },
-  { id: 'appletree', name: 'Apple tree',  cost: 2, slot: [5, 12],  req: { type: 'none' } },
-  { id: 'bench',     name: 'Wooden bench', cost: 2, slot: [6, 8], req: { type: 'none' } },
+  { id: 'flowerbed', name: 'Flower bed',   cost: 1, slot: [8, 7],  req: { type: 'none' } },
+  { id: 'appletree', name: 'Apple tree',   cost: 2, slot: [7, 5],  req: { type: 'none' } },
+  { id: 'bench',     name: 'Wooden bench', cost: 2, slot: [6, 9],  req: { type: 'none' } },
 
-  // One per curriculum category: the world reflects what you learned.
-  { id: 'kiosk',      name: 'News kiosk',          cost: 3, slot: [11, 11],  req: { type: 'cat', cat: 'news', n: 1 } },
-  { id: 'robot',      name: 'Little robot helper', cost: 4, slot: [12, 7], req: { type: 'cat', cat: 'robotics', n: 1 } },
-  { id: 'dressform',  name: 'Dress form',          cost: 3, slot: [6, 5],   req: { type: 'cat', cat: 'fashion', n: 1 } },
-  { id: 'trellis',    name: 'Vine trellis',        cost: 3, slot: [2, 2],   req: { type: 'cat', cat: 'wine', n: 1 } },
-  { id: 'cheesecart', name: 'Cheese cart',         cost: 3, slot: [7, 11],  req: { type: 'cat', cat: 'cheese', n: 1 } },
-  { id: 'cinema',     name: 'Outdoor cinema',      cost: 4, slot: [2, 14],  req: { type: 'cat', cat: 'film', n: 1 } },
-  { id: 'grill',      name: 'Garden kitchen',      cost: 3, slot: [9, 11],  req: { type: 'cat', cat: 'food', n: 1 } },
-  { id: 'signpost',   name: 'Travel signpost',     cost: 2, slot: [9, 15], req: { type: 'cat', cat: 'travel', n: 1 } },
-  { id: 'easel',      name: 'Easel with a colour-field canvas', cost: 3, slot: [1, 11], req: { type: 'cat', cat: 'art', n: 1 } },
-  { id: 'lanterns',   name: 'Paper lanterns',      cost: 3, slot: [4, 11],   req: { type: 'cat', cat: 'culture', n: 1 } },
-  { id: 'column',     name: 'Thinking column',     cost: 4, slot: [6, 2],   req: { type: 'cat', cat: 'philosophy', n: 1 } },
-  { id: 'galton',     name: 'Galton board',        cost: 4, slot: [1, 8],  req: { type: 'cat', cat: 'stats', n: 1 } },
-  { id: 'telescope',  name: 'Telescope',           cost: 4, slot: [12, 2],  req: { type: 'cat', cat: 'science', n: 1 } },
-  { id: 'library',    name: 'Little library',      cost: 3, slot: [5, 8],   req: { type: 'cat', cat: 'history', n: 1 } },
+  // Town square: news, travel, history
+  T('kiosk',     'News kiosk',        'news',    1, 3, [9, 10]),
+  T('podium',    'Town crier podium', 'news',    2, 3, [11, 10]),
+  T('clocktower','Clock tower',       'news',    3, 5, [14, 5]),
+  T('signpost',  'Travel signpost',   'travel',  1, 2, [6, 10]),
+  T('globe',     'Globe on a stand',  'travel',  2, 3, [13, 10]),
+  T('balloon',   'Hot air balloon',   'travel',  3, 5, [15, 8]),
+  T('library',   'Little library',    'history', 1, 3, [6, 7]),
+  T('sundial',   'Sundial',           'history', 2, 3, [12, 10]),
+  T('pyramid',   'Little pyramid',    'history', 3, 4, [14, 9]),
 
-  // Real-world actions build real-world things.
+  // Arts corner: art, film, fashion, culture
+  T('easel',     'Easel',             'art',     1, 3, [1, 7]),
+  T('sculpture', 'Sculpture',         'art',     2, 3, [3, 7]),
+  T('mural',     'Mural wall',        'art',     3, 5, [0, 9]),
+  T('cinema',    'Outdoor cinema',    'film',    1, 4, [2, 13]),
+  T('dirchair',  'Director\'s chair', 'film',    2, 2, [4, 13]),
+  T('popcorn',   'Popcorn cart',      'film',    3, 3, [6, 12]),
+  T('dressform', 'Dress form',        'fashion', 1, 3, [1, 5]),
+  T('rack',      'Clothes rack',      'fashion', 2, 3, [3, 5]),
+  T('runway',    'Little runway',     'fashion', 3, 4, [4, 5]),
+  T('lanterns',  'Paper lanterns',    'culture', 1, 3, [4, 8]),
+  T('teatable',  'Tea table',         'culture', 2, 3, [1, 10]),
+  T('arch',      'Marigold arch',     'culture', 3, 4, [4, 9]),
+
+  // Market street: food, wine, cheese
+  T('grill',     'Garden kitchen',    'food',    1, 3, [9, 12]),
+  T('veggies',   'Vegetable patch',   'food',    2, 3, [8, 14]),
+  T('pizzaoven', 'Pizza oven',        'food',    3, 5, [12, 16]),
+  T('trellis',   'Vine trellis',      'wine',    1, 3, [12, 12]),
+  T('barrels',   'Wine barrels',      'wine',    2, 3, [13, 13]),
+  T('tasting',   'Tasting table',     'wine',    3, 4, [9, 16]),
+  T('cheesecart','Cheese cart',       'cheese',  1, 3, [12, 14]),
+  T('cow',       'Dairy cow',         'cheese',  2, 4, [8, 16]),
+  T('fondue',    'Fondue table',      'cheese',  3, 4, [11, 17]),
+
+  // Observatory hill: science, stats, robotics, philosophy
+  T('telescope', 'Telescope',         'science', 1, 4, [15, 2]),
+  T('labbench',  'Lab bench',         'science', 2, 3, [17, 3]),
+  T('orrery',    'Orrery',            'science', 3, 5, [19, 2]),
+  T('galton',    'Galton board',      'stats',   1, 4, [7, 3]),
+  T('dice',      'Giant dice',        'stats',   2, 2, [8, 2]),
+  T('bellhedge', 'Bell curve hedge',  'stats',   3, 4, [6, 1]),
+  T('robot',     'Little robot',      'robotics',1, 4, [11, 3]),
+  T('robotarm',  'Robot arm',         'robotics',2, 4, [10, 2]),
+  T('rover',     'Mapping rover',     'robotics',3, 5, [12, 1]),
+  T('column',    'Thinking column',   'philosophy', 1, 4, [2, 3]),
+  T('chess',     'Chess table',       'philosophy', 2, 3, [3, 2]),
+  T('theseus',   'Ship of Theseus',   'philosophy', 3, 5, [1, 1]),
+
+  // Real-world actions build real-world things (near the gym).
   { id: 'pullupbar', name: 'Pull-up bar',     cost: 3, slot: [18, 7],  req: { type: 'log', kind: 'workout', n: 3 } },
-  { id: 'lamppost',  name: 'Path lamp',       cost: 2, slot: [13, 11],  req: { type: 'log', kind: 'walk', n: 3 } },
-  { id: 'picnic',    name: 'Picnic blanket',  cost: 3, slot: [11, 14],  req: { type: 'log', kind: 'cooked', n: 2 } },
-  { id: 'hammock',   name: 'Reading hammock', cost: 3, slot: [18, 11], req: { type: 'log', kind: 'read', n: 2 } },
+  { id: 'lamppost',  name: 'Path lamp',       cost: 2, slot: [15, 12], req: { type: 'log', kind: 'walk', n: 3 } },
+  { id: 'picnic',    name: 'Picnic blanket',  cost: 3, slot: [14, 18], req: { type: 'log', kind: 'cooked', n: 2 } },
+  { id: 'hammock',   name: 'Reading hammock', cost: 3, slot: [19, 13], req: { type: 'log', kind: 'read', n: 2 } },
 
-  // Bigger milestones.
-  { id: 'peachtree', name: 'Peach tree',      cost: 3, slot: [16, 15], req: { type: 'lessons', n: 10 } },
-  { id: 'fountain',  name: 'Stone fountain',  cost: 6, slot: [11, 13],  req: { type: 'lessons', n: 20 } },
+  // Milestones.
+  { id: 'peachtree', name: 'Peach tree',      cost: 3, slot: [20, 16], req: { type: 'lessons', n: 10 } },
+  { id: 'fountain',  name: 'Stone fountain',  cost: 6, slot: [18, 12], req: { type: 'lessons', n: 20 } },
 ];
 
 export const ITEM_BY_ID = Object.fromEntries(ITEMS.map((i) => [i.id, i]));
+export const SIGNATURE = Object.fromEntries(ITEMS.filter((i) => i.signature).map((i) => [i.req.cat, i.id]));

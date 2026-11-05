@@ -309,3 +309,18 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .take summary span { font-weight: 600; color: #9d8f72; font-size: 13px; }
 .take[open] { border-style: solid; border-color: var(--ink); }
 .take-q { font-family: var(--display); font-weight: 700; font-size: 17px; line-height: 1.3; margin: 8px 0 0; }
+
+/* journal topics with mastery dots */
+.topics { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+.topic { display: flex; align-items: center; gap: 5px; min-width: 0; padding: 6px 8px; border: 2px solid var(--c); border-radius: 14px; background: #fffdf4; font-weight: 800; font-size: 13px; }
+.topic i { width: 10px; height: 10px; border-radius: 50%; background: var(--c); flex: none; }
+.topic span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.topic small { font-weight: 600; opacity: .6; font-size: 10.5px; white-space: nowrap; }
+.lv { display: flex; gap: 3px; }
+.lv u { width: 9px; height: 9px; border-radius: 50%; border: 2px solid var(--c); background: #fffdf4; }
+.lv u.on { background: var(--c); }
+.lead.small { font-size: 12.5px; margin-top: 6px; }
+.sheet.build h4:first-of-type { margin-top: 6px; }
+.item.plan { background: #fffaf0; }
+.item.plan .item-cost { opacity: .5; }
+.place.small { font-size: 14px; min-height: 38px; padding: 2px 12px; }
