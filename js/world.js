@@ -8,26 +8,26 @@ import { ITEMS, ITEM_BY_ID } from './items.js';
 // H plateau (raised terrace)   . grass   # dirt path   S stairs
 // s sand                        w water
 const MAP = [
-  'HHHHHHHHHHHHHHHHHH',
-  'HHHHHHHHHHHHHHHHHH',
-  'HHHHHHHHHHHHHHHHHH',
-  'HHHHHHHHHHHHHHSHHH',
-  '..............#...',
-  '..............#...',
-  '........#.....#...',
-  '.......####...#...',
-  '.......####...#...',
-  '........#.....#...',
-  '..##############..',
-  '........#.........',
-  '........#.........',
-  '........#....ww...',
-  '........#....ww...',
-  '........#.........',
-  'ss......#.....ssss',
-  'ssssssssssssssssss',
-  'wwwwwwwwwwwwwwwwww',
-  'wwwwwwwwwwwwwwwwww',
+  'HHHHHHHHHHHHHHHHHHHH',
+  'HHHHHHHHHHHHHHHHHHHH',
+  'HHHHHHHHHHHHHHHHHHHH',
+  'HHHHHHHHHHHHHHSHHHHH',
+  '..............#.....',
+  '..............#.....',
+  '........#.....#.....',
+  '.......####...#.....',
+  '.......####...#.....',
+  '........#.....#.....',
+  '..################..',
+  '........#...........',
+  '........#...........',
+  '........#....ww.....',
+  '........#....ww.....',
+  '........#...........',
+  'ss......#.....ssssss',
+  'ssssssssssssssssssss',
+  'wwwwwwwwwwwwwwwwwwww',
+  'wwwwwwwwwwwwwwwwwwww',
 ];
 const W = MAP[0].length;
 const D = MAP.length;
@@ -643,7 +643,7 @@ function workbenchModel() {
 }
 const STATIONS = {
   library:   { model: libraryModel,   tiles: [[2, 8], [3, 8], [2, 9], [3, 9]],      at: [3.0, 9.0],  approach: [3, 10], labelY: 2.7, keeper: makeMaple, keeperAt: [4, 9] },
-  gym:       { model: gymModel,       tiles: [[12, 8], [13, 8], [12, 9], [13, 9]],  at: [13.0, 9.0], approach: [13, 10], labelY: 1.7, keeper: makeDot,   keeperAt: [11, 9] },
+  gym:       { model: gymModel,       tiles: [[16, 8], [17, 8], [16, 9], [17, 9]],  at: [17.0, 9.0], approach: [17, 10], labelY: 1.7, keeper: makeDot,   keeperAt: [15, 9] },
   workbench: { model: workbenchModel, tiles: [[10, 6]],                              at: [10.5, 6.5], approach: [10, 7], labelY: 1.4, keeper: makeBram,  keeperAt: [11, 7] },
 };
 
@@ -898,7 +898,7 @@ export class World {
       this.keepers.set(id, k);
       this.occupied.add(`${kx},${kz}`);
     }
-    const trees = [[1, 5, '#e8312f'], [16, 5, '#ff9f1c'], [0, 13, '#e8312f'], [17, 14, '#ff9f1c'], [5, 16, '#e8312f'], [5, 5, null], [12, 12, '#e8312f']];
+    const trees = [[1, 5, '#e8312f'], [16, 5, '#ff9f1c'], [0, 13, '#e8312f'], [17, 14, '#ff9f1c'], [5, 16, '#e8312f'], [5, 5, null], [12, 12, '#e8312f'], [19, 6, '#e8312f'], [19, 14, null]];
     trees.forEach(([x, z, f], i) => { const t = this._place(tree(f, i + 3), x, z); this.sways.push(t); });
     // backdrop trees on the terrace and beyond
     for (let x = -4; x < W + 4; x += 1) {
@@ -919,7 +919,7 @@ export class World {
       t.position.set(sx + 0.5 + (sx < 0 ? -r() * 1.5 : r() * 1.5), 0, z + r() * 0.5);
       this.scene.add(t);
     }
-    [[6, 7, 1], [6, 6, 2], [1, 9, 3], [16, 9, 4], [10, 12, 5], [3, 12, 6], [15, 13, 7]].forEach(([x, z, s]) => {
+    [[6, 7, 1], [6, 6, 2], [1, 9, 3], [12, 9, 4], [10, 12, 5], [3, 12, 6], [15, 13, 7], [19, 11, 8]].forEach(([x, z, s]) => {
       const f = flowerCluster(s); f.position.set(x + 0.5, 0, z + 0.5); this.scene.add(f);
     });
     // little grass tufts scattered over open grass (non-blocking)

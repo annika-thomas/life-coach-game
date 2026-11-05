@@ -13,7 +13,7 @@ export const ITEMS = [
 
   // One per curriculum category: the world reflects what you learned.
   { id: 'kiosk',      name: 'News kiosk',          cost: 3, slot: [11, 11],  req: { type: 'cat', cat: 'news', n: 1 } },
-  { id: 'robot',      name: 'Little robot helper', cost: 4, slot: [15, 7], req: { type: 'cat', cat: 'robotics', n: 1 } },
+  { id: 'robot',      name: 'Little robot helper', cost: 4, slot: [12, 7], req: { type: 'cat', cat: 'robotics', n: 1 } },
   { id: 'dressform',  name: 'Dress form',          cost: 3, slot: [6, 5],   req: { type: 'cat', cat: 'fashion', n: 1 } },
   { id: 'trellis',    name: 'Vine trellis',        cost: 3, slot: [2, 2],   req: { type: 'cat', cat: 'wine', n: 1 } },
   { id: 'cheesecart', name: 'Cheese cart',         cost: 3, slot: [7, 11],  req: { type: 'cat', cat: 'cheese', n: 1 } },
@@ -28,10 +28,10 @@ export const ITEMS = [
   { id: 'library',    name: 'Little library',      cost: 3, slot: [5, 8],   req: { type: 'cat', cat: 'history', n: 1 } },
 
   // Real-world actions build real-world things.
-  { id: 'pullupbar', name: 'Pull-up bar',     cost: 3, slot: [15, 8],  req: { type: 'log', kind: 'workout', n: 3 } },
+  { id: 'pullupbar', name: 'Pull-up bar',     cost: 3, slot: [18, 7],  req: { type: 'log', kind: 'workout', n: 3 } },
   { id: 'lamppost',  name: 'Path lamp',       cost: 2, slot: [13, 11],  req: { type: 'log', kind: 'walk', n: 3 } },
   { id: 'picnic',    name: 'Picnic blanket',  cost: 3, slot: [11, 14],  req: { type: 'log', kind: 'cooked', n: 2 } },
-  { id: 'hammock',   name: 'Reading hammock', cost: 3, slot: [16, 11], req: { type: 'log', kind: 'read', n: 2 } },
+  { id: 'hammock',   name: 'Reading hammock', cost: 3, slot: [18, 11], req: { type: 'log', kind: 'read', n: 2 } },
 
   // Bigger milestones.
   { id: 'peachtree', name: 'Peach tree',      cost: 3, slot: [16, 15], req: { type: 'lessons', n: 10 } },
