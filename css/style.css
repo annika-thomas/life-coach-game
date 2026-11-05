@@ -352,3 +352,48 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .slider { display: flex; flex-direction: column; gap: 8px; align-items: center; }
 .slider input { width: 100%; accent-color: var(--coral); height: 32px; }
 .slider b { font-family: var(--display); font-size: 26px; }
+
+/* wine map */
+.winemap { width: 100%; height: auto; display: block; border: 3px solid var(--ink); border-radius: 16px; margin-bottom: 10px; background: #bfe6f0; touch-action: manipulation; }
+.winemap .glow { fill: rgba(240, 122, 95, .35); stroke: #c63c30; stroke-width: 2; animation: glow 1.4s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+@keyframes glow { 50% { transform: scale(1.25); opacity: .6; } }
+.winemap .pin { cursor: pointer; }
+.winemap .pin-dot { fill: #fff8e4; stroke: #4a3b33; stroke-width: 2.5; }
+.winemap .pin.right .pin-dot { fill: #6cc04a; stroke-width: 3.5; }
+.winemap .pin.right .pin-dot { r: 10px; }
+.winemap .pin.wrong .pin-dot { fill: #f07a5f; }
+.winemap .pin.done { pointer-events: none; }
+.map-fact { margin: 10px 2px; font-size: 15px; line-height: 1.45; }
+.map-fact:empty { display: none; }
+/* taste test */
+.taste-wine { display: flex; flex-direction: column; padding: 10px 14px; margin-bottom: 10px; border: 3px solid var(--ink); border-radius: 16px; background: #f6e3ea; }
+.taste-wine b { font-family: var(--display); font-size: 21px; }
+.taste-wine small { font-weight: 700; opacity: .7; }
+.trait { position: relative; padding: 6px 4px 10px; border-bottom: 2px dotted #e2d6b6; }
+.trait-head { display: flex; justify-content: space-between; font-family: var(--display); font-size: 16px; }
+.trait-val { font-weight: 800; }
+.trait input { width: 100%; accent-color: #9c3b5a; height: 28px; }
+.trait-ends { display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; opacity: .6; }
+.trait-true { position: relative; height: 0; margin: 0 10px; }
+.trait-true i { position: absolute; top: -40px; width: 4px; height: 22px; margin-left: -2px; border-radius: 2px; background: #2f7a28; }
+.trait.ok .trait-head b { color: #2f7a28; }
+.trait.bad .trait-head b { color: #b8352c; }
+
+/* focus time */
+.focus { position: fixed; inset: 0; z-index: 30; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+  background: radial-gradient(circle at 50% 40%, #e9f7e1, #cfeccf 60%, #b5dfb8); padding: 24px; text-align: center; }
+.focus.show { display: flex; }
+.focus-ring { --p: 0%; width: 220px; height: 220px; border-radius: 50%; display: grid; place-items: center; margin-bottom: 8px;
+  background: conic-gradient(#5bbf4a var(--p), #fffdf4 0); border: 4px solid var(--ink); box-shadow: 0 5px 0 rgba(74,59,51,.25); }
+.focus-plant { --g: 0; position: relative; width: 170px; height: 170px; border-radius: 50%; background: #fff8e4; border: 3px solid var(--ink); overflow: hidden; }
+.focus-plant::before { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 32%; background: #8a5a35; }
+.focus-plant i { position: absolute; left: 50%; display: block; transform-origin: bottom center; }
+.focus-plant .stem { bottom: 32%; width: 8px; margin-left: -4px; height: calc(8% + var(--g) * 42%); background: #4fa53a; border-radius: 4px; }
+.focus-plant .leaf { bottom: calc(32% + var(--g) * 18%); width: 30px; height: 16px; background: #6cc04a; border-radius: 0 16px 0 16px; opacity: min(1, calc(var(--g) * 4)); }
+.focus-plant .leaf.l { margin-left: -32px; transform: rotate(-10deg) scale(calc(.4 + var(--g) * .8)); }
+.focus-plant .leaf.r { margin-left: 2px; transform: scaleX(-1) rotate(-10deg) scale(calc(.4 + var(--g) * .8)); }
+.focus-plant .bloom { bottom: calc(36% + var(--g) * 40%); width: 40px; height: 40px; margin-left: -20px; border-radius: 50%; background: #ff8fc8; border: 3px solid #e5483b;
+  transform: scale(calc(max(0, var(--g) - .6) * 2.5)); }
+.focus-time { margin: 0; font-family: var(--display); font-weight: 800; font-size: 54px; line-height: 1; }
+.focus-what { margin: 0; font-family: var(--display); font-weight: 700; font-size: 20px; }
+.focus-tip { margin: 2px 0 16px; font-weight: 600; opacity: .7; }

@@ -183,6 +183,16 @@ function tree(fruit = '#e8312f', seed = 1) {
   g.userData.sway = r() * 6;
   return g;
 }
+function blossomTree(seed = 1) {
+  const g = new THREE.Group();
+  const r = rng(seed);
+  cyl(0.1, 0.16, 0.8, '#7a4e2c', 0, 0.4, 0, g, 10);
+  const pink = M('#f7b6cf'), pale = M('#fde2ec');
+  [[0, 1.1, 0, 0.55], [-0.3, 1.0, 0.1, 0.38], [0.32, 1.02, 0.05, 0.4], [0.05, 1.45, 0, 0.42], [0, 1.0, 0.3, 0.38]].forEach(([x, y, z, rad], i) => sph(rad, i % 2 ? pale : pink, x, y, z, g, 16));
+  for (let i = 0; i < 8; i++) sph(0.05, '#ffffff', (r() - 0.5) * 1.0, 0.9 + r() * 0.7, 0.2 + r() * 0.35, g, 6);
+  g.userData.sway = r() * 6;
+  return g;
+}
 function conifer(seed) {
   const g = new THREE.Group();
   cyl(0.08, 0.12, 0.4, '#7a4e2c', 0, 0.2, 0, g, 8);
@@ -1120,6 +1130,7 @@ const STATIONS = {
   workbench:   { model: workbenchModel,   tiles: [[12, 7]],                              at: [12.5, 7.5],  approach: [12, 8],  labelY: 1.4, keeper: makeBram,   keeperAt: [13, 7], pin: true },
   dock:        { model: dockModel,        tiles: [],                                     at: [10.5, 20.5], approach: [10, 21], labelY: 1.1, pin: true },
   pond:        { model: pondModel,        tiles: [],                                     at: [16.5, 15.9], approach: [16, 14], labelY: 0.8 },
+  home:        { model: null,             tiles: [],                                     at: [10.5, 6.0],  approach: [10, 7],  labelY: 2.9 },
   square:      { model: noticeBoardModel, tiles: [[7, 8]],                               at: [7.5, 8.5],   approach: [8, 8],   labelY: 1.8, keeper: makeFennel, keeperAt: [7, 9] },
   market:      { model: stallModel,       tiles: [[11, 13]],                             at: [11.5, 13.5], approach: [10, 13], labelY: 1.8, keeper: makePepper, keeperAt: [11, 14] },
   observatory: { model: chalkboardModel,  tiles: [[13, 3]],                              at: [13.5, 3.5],  approach: [12, 3],  labelY: 2.0, keeper: makeSage,   keeperAt: [14, 3] },
@@ -1505,7 +1516,10 @@ export class World {
     this._place(mailbox(), 9, 7);
     this.stations = new Map();
     this.keepers = new Map();
+    c.traverse((o) => { o.userData.station = 'home'; });
+    this.stations.set('home', c);
     for (const [id, st] of Object.entries(STATIONS)) {
+      if (!st.model) continue;
       const m = st.model();
       m.position.set(st.at[0], 0, st.at[1]);
       m.traverse((o) => { o.userData.station = id; });
@@ -1769,6 +1783,29 @@ export class World {
       this._anim(0.7, (t) => { g.scale.setScalar(Math.max(0.001, t === 1 ? 1 : 1 - Math.pow(2, -10 * t) * Math.cos(t * 10))); });
       this._puff(g.position);
     }
+  }
+  // Plants grown during focus time.
+  placePlant(key, kind, [x, z], animate = false) {
+    this.plants = this.plants || new Map();
+    if (this.plants.has(key)) return;
+    const seed = x * 31 + z * 17;
+    const g = kind === 'blossom' ? blossomTree(seed) : kind === 'tree' ? tree([null, '#e8312f', '#ff9f1c', '#ffab91'][seed % 4], seed) : flowerCluster(seed, [['#ff4d4d', '#ffd23f'], ['#ff8fc8', '#ffffff'], ['#b07cff', '#ffd23f'], ['#ff8fc8', '#ff4d4d']][seed % 4]);
+    if (kind === 'tree') g.scale.setScalar(0.85);
+    g.position.set(x + 0.5, tileH(x, z), z + 0.5);
+    this.scene.add(g);
+    this.plants.set(key, g);
+    if (g.userData.sway !== undefined) this.sways.push(g);
+    if (animate) {
+      const full = g.scale.x;
+      g.scale.setScalar(0.001);
+      this._anim(1.2, (t) => { g.scale.setScalar(Math.max(0.001, full * (t === 1 ? 1 : 1 - Math.pow(2, -9 * t) * Math.cos(t * 9)))); });
+      this._puff(g.position);
+    }
+  }
+  // Free spots for the grove, nearest first to its corner of the island.
+  groveSpots() {
+    const c = [19.5, 16.5];
+    return this.giftSpots().slice().sort((a, b) => Math.hypot(a[0] - c[0], a[1] - c[1]) - Math.hypot(b[0] - c[0], b[1] - c[1]));
   }
   focusOn(x, z) { this.lookAt = new THREE.Vector3(x, 0, z); this.lookUntil = this.clock.elapsedTime + 3; }
 

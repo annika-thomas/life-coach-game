@@ -6,6 +6,8 @@ import { LESSONS, CATEGORIES } from './lessons.js';
 import { load, save, reset, dayKey, rhythm } from './state.js';
 import { ICON, leafAmt } from './icons.js';
 import { QUIZ } from './quiz.js';
+import { MAPS, project } from './wine-maps.js';
+import { REGIONS, STYLES, TRAITS } from './wine-games.js';
 
 let S = load();
 const $ = (sel) => document.querySelector(sel);
@@ -893,6 +895,190 @@ function openGuess() {
     };
   };
 }
+
+// ── Pepper's wine games ────────────────────────────────────────────────
+// Wine map: name the glowing region, or find a named one. Taste test: set
+// sweetness, acidity, tannin and body for a classic style.
+const mapSvg = (map, dots, glow) => {
+  const m = MAPS[map];
+  return `<svg class="winemap" viewBox="0 0 ${m.width} ${m.height}" preserveAspectRatio="xMidYMid meet">
+    <rect width="${m.width}" height="${m.height}" fill="#bfe6f0"/>
+    ${m.paths.map((p) => `<path d="${p.d}" fill="#f4ead2" stroke="#b8a983" stroke-width="${map === 'world' ? 0.5 : 0.9}"/>`).join('')}
+    ${glow ? (() => { const [x, y] = project(map, glow.lon, glow.lat); return `<circle class="glow" cx="${x}" cy="${y}" r="${map === 'world' ? 9 : 16}"/><circle cx="${x}" cy="${y}" r="${map === 'world' ? 3.5 : 5}" fill="#c63c30" stroke="#fff" stroke-width="1.5"/>`; })() : ''}
+    ${(dots || []).map((d, i) => { const [x, y] = project(map, d.lon, d.lat); return `<g class="pin" data-i="${i}" data-id="${d.id}"><circle cx="${x}" cy="${y}" r="${map === 'world' ? 11 : 15}" fill="transparent"/><circle class="pin-dot" cx="${x}" cy="${y}" r="${map === 'world' ? 5 : 7}"/></g>`; }).join('')}
+  </svg>`;
+};
+const readText = () => S.lessons.map((l) => LESSONS.find((x) => x.id === l.id)).filter(Boolean).map((l) => ({ id: l.id, text: (l.title + ' ' + l.body.join(' ')).toLowerCase() }));
+const cardFor = (region) => readText().find((c) => region.words.some((w) => c.text.includes(w)))?.id;
+function openWineMap() {
+  // regions you've read about come first; the rest fill in
+  const known = REGIONS.filter((r) => cardFor(r)), other = REGIONS.filter((r) => !cardFor(r));
+  const rounds = [...shuffle(known), ...shuffle(other)].slice(0, 5).map((r, i) => ({ r, type: i % 2 ? 'find' : 'name' }));
+  let i = 0, score = 0;
+  const show = () => {
+    const { r, type } = rounds[i];
+    const same = REGIONS.filter((x) => x.map === r.map && x.id !== r.id);
+    if (type === 'name') {
+      const opts = shuffle([r, ...shuffle(same).slice(0, 3)]);
+      openSheet('Wine map', `<p class="lead">Round ${i + 1} of 5 · Which region is glowing?</p>${mapSvg(r.map, null, r)}
+        <div class="opts">${opts.map((o) => `<button class="opt" data-id="${o.id}">${esc(o.name)}</button>`).join('')}</div><p class="map-fact"></p>`, 'puzzle');
+      sheet.querySelectorAll('.opt').forEach((b) => b.onclick = () => answer(b.dataset.id === r.id, b));
+    } else {
+      const dots = shuffle([r, ...shuffle(same).slice(0, 3)]);
+      openSheet('Wine map', `<p class="lead">Round ${i + 1} of 5 · Tap <b>${esc(r.name)}</b>.</p>${mapSvg(r.map, dots)}<p class="map-fact"></p>`, 'puzzle');
+      sheet.querySelectorAll('.pin').forEach((g) => g.onclick = () => answer(dots[+g.dataset.i].id === r.id, g));
+    }
+  };
+  const answer = (right, el) => {
+    if (sheet.querySelector('.answered-round')) return;
+    const { r } = rounds[i];
+    if (right) score += 1;
+    el.classList.add(right ? 'right' : 'wrong');
+    sheet.querySelectorAll('.opt').forEach((b) => { b.disabled = true; if (b.dataset.id === r.id) b.classList.add('right'); });
+    sheet.querySelectorAll('.pin').forEach((p) => { p.classList.add('done'); if (p.dataset.id === r.id) p.classList.add('right'); });
+    const card = cardFor(r);
+    if (card && S.reviews[card]) grade(card, right);
+    const fact = sheet.querySelector('.map-fact');
+    fact.classList.add('answered-round');
+    fact.innerHTML = `<b>${right ? 'Yes!' : 'Not quite.'} ${esc(r.name)}, ${esc(r.country)}.</b> ${esc(r.known)}`;
+    fact.insertAdjacentHTML('afterend', `<button class="btn primary wide" id="map-next">${i < 4 ? 'Next' : 'Finish'}</button>`);
+    $('#map-next').onclick = () => { i += 1; if (i < 5) show(); else finish(); };
+  };
+  const finish = () => {
+    const news = masteryNews();
+    commit();
+    closeSheet();
+    setTimeout(async () => {
+      const lines = [score === 5 ? 'Five for five! You could lead a wine tour.' : score >= 3 ? `${score} out of 5. You know your way around a wine list.` : `${score} out of 5. Maps take a few goes. Come back tomorrow.`];
+      if (score === 5 && !S.daily.mapGift) { S.daily.mapGift = true; const g = grantGift('Pepper'); if (g) lines.push(`(Pepper gave you a ${g.toLowerCase()}.)`); }
+      await talk('pepper', [...lines, ...news]);
+    }, 250);
+  };
+  show();
+}
+function openTaste() {
+  const rounds = shuffle(STYLES).slice(0, 3);
+  let i = 0, total = 0;
+  const show = () => {
+    const st = rounds[i];
+    openSheet('Taste test', `<p class="lead">Round ${i + 1} of 3 · How does this one usually taste?</p>
+      <div class="taste-wine"><b>${esc(st.name)}</b><small>${esc(st.grape)} · ${esc(st.colour)}</small></div>
+      ${TRAITS.map((t) => `<div class="trait" data-k="${t.key}"><div class="trait-head"><b>${t.label}</b><span class="trait-val">3</span></div>
+        <input type="range" min="1" max="5" step="1" value="3"><div class="trait-ends"><small>${t.lo}</small><small>${t.hi}</small></div><div class="trait-true"></div></div>`).join('')}
+      <button class="btn primary wide" id="taste-go">Taste it</button><p class="map-fact"></p>`, 'puzzle');
+    sheet.querySelectorAll('.trait input').forEach((inp) => inp.oninput = () => { inp.closest('.trait').querySelector('.trait-val').textContent = inp.value; });
+    $('#taste-go').onclick = () => {
+      let got = 0;
+      sheet.querySelectorAll('.trait').forEach((row) => {
+        const k = row.dataset.k, inp = row.querySelector('input'), truth = st[k];
+        const ok = Math.abs(+inp.value - truth) <= 1;
+        got += ok; inp.disabled = true;
+        row.classList.add(ok ? 'ok' : 'bad');
+        row.querySelector('.trait-true').innerHTML = `<i style="left:${(truth - 1) * 25}%"></i>`;
+        row.querySelector('.trait-val').textContent = `${inp.value} · typical ${truth}`;
+      });
+      total += got;
+      $('#taste-go').remove();
+      const fact = sheet.querySelector('.map-fact');
+      fact.innerHTML = `<b>${got}/4 close.</b> ${esc(st.note)}`;
+      fact.insertAdjacentHTML('afterend', `<button class="btn primary wide" id="taste-next">${i < 2 ? 'Next wine' : 'Finish'}</button>`);
+      $('#taste-next').onclick = () => { i += 1; if (i < 3) show(); else finish(); };
+    };
+  };
+  const finish = () => {
+    if (S.reviews['wine-structure']) grade('wine-structure', total >= 9);
+    const news = masteryNews();
+    commit();
+    closeSheet();
+    setTimeout(async () => {
+      const lines = [total === 12 ? 'A perfect palate! Sit down, have a glass.' : total >= 9 ? `${total} out of 12. You have a good palate.` : `${total} out of 12. Tasting is practice. So, more tasting.`];
+      if (total === 12 && !S.daily.tasteGift) { S.daily.tasteGift = true; const g = grantGift('Pepper'); if (g) lines.push(`(Pepper gave you a ${g.toLowerCase()}.)`); }
+      await talk('pepper', [...lines, ...news]);
+    }, 250);
+  };
+  show();
+}
+VISIT.market = async () => {
+  const t = KEEPER_TALK.pepper;
+  const lines = firstVisit('market') ? [...t.intro, 'I also run two little wine games, if you fancy.'] : [pick(t.idle)];
+  const c = await talk('pepper', lines, ['Wine map', 'Taste test', 'Read about food, wine or cheese', 'Later']);
+  if (c === 0) setTimeout(openWineMap, 200);
+  if (c === 1) setTimeout(openTaste, 200);
+  if (c === 2) { filters = new Set(DISTRICTS.market.cats); setTimeout(() => openLessons(), 200); }
+};
+
+// ── Focus time (grow a grove) ──────────────────────────────────────────
+// Like a focus forest: pick a length, put the phone down, and a plant grows.
+// Nothing withers if you leave: it's on your honour, like logging. A full
+// session plants something in the grove and pays energy.
+const FOCUS = { 10: { plant: 'flowers', label: 'a flower patch', energy: 1 }, 25: { plant: 'tree', label: 'a tree', energy: 2 }, 50: { plant: 'blossom', label: 'a blossom tree', energy: 3 } };
+S.grove = S.grove || [];
+S.grove.forEach((g) => world.placePlant(g.id, g.kind, g.spot));
+const focusEl = $('#focus');
+let focusTimer = null;
+function startFocus(mins) {
+  S.focus = { start: Date.now(), mins };
+  save(S);
+  runFocus();
+}
+function runFocus() {
+  const f = S.focus;
+  if (!f) return;
+  const info = FOCUS[f.mins];
+  focusEl.classList.add('show');
+  $('#focus-what').textContent = `Growing ${info.label}`;
+  const tick = () => {
+    const left = f.start + f.mins * 60000 - Date.now();
+    const done = 1 - Math.max(0, left) / (f.mins * 60000);
+    $('#focus-time').textContent = `${Math.floor(Math.max(0, left) / 60000)}:${String(Math.floor((Math.max(0, left) % 60000) / 1000)).padStart(2, '0')}`;
+    $('#focus-plant').style.setProperty('--g', done.toFixed(3));
+    $('#focus-ring').style.setProperty('--p', `${(done * 100).toFixed(1)}%`);
+    if (left <= 0) finishFocus();
+  };
+  clearInterval(focusTimer);
+  focusTimer = setInterval(tick, 1000);
+  tick();
+}
+async function finishFocus() {
+  clearInterval(focusTimer);
+  const f = S.focus;
+  S.focus = null;
+  focusEl.classList.remove('show');
+  if (!f) return;
+  const info = FOCUS[f.mins];
+  const used = new Set([...S.gifts.map((g) => g.spot.join(',')), ...S.grove.map((g) => g.spot.join(','))]);
+  const spot = world.groveSpots().find((p) => !used.has(p.join(',')));
+  const lines = [`${f.mins} minutes of focus. Nice work.`];
+  if (spot) {
+    const id = `p${Date.now()}`;
+    S.grove.push({ id, kind: info.plant, spot, mins: f.mins, ts: f.start });
+    world.placePlant(id, info.plant, spot, true);
+    world.focusOn(spot[0] + 0.5, spot[1] + 0.5);
+    lines.push(`I planted ${info.label} in the grove. +${info.energy} energy.`);
+  }
+  S.energy += info.energy;
+  commit();
+  newlyUnlocked();
+  floatReward(info.energy);
+  world.hop();
+  await talk('pip', lines);
+}
+$('#focus-stop').onclick = async () => {
+  const f = S.focus;
+  const mins = f ? Math.floor((Date.now() - f.start) / 60000) : 0;
+  clearInterval(focusTimer);
+  S.focus = null; save(S);
+  focusEl.classList.remove('show');
+  await talk('pip', [mins >= 1 ? `${mins} minute${mins > 1 ? 's' : ''} is still something. The seedling will wait for next time.` : 'No problem. The seedling will wait for next time.']);
+};
+document.addEventListener('visibilitychange', () => { if (!document.hidden && S.focus) runFocus(); });
+VISIT.home = async () => {
+  const mins = S.grove.reduce((a, g) => a + g.mins, 0);
+  const lines = [mins ? `Want to focus for a while? We've grown ${S.grove.length} thing${S.grove.length > 1 ? 's' : ''} in the grove so far.` : 'Want to focus for a while? Put the phone down and I\'ll grow something for the grove.'];
+  const c = await talk('pip', lines, ['10 minutes: flowers', '25 minutes: a tree', '50 minutes: a blossom tree', 'Not now']);
+  if (c !== null && c < 3) startFocus([10, 25, 50][c]);
+};
+if (S.focus) setTimeout(runFocus, 500);
 
 // ── Gym: log real-world actions ───────────────────────────────────────
 function weekStrip() {

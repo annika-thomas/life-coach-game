@@ -54,6 +54,7 @@
     <button class="place" data-place="workbench">Workbench</button>
     <button class="place" data-place="dock">Dock</button>
     <button class="place" data-place="pond">Pond</button>
+    <button class="place" data-place="home">Home</button>
     <button class="place" data-place="square">Town square</button>
     <button class="place" data-place="market">Market</button>
     <button class="place" data-place="observatory">Observatory</button>
@@ -67,6 +68,15 @@
       <div class="track"><div class="zone" id="zone"></div><div class="fishy" id="fishy"></div></div>
       <div class="meter"><b id="meter"></b></div>
     </div>
+  </div>
+
+  <!-- focus time: a plant grows while you're away from the screen -->
+  <div class="focus" id="focus">
+    <div class="focus-ring" id="focus-ring"><div class="focus-plant" id="focus-plant"><i class="stem"></i><i class="leaf l"></i><i class="leaf r"></i><i class="bloom"></i></div></div>
+    <p class="focus-time" id="focus-time">25:00</p>
+    <p class="focus-what" id="focus-what">Growing a tree</p>
+    <p class="focus-tip">Put the phone down. Pip will look after it.</p>
+    <button class="btn ghost" id="focus-stop">Stop early</button>
   </div>
 
   <div class="scrim" id="scrim"></div>
