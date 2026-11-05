@@ -40,11 +40,12 @@
   <div class="bubble" id="bubble"></div>
   <div class="toast" id="toast"></div>
 
-  <nav class="actions">
-    <button id="btn-learn" class="action learn"><span>📖</span>Learn</button>
-    <button id="btn-moved" class="action moved"><span>👟</span>I moved</button>
-    <button id="btn-build" class="action build"><span>🔨</span>Build</button>
-  </nav>
+  <!-- floating signs over the Library, Gym and Workbench -->
+  <div id="labels">
+    <button class="place" data-place="library"><span>📖</span>Library</button>
+    <button class="place" data-place="gym"><span>🏋️</span>Gym</button>
+    <button class="place" data-place="workbench"><span>🔨</span>Workbench<b class="badge">!</b></button>
+  </div>
 
   <div class="scrim" id="scrim"></div>
   <section class="sheet" id="sheet" aria-modal="true" role="dialog">

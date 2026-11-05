@@ -36,13 +36,16 @@ Then open `http://localhost:8080`, or `http://<laptop-ip>:8080` from your phone 
 
 ## How it plays
 
-| Screen | What it does |
+There are no menu buttons. You visit places on the island, and each one has a floating wooden sign. Tap a sign (or the place itself) and Pip walks there, then its screen opens. When a place is off-screen, its sign sits at the screen edge as an arrow.
+
+| Place | What it does |
 |---|---|
-| **Home** | The island, Pip, energy leaves, a clock badge. **Tap the ground** to walk Pip there, or **press and drag** for a joystick; the camera follows. Tap Pip or anything you built. At 0 energy Pip naps between walks. |
-| **Learn** | An endless feed of ~2-minute cards across 14 categories. Each ends with an opinion question; answering pays +1. Chips filter categories. Skip is free but pays nothing. |
-| **I moved** | Workout / Walk / Cooked / Read, optional note, this week's strip. +2 each. |
-| **Build** | Everything Pip can make, priced in energy, labelled with the lesson that unlocked it. |
-| **📔 Journal** | Every answer you've written, per-category counts, rename the creature, export or reset data. |
+| **📖 Library** | An endless feed of ~2-minute cards across 14 categories. Each ends with an opinion question; answering pays +1 ⚡. Chips filter categories. Skip is free but pays nothing. |
+| **🏋️ Gym** | Log something real: Workout / Walk / Cooked / Read, optional note, this week's strip. +2 ⚡ each. |
+| **🔨 Workbench** | Everything Pip can make, priced in energy, labelled with the lesson that unlocked it. Shows a "!" when you can afford something. |
+| **📔 Journal** (top right) | Every answer you've written, per-category counts, rename the creature, export or reset data. |
+
+Walking: **tap the ground** to walk Pip there, or **press and drag** for a joystick. The camera follows Pip. Tap Pip to chat, or tap anything you built to see which lesson it came from.
 
 No decay, no streak-shaming. At zero energy Pip just naps.
 
@@ -62,6 +65,6 @@ sw.js, manifest.webmanifest offline + home-screen install
 Append to `LESSONS` in `js/lessons.js`: `{ id, cat, level, title, body: [para, para], question, unlocks }`. `level: 2` cards are held back until you've done a level-1 card in that category. The picker prefers unseen cards and avoids repeating the last few categories.
 
 ### Adding builds
-Add an entry in `js/items.js` (pick a free grass tile from `MAP` in `world.js`, inside the fixed view: roughly x 4–11, z 3–13) and a matching model function in `BUILDERS` in `world.js`.
+Add an entry in `js/items.js` (pick a free grass tile from `MAP` in `world.js` that isn't used by a station in `STATIONS`) and a matching model function in `BUILDERS` in `world.js`.
 
 After changing files, bump `VERSION` in `sw.js` so installed copies pick up the update.

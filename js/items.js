@@ -12,7 +12,7 @@ export const ITEMS = [
   { id: 'bench',     name: 'Wooden bench', emoji: '🪑', cost: 2, slot: [5, 9], req: { type: 'none' } },
 
   // One per curriculum category — the world reflects what you learned.
-  { id: 'kiosk',      name: 'News kiosk',          emoji: '🗞️', cost: 3, slot: [4, 7],  req: { type: 'cat', cat: 'news', n: 1 } },
+  { id: 'kiosk',      name: 'News kiosk',          emoji: '🗞️', cost: 3, slot: [2, 9],  req: { type: 'cat', cat: 'news', n: 1 } },
   { id: 'robot',      name: 'Little robot helper', emoji: '🤖', cost: 4, slot: [9, 9], req: { type: 'cat', cat: 'robotics', n: 1 } },
   { id: 'dressform',  name: 'Dress form',          emoji: '👗', cost: 3, slot: [8, 4],   req: { type: 'cat', cat: 'fashion', n: 1 } },
   { id: 'trellis',    name: 'Vine trellis',        emoji: '🍇', cost: 3, slot: [4, 3],   req: { type: 'cat', cat: 'wine', n: 1 } },

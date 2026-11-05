@@ -14,6 +14,8 @@ world.setEnergy(S.energy);
 
 // ── HUD ────────────────────────────────────────────────────────────────
 function renderHud() {
+  const canBuild = ITEMS.some((i) => isUnlocked(i) && !isBuilt(i) && i.cost <= S.energy);
+  document.querySelector('.place[data-place=workbench]').classList.toggle('ready', canBuild);
   const pips = $('#energy-pips');
   const shown = Math.min(S.energy, 10);
   pips.innerHTML = Array.from({ length: 10 }, (_, i) => `<span class="pip ${i < shown ? 'on' : ''}"></span>`).join('');
@@ -38,7 +40,30 @@ function say(text, ms = 4200) {
   clearTimeout(bubbleTimer);
   bubbleTimer = setTimeout(() => bubble.classList.remove('show'), ms);
 }
+const places = [...document.querySelectorAll('.place')];
+places.forEach((el) => { el.onclick = () => world.visit(el.dataset.place); });
+const OPEN = { library: () => openLessons(), gym: () => openLog(), workbench: () => openBuild() };
+world.on('station', (id) => OPEN[id]());
+function positionPlaces() {
+  const vw = window.innerWidth, vh = window.innerHeight;
+  for (const el of places) {
+    const p = world.stationScreenPos(el.dataset.place);
+    // Off-screen places stick to the nearest edge as a small arrow you can still tap.
+    const top = 120, bottom = vh - 30, left = 50, right = vw - 50;
+    const off = !p.visible || p.x < left || p.x > right || p.y < top || p.y > bottom;
+    let x = Math.max(left, Math.min(right, p.x)), y = Math.max(top, Math.min(bottom, p.y));
+    el.classList.toggle('edge', off);
+    el.classList.toggle('hidden', false);
+    if (off) {
+      const arrow = p.x > right ? '→' : p.x < left ? '←' : p.y < top ? '↑' : '↓';
+      el.dataset.arrow = arrow;
+      x = Math.max(left + 10, Math.min(right - 10, x));
+    }
+    el.style.transform = `translate(${Math.round(x)}px, ${Math.round(y)}px) translate(-50%, ${off ? '-50%' : '-100%'})`;
+  }
+}
 world.onFrame = () => {
+  positionPlaces();
   if (!bubble.classList.contains('show')) return;
   const p = world.creatureScreenPos();
   const half = bubble.offsetWidth / 2, vw = window.innerWidth;
@@ -53,7 +78,7 @@ function idleLine() {
   if (S.energy <= 0) return pick([
     'Zzz… a lesson or a walk would wake me up.',
     'Napping. Whenever you feel like it — no rush.',
-    '…mm? Teach me something and I\'ll get building.',
+    '…mm? Meet me at the library and I\'ll get building.',
   ]);
   const affordable = ITEMS.filter((i) => isUnlocked(i) && !isBuilt(i) && i.cost <= S.energy);
   return pick([
@@ -166,7 +191,7 @@ function cardHtml(l) {
   </article>`;
 }
 function openLessons() {
-  openSheet('Learn', `${chipsHtml()}<div id="feed"></div>`, 'lessons');
+  openSheet('Library', `${chipsHtml()}<div id="feed"></div>`, 'lessons');
   const feed = $('#feed');
   const shown = [];
   const append = () => {
@@ -252,7 +277,7 @@ function weekStrip() {
 function openLog() {
   let kind = null;
   const r = rhythm(S);
-  openSheet('I moved', `
+  openSheet('Gym', `
     <p class="lead">Did something real? Tell ${esc(S.creatureName)}. Honour system — it's your island.</p>
     <div class="tiles">${Object.entries(LOG_KINDS).map(([k, v]) =>
       `<button class="tile" data-kind="${k}"><span>${v.emoji}</span>${v.label}</button>`).join('')}</div>
@@ -297,7 +322,7 @@ function openBuild() {
   });
   const order = { ready: 0, short: 1, built: 2, locked: 3 };
   rows.sort((a, b) => order[a.match(/class="item (\w+)"/)[1]] - order[b.match(/class="item (\w+)"/)[1]]);
-  openSheet('Build', `<p class="lead">${esc(S.creatureName)} has <b>${S.energy} ⚡</b>. Learn things to unlock more.</p><div class="items">${rows.join('')}</div>`, 'build');
+  openSheet('Workbench', `<p class="lead">${esc(S.creatureName)} has <b>${S.energy} ⚡</b>. Learn things to unlock more.</p><div class="items">${rows.join('')}</div>`, 'build');
   sheet.querySelectorAll('.item').forEach((b) => b.onclick = () => {
     const it = ITEM_BY_ID[b.dataset.id];
     if (b.classList.contains('built')) { closeSheet(); say(`${it.emoji} The ${it.name.toLowerCase()}!`); return; }
@@ -345,16 +370,13 @@ function openJournal() {
 }
 
 // ── Wire up ────────────────────────────────────────────────────────────
-$('#btn-learn').onclick = openLessons;
-$('#btn-moved').onclick = openLog;
-$('#btn-build').onclick = openBuild;
 $('#btn-journal').onclick = openJournal;
 $('#energy').onclick = openBuild;
 
 renderHud();
 setTimeout(() => $('#title-sign').classList.add('gone'), 2200);
-setTimeout(() => say(S.lessons.length || S.logs.length ? idleLine() : `Hi! I'm ${S.creatureName}. Feed me a lesson or a walk and I'll build us an island.`, 6000), 2600);
-if (!S.seenWalkHint) setTimeout(() => { toast('Tap the ground to walk · drag to steer'); S.seenWalkHint = true; save(S); }, 9000);
+setTimeout(() => say(S.lessons.length || S.logs.length ? idleLine() : `Hi! I'm ${S.creatureName}. Learn something at the library or log a workout at the gym, and I'll build us an island.`, 6000), 2600);
+if (!S.seenPlacesHint) setTimeout(() => { toast('Tap a sign to visit · tap the ground to walk'); S.seenPlacesHint = true; save(S); }, 9000);
 
 if ('serviceWorker' in navigator && location.protocol !== 'file:') {
   navigator.serviceWorker.register('sw.js').catch(() => {});

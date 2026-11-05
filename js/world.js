@@ -510,6 +510,143 @@ const BUILDERS = {
   },
 };
 
+
+// ── Stations: the places you visit to learn, log and build ─────────────
+function signTex(text, bg, fg = '#fff8e4') {
+  const c = document.createElement('canvas'); c.width = 256; c.height = 64;
+  const g = c.getContext('2d');
+  const paint = () => {
+    g.fillStyle = bg; g.fillRect(0, 0, 256, 64);
+    g.fillStyle = fg; g.font = '800 40px "Baloo 2", sans-serif';
+    g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(text, 128, 36);
+  };
+  paint();
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace;
+  if (document.fonts) document.fonts.ready.then(() => { paint(); t.needsUpdate = true; });
+  return t;
+}
+function shelvesTex() {
+  return canvasTex(128, (g, s) => {
+    g.fillStyle = '#5a3a22'; g.fillRect(0, 0, s, s);
+    const cols = ['#e5483b', '#3f7fc4', '#f2c94c', '#4a9b6e', '#8a72b8', '#ef8a3c', '#f6ecd6'];
+    const r = rng(42);
+    for (let row = 0; row < 3; row++) {
+      let x = 6; const y0 = 8 + row * 40;
+      while (x < s - 10) {
+        const w = 6 + r() * 7, h = 22 + r() * 10;
+        g.fillStyle = cols[Math.floor(r() * cols.length)];
+        g.fillRect(x, y0 + 32 - h, w, h); x += w + 1.5;
+      }
+      g.fillStyle = '#8a5a35'; g.fillRect(0, y0 + 32, s, 5);
+    }
+  });
+}
+function libraryModel() {
+  const g = new THREE.Group();
+  box(1.95, 0.16, 1.75, '#b9b2a6', 0, 0.08, 0, g);
+  box(1.75, 1.25, 1.45, '#f0dcae', 0, 0.78, -0.05, g);
+  for (const x of [-0.86, 0.86]) box(0.1, 1.25, 1.5, '#7a4e2c', x, 0.78, -0.05, g);
+  box(1.8, 0.1, 1.5, '#7a4e2c', 0, 1.42, -0.05, g);
+  // front gable + teal roof
+  const gs = new THREE.Shape();
+  gs.moveTo(-0.875, 0); gs.lineTo(0, 0.75); gs.lineTo(0.875, 0); gs.lineTo(-0.875, 0);
+  mesh(new THREE.ExtrudeGeometry(gs, { depth: 1.45, bevelEnabled: false }), M('#f0dcae'), 0, 1.45, -0.78, g);
+  const ang = Math.atan2(0.75, 0.875), len = Math.hypot(0.875, 0.75) + 0.3;
+  const mats = [M('#2f8fa3'), M('#2f8fa3'), M('#3fa7b8'), M('#25707f'), M('#2a7f91'), M('#2a7f91')];
+  for (const sgn of [-1, 1]) {
+    const slab = new THREE.Mesh(new THREE.BoxGeometry(len, 0.14, 1.85), mats);
+    slab.castShadow = slab.receiveShadow = true;
+    slab.rotation.z = -sgn * ang;
+    slab.position.set(sgn * (0.875 / 2 + 0.08) + sgn * Math.sin(ang) * 0.07, 1.45 + 0.375 + Math.cos(ang) * 0.07, -0.05);
+    g.add(slab);
+  }
+  box(0.14, 0.14, 1.9, '#25707f', 0, 2.25, -0.05, g);
+  // big round-top double door
+  const ds = new THREE.Shape();
+  ds.moveTo(-0.3, 0); ds.lineTo(-0.3, 0.55); ds.absarc(0, 0.55, 0.3, Math.PI, 0, true); ds.lineTo(0.3, 0); ds.lineTo(-0.3, 0);
+  mesh(new THREE.ExtrudeGeometry(ds, { depth: 0.05, bevelEnabled: true, bevelThickness: 0.02, bevelSize: 0.03, bevelSegments: 2 }), M('#2f6fa8'), 0, 0.16, 0.68, g);
+  box(0.02, 0.8, 0.02, '#1f4f7a', 0, 0.56, 0.76, g);
+  for (const x of [-0.07, 0.07]) sph(0.03, '#f2c94c', x, 0.5, 0.77, g, 8);
+  // windows showing bookshelves
+  const shelf = new THREE.MeshLambertMaterial({ map: shelvesTex() });
+  for (const x of [-0.58, 0.58]) {
+    box(0.42, 0.48, 0.04, '#7a4e2c', x, 0.82, 0.68, g);
+    const w = new THREE.Mesh(new THREE.PlaneGeometry(0.34, 0.4), shelf); w.position.set(x, 0.82, 0.705); g.add(w);
+  }
+  // sign over the door
+  const sign = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.24, 0.05), [M('#7a4e2c'), M('#7a4e2c'), M('#7a4e2c'), M('#7a4e2c'), new THREE.MeshLambertMaterial({ map: signTex('LIBRARY', '#8a5a35') }), M('#7a4e2c')]);
+  sign.position.set(0, 1.62, 0.72); sign.castShadow = true; g.add(sign);
+  // book stack + reading lamp outside
+  [['#e5483b', 0], ['#3f7fc4', 0.05], ['#f2c94c', 0.1]].forEach(([c, y], i) => { const b = box(0.24, 0.05, 0.17, c, 0.78, 0.03 + y, 0.95, g); b.rotation.y = i * 0.3; });
+  cyl(0.025, 0.035, 0.9, '#33363d', -0.82, 0.45, 0.95, g, 8);
+  sph(0.09, new THREE.MeshLambertMaterial({ color: '#fff3c4', emissive: '#ffd36b', emissiveIntensity: 0.5 }), -0.82, 0.95, 0.95, g, 10);
+  return g;
+}
+function gymModel() {
+  const g = new THREE.Group();
+  const mat = new THREE.Mesh(new THREE.BoxGeometry(1.85, 0.05, 1.85), new THREE.MeshLambertMaterial({
+    map: canvasTex(128, (c, s) => {
+      c.fillStyle = '#3b8f86'; c.fillRect(0, 0, s, s);
+      c.strokeStyle = '#f6ecd6'; c.lineWidth = 4; c.strokeRect(6, 6, s - 12, s - 12);
+      c.beginPath(); c.arc(s / 2, s / 2, 18, 0, Math.PI * 2); c.stroke();
+    }),
+  }));
+  mat.position.y = 0.025; mat.receiveShadow = true; g.add(mat);
+  // sign
+  for (const x of [-0.55, 0.55]) box(0.07, 1.35, 0.07, '#7a4e2c', x, 0.67, -0.8, g);
+  const sign = new THREE.Mesh(new THREE.BoxGeometry(1.25, 0.32, 0.06), [M('#7a4e2c'), M('#7a4e2c'), M('#7a4e2c'), M('#7a4e2c'), new THREE.MeshLambertMaterial({ map: signTex('GYM', '#e5483b') }), M('#7a4e2c')]);
+  sign.position.set(0, 1.2, -0.8); sign.castShadow = true; g.add(sign);
+  // dumbbell rack
+  box(0.08, 0.5, 0.35, '#4a4f5a', -0.75, 0.3, -0.3, g); box(0.08, 0.5, 0.35, '#4a4f5a', -0.25, 0.3, -0.3, g);
+  box(0.58, 0.04, 0.35, '#4a4f5a', -0.5, 0.33, -0.3, g); box(0.58, 0.04, 0.35, '#4a4f5a', -0.5, 0.53, -0.3, g);
+  const dumbbell = (x, y, z, c) => {
+    const bar = cyl(0.015, 0.015, 0.2, '#c7ccd4', x, y, z, g, 6); bar.rotation.x = Math.PI / 2;
+    for (const dz of [-0.08, 0.08]) { const d = cyl(0.045, 0.045, 0.04, c, x, y, z + dz, g, 10); d.rotation.x = Math.PI / 2; }
+  };
+  dumbbell(-0.62, 0.4, -0.3, '#e5483b'); dumbbell(-0.4, 0.4, -0.3, '#3f7fc4');
+  dumbbell(-0.62, 0.6, -0.3, '#f2c94c'); dumbbell(-0.4, 0.6, -0.3, '#4a9b6e');
+  // barbell on stands
+  for (const x of [0.15, 0.85]) box(0.06, 0.7, 0.06, '#4a4f5a', x, 0.37, -0.25, g);
+  const bar = cyl(0.02, 0.02, 1.0, '#c7ccd4', 0.5, 0.7, -0.25, g, 8); bar.rotation.z = Math.PI / 2;
+  for (const x of [0.08, 0.92]) { const d = cyl(0.17, 0.17, 0.05, '#33363d', x, 0.7, -0.25, g, 16); d.rotation.z = Math.PI / 2; }
+  // padded bench
+  box(0.3, 0.07, 0.75, '#e5483b', 0.5, 0.3, 0.35, g);
+  for (const z of [0.08, 0.62]) box(0.06, 0.27, 0.06, '#4a4f5a', 0.5, 0.14, z, g);
+  // kettlebells
+  [[-0.6, 0.5, '#33363d'], [-0.3, 0.6, '#f07a5f']].forEach(([x, z, c]) => {
+    sph(0.1, c, x, 0.12, z, g, 12);
+    const h = mesh(new THREE.TorusGeometry(0.06, 0.018, 6, 12, Math.PI), M(c), x, 0.2, z, g); void h;
+  });
+  // water bottle
+  cyl(0.035, 0.035, 0.16, '#7ad3e8', -0.75, 0.13, 0.75, g, 10);
+  return g;
+}
+function workbenchModel() {
+  const g = new THREE.Group();
+  const wood = M('#c98f55'), dark = M('#8a5a35');
+  box(0.95, 0.08, 0.55, wood, 0, 0.55, 0, g);
+  for (const [x, z] of [[-0.42, -0.22], [0.42, -0.22], [-0.42, 0.22], [0.42, 0.22]]) box(0.07, 0.55, 0.07, dark, x, 0.27, z, g);
+  box(0.85, 0.04, 0.45, dark, 0, 0.18, 0, g);
+  // back pegboard with tools
+  box(0.95, 0.5, 0.04, wood, 0, 0.85, -0.26, g);
+  for (const x of [-0.42, 0.42]) box(0.05, 0.6, 0.05, dark, x, 0.85, -0.26, g);
+  const hammer = new THREE.Group(); hammer.position.set(-0.22, 0.88, -0.22); g.add(hammer);
+  box(0.03, 0.25, 0.02, dark, 0, 0, 0, hammer); box(0.12, 0.05, 0.04, '#7a7f8a', 0, 0.12, 0, hammer);
+  const saw = box(0.3, 0.1, 0.01, '#c7ccd4', 0.15, 0.88, -0.23, g); saw.rotation.z = 0.15;
+  box(0.08, 0.1, 0.03, '#e5483b', 0.32, 0.9, -0.23, g);
+  // vise + plank on top
+  box(0.12, 0.1, 0.12, '#3f7fc4', 0.38, 0.64, 0.15, g);
+  box(0.5, 0.03, 0.12, '#e8c08a', -0.1, 0.605, 0.08, g);
+  // planks leaning on the side
+  for (let i = 0; i < 3; i++) { const p = box(0.08, 0.7, 0.03, '#e8c08a', 0.55 + i * 0.04, 0.34, 0.15 - i * 0.08, g); p.rotation.z = -0.25; }
+  return g;
+}
+const STATIONS = {
+  library:   { model: libraryModel,   tiles: [[3, 6], [4, 6], [3, 7], [4, 7]],      at: [4.0, 7.0],  approach: [3, 8],  labelY: 2.7 },
+  gym:       { model: gymModel,       tiles: [[12, 9], [13, 9], [12, 10], [13, 10]], at: [13.0, 10.0], approach: [12, 11], labelY: 1.7 },
+  workbench: { model: workbenchModel, tiles: [[9, 5]],                               at: [9.5, 5.5], approach: [9, 6],  labelY: 1.4 },
+};
+
 // ── The creature ───────────────────────────────────────────────────────
 // Pip: an original round sprout-creature in a striped knit sweater.
 function makeCreature() {
@@ -568,7 +705,7 @@ export class World {
     this.stick = new THREE.Vector2();   // joystick input, length 0..1
     this.anims = [];
     this.energy = 0;
-    this.listeners = { creatureTap: [], itemTap: [] };
+    this.listeners = { creatureTap: [], itemTap: [], station: [] };
 
     LEAF_MAT = new THREE.MeshLambertMaterial({ map: leafTex('#4cae3f', '#6ccb52', '#3c9632') });
     LEAF_MAT_DARK = new THREE.MeshLambertMaterial({ color: '#3f8f4a' });
@@ -692,6 +829,15 @@ export class World {
     c.position.set(6.5, 0, 5.0); this.scene.add(c);
     for (const x of [5, 6, 7]) for (const z of [4, 5]) this.occupied.add(`${x},${z}`);
     this._place(mailbox(), 7, 6);
+    this.stations = new Map();
+    for (const [id, st] of Object.entries(STATIONS)) {
+      const m = st.model();
+      m.position.set(st.at[0], 0, st.at[1]);
+      m.traverse((o) => { o.userData.station = id; });
+      this.scene.add(m);
+      this.stations.set(id, m);
+      st.tiles.forEach(([x, z]) => this.occupied.add(`${x},${z}`));
+    }
     const trees = [[1, 4, '#e8312f'], [14, 6, '#ff9f1c'], [0, 9, '#e8312f'], [15, 12, '#ff9f1c'], [5, 15, '#e8312f'], [3, 5, null], [10, 5, '#e8312f']];
     trees.forEach(([x, z, f], i) => { const t = this._place(tree(f, i + 3), x, z); this.sways.push(t); });
     // backdrop trees on the terrace and beyond
@@ -713,7 +859,7 @@ export class World {
       t.position.set(sx + 0.5 + (sx < 0 ? -r() * 1.5 : r() * 1.5), 0, z + r() * 0.5);
       this.scene.add(t);
     }
-    [[4, 5, 1], [4, 8, 2], [8, 7, 3], [1, 7, 4], [14, 8, 5], [0, 13, 6], [12, 10, 7]].forEach(([x, z, s]) => {
+    [[4, 5, 1], [5, 8, 2], [8, 7, 3], [1, 7, 4], [14, 8, 5], [0, 13, 6], [14, 11, 7]].forEach(([x, z, s]) => {
       const f = flowerCluster(s); f.position.set(x + 0.5, 0, z + 0.5); this.scene.add(f);
     });
     // little grass tufts scattered over open grass (non-blocking)
@@ -853,6 +999,30 @@ export class World {
     this.path = path.slice(1).map(([x, z]) => new THREE.Vector3(x + 0.5, 0, z + 0.5));
     this.onArrive = onArrive;
   }
+  // Walk to a station, then announce arrival (the app opens its screen).
+  visit(id) {
+    const st = STATIONS[id];
+    if (!st || this.state === 'build') return;
+    if (this.state === 'nap') this._wake();
+    this.stick.set(0, 0);
+    const [ax, az] = st.approach;
+    const arrive = () => {
+      this.state = 'idle'; this.idleTimer = 6;
+      this._faceToward(new THREE.Vector3(st.at[0], 0, st.at[1]));
+      this.hop();
+      this._emit('station', id);
+    };
+    const path = this._findPath(this._tileOf(this.pos), (x, z) => x === ax && z === az);
+    if (path && path.length > 1) this._walk(path, arrive);
+    else arrive();
+  }
+  stationScreenPos(id) {
+    const st = STATIONS[id];
+    const v = new THREE.Vector3(st.at[0], st.labelY, st.at[1]).project(this.camera);
+    const r = this.canvas.getBoundingClientRect();
+    return { x: (v.x * 0.5 + 0.5) * r.width + r.left, y: (-v.y * 0.5 + 0.5) * r.height + r.top, visible: v.z < 1 };
+  }
+
   // Tap on the ground: walk to that tile (or the nearest reachable spot next to it).
   walkTo(x, z) {
     if (this.state === 'build') return;
@@ -995,6 +1165,8 @@ export class World {
       const ndc = new THREE.Vector2(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
       ray.setFromCamera(ndc, this.camera);
       if (ray.intersectObject(this.creature, true).length) { this.hop(); this._emit('creatureTap'); return; }
+      const st = ray.intersectObjects([...this.stations.values()], true);
+      if (st.length) { this.visit(st[0].object.userData.station); return; }
       const items = ray.intersectObjects([...this.built.values()], true);
       if (items.length) { this._emit('itemTap', items[0].object.userData.itemId); return; }
       const g = ray.intersectObjects(this.ground, false);
