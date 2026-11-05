@@ -194,7 +194,7 @@ const VISIT = {
     const topic = CATEGORIES[next.cat].label.toLowerCase();
     const lines = firstVisit('library')
       ? ['Oh, a reader. I\'m Maple. I look after the shelves here.',
-         'Read a card, and I\'ll send a little energy over to ' + S.creatureName + '. The fish at the dock like to ask about what you\'ve read.']
+         'Read a card, and I\'ll send a little energy over to ' + S.creatureName + '. When you go fishing at the dock later, you\'ll get quizzed on what you\'ve read.']
       : [pick([
           `I just shelved something on ${topic}. Want a look?`,
           'Quiet day. Perfect for reading.',
@@ -401,7 +401,7 @@ function openLessons(first) {
   const feed = $('#feed');
   const shown = [];
   let done = 0;
-  onClose = () => { if (done) talk('maple', [done > 1 ? `${done} cards! The fish at the dock will be asking about those.` : pick(['Good reading. The fish might quiz you on that later.', 'I\'ll keep a few more on the shelf for you.'])]); };
+  onClose = () => { if (done) talk('maple', [done > 1 ? `${done} cards! Try the dock later and see what stuck.` : pick(['Good reading. Come back anytime.', 'I\'ll keep a few more on the shelf for you.'])]); };
   const append = (l = nextLesson(shown)) => {
     shown.push(l.id);
     feed.insertAdjacentHTML('beforeend', cardHtml(l));
@@ -433,7 +433,7 @@ function openLessons(first) {
       commit();
       floatReward(gain, btn);
       card.classList.add('done');
-      card.querySelector('.card-actions').innerHTML = `<div class="answered">${ICON.check} Got it. The fish at the dock will ask about this one.</div>`;
+      card.querySelector('.card-actions').innerHTML = `<div class="answered">${ICON.check} Got it. You can review this one later at the dock.</div>`;
       ta.readOnly = true;
       newlyUnlocked();
       append();
@@ -609,7 +609,8 @@ async function goFishing() {
   // On the line: answer to land it.
   const q = rev.q;
   const opts = shuffle([q.a, ...q.w]);
-  const pickIdx = await talk('note', [`Something ${TIER[fish.tier].label} is on the line! ${q.q}`], opts);
+  const src = LESSONS.find((l) => l.id === rev.id);
+  const pickIdx = await talk('note', [`Something ${TIER[fish.tier].label} is on the line! From "${src.title}": ${q.q}`], opts);
   const right = pickIdx !== null && opts[pickIdx] === q.a;
   grade(rev.id, right);
   const lesson = LESSONS.find((l) => l.id === rev.id);

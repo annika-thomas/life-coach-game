@@ -1728,8 +1728,8 @@ export class World {
   }
   _stepAnim(time) {
     const { body } = this.creature.userData;
-    body.rotation.z = Math.sin(time * 14) * 0.12;
-    body.position.y = Math.abs(Math.sin(time * 14)) * 0.05;
+    body.rotation.z = Math.sin(time * 12) * 0.035;
+    body.position.y = Math.abs(Math.sin(time * 12)) * 0.035;
   }
   _marker(x, z, at) {
     const ring = new THREE.Mesh(new THREE.RingGeometry(0.22, 0.3, 24), new THREE.MeshBasicMaterial({ color: '#fff8e4', transparent: true, opacity: 0.9 }));
