@@ -4,21 +4,31 @@ A private, single-user phone app: a little creature on a tile-based island that 
 
 No build step and no dependencies to install. It's plain HTML/JS with three.js vendored in `vendor/`. Everything is stored in `localStorage` on your phone.
 
-## Open it on your phone
+## Deploy (free, auto-updates on every push)
 
-The app needs to be served over HTTP (ES modules won't load from `file://`). Pick one:
+The repo is private, so GitHub Pages would need a paid plan. Netlify's free tier deploys private repos.
 
-**A. GitHub Pages (easiest, works anywhere, installable)**
-1. Repo → Settings → Pages → Source: *Deploy from a branch* → pick this branch, folder `/ (root)`.
-   (Pages on a private repo needs a paid GitHub plan. Netlify Drop or Cloudflare Pages are free alternatives: drag the folder in.)
-2. Open the URL in Safari/Chrome on your phone → Share → **Add to Home Screen**.
-   It then launches full-screen like an app and works offline.
+1. Sign in at app.netlify.com with GitHub → **Add new site → Import an existing project → GitHub**.
+2. Grant access to `life-coach-game` and pick it.
+3. Settings: **Branch to deploy** `claude/adoring-rubin-c5kow2`, **Build command** empty, **Publish directory** `.` → Deploy.
+4. Optional: Site configuration → change the site name (e.g. `my-island-xyz.netlify.app`).
 
-**B. From your laptop on the same Wi-Fi**
+From then on, every push to that branch redeploys in about 30 seconds. (Cloudflare Pages works the same way if you prefer it.)
+
+The URL is public but unlisted. Your answers and progress never leave your phone; the site only serves the app files and the lesson bank.
+
+### Put it on your home screen
+Open the URL in **Safari** (iPhone) → Share → **Add to Home Screen**. It then opens full-screen and works offline.
+
+- Use the home-screen icon from then on. On iPhone, home-screen apps keep their own storage, separate from Safari tabs.
+- Updates show up the next time you open it while online.
+- Back up now and then with 📔 Journal → Export data.
+
+### Trying changes locally
 ```sh
 python3 -m http.server 8080
 ```
-Then open `http://<your-laptop-ip>:8080` on your phone. (Offline caching needs HTTPS, so this mode is for trying things out.)
+Then open `http://localhost:8080`, or `http://<laptop-ip>:8080` from your phone on the same Wi-Fi.
 
 ## How it plays
 
