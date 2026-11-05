@@ -10,7 +10,7 @@ Live at **https://annika-thomas.github.io/life-coach-game/** (GitHub Pages, from
 
 ### Alternative: Netlify (works with a private repo)
 
-The repo is private, so GitHub Pages would need a paid plan. Netlify's free tier deploys private repos.
+Only needed if you make the repo private again (Pages on private repos needs a paid GitHub plan; Netlify's free tier handles private repos).
 
 1. Sign in at app.netlify.com with GitHub → **Add new site → Import an existing project → GitHub**.
 2. Grant access to `life-coach-game` and pick it.
