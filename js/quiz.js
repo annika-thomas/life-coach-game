@@ -1,5 +1,5 @@
-// Recall questions per lesson card. Item 0 is used as the "guess first"
-// question before reading; all items are used later for fishing reviews.
+// Recall questions per lesson card, asked at the dock when you hook a fish.
+// They rotate, so a card's second review asks a different question.
 // [question, correct answer, [wrong answers], short explanation]
 const Q = (q, a, w, why) => ({ q, a, w, why });
 

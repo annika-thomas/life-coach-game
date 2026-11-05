@@ -166,7 +166,7 @@ const VISIT = {
     const topic = CATEGORIES[next.cat].label.toLowerCase();
     const lines = firstVisit('library')
       ? ['Oh, a reader. I\'m Maple. I look after the shelves here.',
-         'Every card ends with a question. Tell me what you think, and I\'ll send a little energy over to ' + S.creatureName + '.']
+         'Read a card, and I\'ll send a little energy over to ' + S.creatureName + '. The fish at the dock like to ask about what you\'ve read.']
       : [pick([
           `I just shelved something on ${topic}. Want a look?`,
           'Quiet day. Perfect for reading.',
@@ -295,31 +295,25 @@ function chipsHtml() {
 }
 const shuffle = (a) => { const b = a.slice(); for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; };
 
-// A card: guess first (multiple choice), then the reading unlocks, then an
-// optional "your take". Guessing before reading helps you remember it.
+// A card: read it, tap "Got it". Maple's question is optional and folded
+// away. Quizzing happens later, at the dock.
 function cardHtml(l) {
   const c = CATEGORIES[l.cat];
   const prior = S.lessons.some((x) => x.id === l.id);
   const unlock = l.unlocks && ITEM_BY_ID[l.unlocks];
-  const g = QUIZ[l.id][0];
   return `<article class="card" data-id="${l.id}">
     <div class="card-tag" style="--c:${c.color}">${c.label}${prior ? ' · reread' : ''}</div>
     <h3>${esc(l.title)}</h3>
-    <div class="guess">
-      <span class="guess-label">Guess first</span>
-      <p class="guess-q">${esc(g.q)}</p>
-      <div class="opts">${shuffle([g.a, ...g.w]).map((o) => `<button class="opt" data-right="${o === g.a ? 1 : 0}">${esc(o)}</button>`).join('')}</div>
-      <p class="guess-result"></p>
-    </div>
-    <div class="reading">
-      ${l.body.map((p) => `<p>${esc(p)}</p>`).join('')}
-      ${unlock ? `<div class="card-unlock">Counts toward the ${esc(unlock.name.toLowerCase())}</div>` : ''}
-      <div class="asks"><span class="asks-who">Maple asks</span>${esc(l.question)}</div>
-      <textarea rows="2" placeholder="Your take (optional, +1 bonus)"></textarea>
-      <div class="card-actions">
-        <button class="btn ghost skip">Skip</button>
-        <button class="btn primary answer">Done <span class="amt">${ICON.leaf}<span class="n">+1</span></span></button>
-      </div>
+    ${l.body.map((p) => `<p>${esc(p)}</p>`).join('')}
+    ${unlock ? `<div class="card-unlock">Counts toward the ${esc(unlock.name.toLowerCase())}</div>` : ''}
+    <details class="take">
+      <summary>Maple has a question for you <span>(optional, +1)</span></summary>
+      <p class="take-q">${esc(l.question)}</p>
+      <textarea rows="2" placeholder="Your take"></textarea>
+    </details>
+    <div class="card-actions">
+      <button class="btn ghost skip">Skip</button>
+      <button class="btn primary answer">Got it <span class="amt">${ICON.leaf}<span class="n">+1</span></span></button>
     </div>
   </article>`;
 }
@@ -335,29 +329,20 @@ function openLessons(first) {
     wire(feed.lastElementChild, l);
   };
   const wire = (card, l) => {
-    let guessedRight = null;
     const ta = card.querySelector('textarea');
     const btn = card.querySelector('.answer');
-    card.querySelectorAll('.opt').forEach((o) => o.onclick = () => {
-      if (guessedRight !== null) return;
-      guessedRight = o.dataset.right === '1';
-      card.querySelectorAll('.opt').forEach((x) => { x.disabled = true; if (x.dataset.right === '1') x.classList.add('right'); });
-      if (!guessedRight) o.classList.add('wrong');
-      card.querySelector('.guess-result').textContent = guessedRight ? 'Nice guess. Here\'s the story.' : 'Not quite. Read on to see why.';
-      card.classList.add('guessed');
-    });
     ta.addEventListener('input', () => { btn.querySelector('.n').textContent = ta.value.trim().length >= 3 ? '+2' : '+1'; });
     btn.onclick = () => {
       const take = ta.value.trim();
       const gain = take.length >= 3 ? 2 : 1;
-      S.lessons.push({ id: l.id, cat: l.cat, answer: take, guessed: guessedRight, ts: Date.now() });
+      S.lessons.push({ id: l.id, cat: l.cat, answer: take, ts: Date.now() });
       S.skipped = S.skipped.filter((x) => x !== l.id);
       scheduleNew(l.id);
       S.energy += gain; done += 1;
       commit();
       floatReward(gain, btn);
       card.classList.add('done');
-      card.querySelector('.card-actions').innerHTML = `<div class="answered">${ICON.check} Done. You'll see this one again at the dock.</div>`;
+      card.querySelector('.card-actions').innerHTML = `<div class="answered">${ICON.check} Got it. The fish at the dock will ask about this one.</div>`;
       ta.readOnly = true;
       newlyUnlocked();
       append();
@@ -399,7 +384,7 @@ function nextReview() {
   const id = due[0] || ids.sort((a, b) => S.reviews[a].last - S.reviews[b].last)[0];
   const r = S.reviews[id];
   const qs = QUIZ[id];
-  return { id, box: r.box, q: qs[(r.n + 1) % qs.length], due: !!due.length };
+  return { id, box: r.box, q: qs[r.n % qs.length], due: !!due.length };
 }
 function grade(id, right) {
   const r = S.reviews[id];

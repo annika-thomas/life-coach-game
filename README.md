@@ -40,7 +40,7 @@ There are no menu buttons. You visit places on the island, each with a keeper: *
 
 | Place | What it does |
 |---|---|
-| **Library** | An endless feed of short cards across 14 categories. Each card starts with a multiple-choice **guess** (guessing before reading helps you remember), then the reading unlocks, then an optional **your take** question. Finishing a card pays +1 energy, +1 more for writing your take. |
+| **Library** | An endless feed of short cards across 14 categories. Read a card and tap **Got it** (+1 energy). Maple's opinion question is folded away; open it and write your take for +1 more. |
 | **Dock** (south beach) | Fishing. Cast, wait for the bite and tap, then hold to keep the fish inside the bar. Once it's hooked, answer a multiple-choice question about a card you've read to land it (+1 energy). Questions come from a spaced-repetition schedule: right answers push a card days or weeks out, wrong ones bring it back soon. Cards you know well hook rarer fish. |
 | **Gym** | Log something real: Workout / Walk / Cooked / Read, optional note, this week's strip. +2 energy each. |
 | **Workbench** | Everything Pip can make, priced in energy, labelled with the lesson that unlocked it. Shows a "!" when you can afford something. |
@@ -58,13 +58,13 @@ js/app.js                   screens, energy, unlock logic, lesson picker
 js/world.js                 the 3D island: map, terrain, props, creature, camera
 js/items.js                 build catalogue (cost, unlock rule, tile slot)
 js/lessons.js               lesson bank + category list
-js/quiz.js                  two recall questions per card (guess-first + fishing)
+js/quiz.js                  two recall questions per card, asked when fishing
 js/state.js                 localStorage save/load
 sw.js, manifest.webmanifest offline + home-screen install
 ```
 
 ### Adding lessons
-Append to `LESSONS` in `js/lessons.js`: `{ id, cat, level, title, body: [para, para], question, unlocks }`, and add at least two questions for it in `js/quiz.js` (the first is the guess-first question). `level: 2` cards are held back until you've done a level-1 card in that category. The picker prefers unseen cards and avoids repeating the last few categories.
+Append to `LESSONS` in `js/lessons.js`: `{ id, cat, level, title, body: [para, para], question, unlocks }`, and add at least two questions for it in `js/quiz.js` (asked at the dock, in rotation). `level: 2` cards are held back until you've done a level-1 card in that category. The picker prefers unseen cards and avoids repeating the last few categories.
 
 ### Adding builds
 Add an entry in `js/items.js` (pick a free grass tile from `MAP` in `world.js` that isn't used by a station in `STATIONS`) and a matching model function in `BUILDERS` in `world.js`.

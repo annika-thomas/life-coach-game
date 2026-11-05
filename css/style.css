@@ -214,9 +214,10 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .dialog {
   position: fixed; left: 12px; right: 12px; bottom: calc(var(--safe-b) + 16px); z-index: 21; max-width: 560px; margin: 0 auto;
   min-height: 104px; padding: 22px 22px 18px; background: var(--cream); border: 3.5px solid var(--ink); border-radius: 30px;
-  box-shadow: 0 5px 0 rgba(74,59,51,.3); transform: translateY(140%); transition: transform .25s cubic-bezier(.2,.9,.3,1.15);
+  box-shadow: 0 5px 0 rgba(74,59,51,.3); transform: translateY(calc(100% + 80px)); visibility: hidden;
+  transition: transform .25s cubic-bezier(.2,.9,.3,1.15), visibility 0s .25s;
 }
-.dialog.show { transform: translateY(0); }
+.dialog.show { transform: translateY(0); visibility: visible; transition: transform .25s cubic-bezier(.2,.9,.3,1.15); }
 .dlg-name { position: absolute; top: -17px; left: 22px; padding: 1px 16px 2px; border: 3px solid var(--ink); border-radius: 999px; color: #fff;
   font-family: var(--display); font-weight: 800; font-size: 16px; transform: rotate(-3deg); }
 .dlg-text { margin: 0; font-family: var(--display); font-weight: 700; font-size: 19px; line-height: 1.35; min-height: 52px; }
@@ -254,22 +255,6 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .item-cost .ico { width: 20px; height: 20px; }
 .item.locked { opacity: .8; }
 
-/* guess first, then read */
-.guess { background: #fff6dc; border: 2.5px solid var(--ink); border-radius: 18px; padding: 10px 12px 8px; margin: 8px 0 12px; }
-.guess-label { display: inline-block; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .5px; color: #b8352c; }
-.guess-q { font-family: var(--display); font-weight: 700; font-size: 18px; line-height: 1.3; margin: 2px 0 8px; }
-.opts { display: grid; gap: 6px; }
-.opt { text-align: left; padding: 9px 12px; border: 2.5px solid var(--ink); border-radius: 14px; background: #fffdf4; box-shadow: 0 2px 0 var(--ink); font-weight: 700; font-size: 15px; }
-.opt:disabled { color: var(--ink); opacity: .55; }
-.opt.right { background: #d8f6c4; opacity: 1; }
-.opt.wrong { background: #ffd6cf; opacity: 1; }
-.guess-result { margin: 8px 2px 0; font-weight: 800; min-height: 0; font-size: 14px; }
-.guess-result:empty { display: none; }
-.card .reading { display: none; }
-.card.guessed .reading { display: block; animation: fadein .35s; }
-@keyframes fadein { from { opacity: 0; transform: translateY(6px); } }
-.card textarea { margin-top: 10px; }
-
 /* longer quiz answers in dialogue choices */
 .choice { max-width: min(86vw, 420px); white-space: normal; line-height: 1.2; }
 
@@ -298,3 +283,11 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .fishcell small { font-weight: 800; font-size: 11px; line-height: 1.1; }
 .fishsvg { width: 46px; height: 26px; }
 .stats { grid-template-columns: repeat(4, 1fr); }
+
+/* optional take, folded away */
+.take { margin: 4px 0 2px; border: 2.5px dashed #cdbf9c; border-radius: 16px; padding: 8px 12px; background: #fffaf0; }
+.take summary { list-style: none; cursor: pointer; font-weight: 800; color: #8a5a9e; font-size: 15px; }
+.take summary::-webkit-details-marker { display: none; }
+.take summary span { font-weight: 600; color: #9d8f72; font-size: 13px; }
+.take[open] { border-style: solid; border-color: var(--ink); }
+.take-q { font-family: var(--display); font-weight: 700; font-size: 17px; line-height: 1.3; margin: 8px 0 0; }
