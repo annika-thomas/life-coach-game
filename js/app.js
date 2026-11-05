@@ -98,7 +98,7 @@ function renderHud() {
 }
 function renderClock() {
   const d = new Date();
-  $('#clock-day').textContent = d.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+  $('#clock-day').textContent = d.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' }) + (S.daily?.weather ? ` · ${({ sunny: 'Sunny', cloudy: 'Cloudy', rain: 'Rain', snow: 'Snow' })[S.daily.weather]}` : '');
   $('#clock-time').textContent = d.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
   const h = d.getHours();
   $('#clock-icon').innerHTML = h < 6 || h >= 20 ? ICON.moon : h < 17 ? ICON.sun : ICON.sunset;
@@ -730,7 +730,7 @@ function ensureDay() {
 }
 ensureDay();
 world.setVisitors(S.daily.visitors.filter((v) => !v.done));
-setInterval(() => { if (S.daily.date !== today() && !talking && !sheet.classList.contains('open')) { ensureDay(); world.setVisitors(S.daily.visitors.filter((v) => !v.done)); } }, 60000);
+setInterval(() => { if (S.daily.date !== today() && !talking && !sheet.classList.contains('open')) { ensureDay(); world.setVisitors(S.daily.visitors.filter((v) => !v.done)); applyAtmosphere(); spawnToday(); } }, 60000);
 
 // What a visitor asks: advice drawing on a card you've read, a review
 // question that's due, or (before you've read anything) just hello.
@@ -1003,11 +1003,13 @@ function openTaste() {
 VISIT.market = async () => {
   const t = KEEPER_TALK.pepper;
   const lines = firstVisit('market') ? [...t.intro, 'I also run a few little games: wine and cheese maps, and a taste test.'] : [pick(t.idle)];
-  const c = await talk('pepper', lines, ['Wine map', 'Cheese map', 'Taste test', 'Read about food, wine or cheese', 'Later']);
-  if (c === 0) setTimeout(openWineMap, 200);
-  if (c === 1) setTimeout(openCheeseMap, 200);
-  if (c === 2) setTimeout(openTaste, 200);
-  if (c === 3) { filters = new Set(DISTRICTS.market.cats); setTimeout(() => openLessons(), 200); }
+  const opts = ['Wine map', 'Cheese map', 'Taste test', ...(fruitTotal() >= 5 ? ['Trade 5 fruit'] : []), 'Read about food, wine or cheese', 'Later'];
+  const pickd = opts[await talk('pepper', lines, opts)];
+  if (pickd === 'Wine map') setTimeout(openWineMap, 200);
+  if (pickd === 'Cheese map') setTimeout(openCheeseMap, 200);
+  if (pickd === 'Taste test') setTimeout(openTaste, 200);
+  if (pickd === 'Trade 5 fruit') setTimeout(tradeFruit, 200);
+  if (pickd === 'Read about food, wine or cheese') { filters = new Set(DISTRICTS.market.cats); setTimeout(() => openLessons(), 200); }
 };
 
 // ── Focus time (grow a grove) ──────────────────────────────────────────
@@ -1082,6 +1084,146 @@ VISIT.home = async () => {
   if (c !== null && c < 3) startFocus([10, 25, 50][c]);
 };
 if (S.focus) setTimeout(runFocus, 500);
+
+// ── Seasons, weather and time of day ───────────────────────────────────
+// All from your real clock and calendar. Weather is picked once a day.
+const SEASON = (() => { const m = new Date().getMonth(); return m <= 1 || m === 11 ? 'winter' : m <= 4 ? 'spring' : m <= 7 ? 'summer' : 'autumn'; })();
+const WEATHER_WORD = { sunny: 'Sunny', cloudy: 'Cloudy', rain: 'Rain', snow: 'Snow' };
+function rollWeather() {
+  const r = seeded(today() + 'wx')();
+  if (SEASON === 'winter') return r < 0.3 ? 'snow' : r < 0.55 ? 'cloudy' : 'sunny';
+  return r < 0.2 ? 'rain' : r < 0.45 ? 'cloudy' : 'sunny';
+}
+const hourNow = () => { const d = new Date(); return d.getHours() + d.getMinutes() / 60; };
+const isNight = () => { const h = hourNow(); return h < 6 || h >= 19; };
+function applyAtmosphere() {
+  if (!S.daily.weather) { S.daily.weather = rollWeather(); save(S); }
+  world.setSeason(SEASON);
+  if (world.weather !== S.daily.weather) world.setWeather(S.daily.weather);
+  world.setTimeOfDay(hourNow());
+  $('#clock-day').textContent = `${new Date().toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })} · ${WEATHER_WORD[S.daily.weather]}`;
+}
+
+// ── Things to collect around the island ────────────────────────────────
+// Weeds and shells turn up each day; bugs change with the time of day and
+// season; fruit trees regrow overnight.
+const BUGS = [
+  { id: 'cabbagewhite', name: 'Cabbage White', color: '#fbf6ec', time: 'day', seasons: ['spring', 'summer', 'autumn'] },
+  { id: 'swallowtail', name: 'Swallowtail', color: '#f2c94c', time: 'day', seasons: ['spring', 'summer'] },
+  { id: 'commonblue', name: 'Common Blue', color: '#7aa8e8', time: 'day', seasons: ['spring', 'summer'] },
+  { id: 'monarch', name: 'Monarch', color: '#ef8a3c', time: 'day', seasons: ['summer', 'autumn'] },
+  { id: 'peacock', name: 'Peacock Butterfly', color: '#c63c30', time: 'day', seasons: ['spring', 'summer', 'autumn'] },
+  { id: 'dragonfly', name: 'Dragonfly', color: '#3fa7b8', time: 'day', seasons: ['summer', 'autumn'] },
+  { id: 'brimstone', name: 'Brimstone', color: '#e8e070', time: 'day', seasons: ['winter', 'spring'] },
+  { id: 'mourningcloak', name: 'Mourning Cloak', color: '#5a3a2a', time: 'day', seasons: ['autumn', 'winter', 'spring'] },
+  { id: 'firefly', name: 'Firefly', color: '#e9ff7a', time: 'night', seasons: ['summer'], glow: true },
+  { id: 'lunamoth', name: 'Luna Moth', color: '#bfe8b0', time: 'night', seasons: ['spring', 'summer'] },
+  { id: 'tigermoth', name: 'Garden Tiger Moth', color: '#e0784a', time: 'night', seasons: ['summer', 'autumn'] },
+  { id: 'wintermoth', name: 'Winter Moth', color: '#c9bfae', time: 'night', seasons: ['autumn', 'winter'] },
+];
+const SHELLS = [
+  { id: 'scallop', name: 'Scallop shell', color: '#f6c2a8', w: 4 }, { id: 'cowrie', name: 'Cowrie', color: '#e8d9c0', w: 4 },
+  { id: 'conch', name: 'Conch', color: '#f3b6b0', w: 2 }, { id: 'sanddollar', name: 'Sand dollar', color: '#efe6cf', w: 2 },
+  { id: 'coral', name: 'Coral', color: '#ff8f7a', w: 1 },
+];
+const FRUIT_OF = { '#e8312f': 'apple', '#ff9f1c': 'orange', '#ffab91': 'peach' };
+S.pocket = S.pocket || {};
+const pocket = S.pocket;
+for (const k of ['fruit', 'shells', 'bugs']) pocket[k] = pocket[k] || {};
+const bump = (bag, key, n = 1) => { bag[key] = (bag[key] || 0) + n; };
+
+function planPickups() {
+  const r = seeded(today() + 'pk');
+  const used = new Set([...S.gifts.map((g) => g.spot.join(',')), ...(S.grove || []).map((g) => g.spot.join(','))]);
+  const spots = world.giftSpots().filter((p) => !used.has(p.join(',')));
+  const sand = spots.filter(([x, z]) => z >= 18), grass = spots.filter(([x, z]) => z < 18);
+  const pickN = (arr, n) => arr.slice().sort(() => r() - 0.5).slice(0, n);
+  const list = [];
+  pickN(grass, SEASON === 'winter' ? 3 : 6 + Math.floor(r() * 4)).forEach(([x, z], i) => list.push({ id: `weed${i}`, kind: 'weed', x, z }));
+  pickN(sand, 3 + Math.floor(r() * 3)).forEach(([x, z], i) => {
+    const total = SHELLS.reduce((a, s) => a + s.w, 0); let k = r() * total; const sh = SHELLS.find((s) => (k -= s.w) <= 0) || SHELLS[0];
+    list.push({ id: `shell${i}`, kind: 'shell', x, z, species: sh.id, color: sh.color });
+  });
+  return list;
+}
+// Bugs depend on the hour, so they're rolled per part of the day.
+function planBugs() {
+  const night = isNight();
+  const period = night ? 'night' : 'day';
+  if (S.daily.weather === 'rain' || S.daily.weather === 'snow') return [];
+  const r = seeded(today() + 'bug' + period);
+  const pool = BUGS.filter((b) => b.time === period && b.seasons.includes(SEASON));
+  if (!pool.length) return [];
+  const used = new Set([...S.gifts.map((g) => g.spot.join(',')), ...(S.grove || []).map((g) => g.spot.join(','))]);
+  const spots = world.giftSpots().filter((p) => !used.has(p.join(',')) && p[1] < 18).sort(() => r() - 0.5);
+  return Array.from({ length: 2 + Math.floor(r() * 3) }, (_, i) => {
+    const b = pool[Math.floor(r() * pool.length)];
+    return { id: `bug-${period}-${i}`, kind: 'bug', x: spots[i][0], z: spots[i][1], species: b.id, color: b.color, glow: b.glow };
+  });
+}
+function spawnToday() {
+  S.daily.collected = S.daily.collected || [];
+  S.daily.picked = S.daily.picked || [];
+  const all = [...planPickups(), ...planBugs()].filter((p) => !S.daily.collected.includes(p.id));
+  world.spawnPickups(all);
+  for (const k of world.fruitTreeKeys()) world.setFruit(k, !S.daily.picked.includes(k));
+  world._bugPeriod = isNight();
+}
+world.on('pickupTap', (id) => {
+  world.collect(id, async (p) => {
+    S.daily.collected.push(p.id);
+    if (p.kind === 'weed') {
+      bump(pocket, 'weeds');
+      const lines = [];
+      if (seeded(today() + p.id)() < 0.1) { bump(pocket, 'clovers'); lines.push('A four-leaf clover was hiding under that weed!'); }
+      const left = [...(world.pickups?.values() || [])].filter((x) => x.kind === 'weed').length;
+      if (!left && !S.daily.weedGift) {
+        S.daily.weedGift = true;
+        const g = grantGift('Fennel');
+        lines.push('Every weed is gone. The island looks lovely.', ...(g ? [`(Fennel left you a ${g.toLowerCase()} as thanks.)`] : []));
+      }
+      save(S);
+      if (lines.length) await talk('note', lines); else toast(`Pulled a weed (${left} left today)`);
+    } else if (p.kind === 'shell') {
+      const sh = SHELLS.find((s) => s.id === p.species);
+      bump(pocket.shells, sh.id); save(S);
+      toast(`Found a ${sh.name.toLowerCase()}!`);
+    } else if (p.kind === 'bug') {
+      const b = BUGS.find((x) => x.id === p.species);
+      const first = !pocket.bugs[b.id];
+      bump(pocket.bugs, b.id); save(S);
+      await talk('note', [`You caught a ${b.name}!${first ? ' New to your collection.' : ''}`]);
+    }
+  });
+});
+world.on('treeTap', (key) => {
+  if (S.daily.picked.includes(key)) { talk('note', ['No fruit left on this one. It will grow back tomorrow.']); return; }
+  world.shakeTree(key, (n) => {
+    if (!n) return;
+    S.daily.picked.push(key);
+    const t = world.fruitTrees.get(key);
+    const kind = FRUIT_OF[t.color] || 'apple';
+    bump(pocket.fruit, kind, n); save(S);
+    toast(`+${n} ${kind}${n > 1 ? (kind === 'peach' ? 'es' : 's') : ''}`);
+  });
+});
+const fruitTotal = () => Object.values(pocket.fruit).reduce((a, n) => a + n, 0);
+function tradeFruit() {
+  let need = 5;
+  for (const k of Object.keys(pocket.fruit)) { const take = Math.min(need, pocket.fruit[k]); pocket.fruit[k] -= take; need -= take; }
+  const g = grantGift('Pepper');
+  save(S);
+  talk('pepper', ['Oh, these are lovely. I\'ll bake something.', g ? `(Pepper gave you a ${g.toLowerCase()} in return.)` : 'Here, have a slice. It\'s still warm.']);
+}
+
+// Start it all up, and keep the sky in step with the clock.
+applyAtmosphere();
+spawnToday();
+setInterval(() => {
+  if (S.daily.date !== today()) return; // the day roll-over handler refreshes everything
+  applyAtmosphere();
+  if (world._bugPeriod !== isNight()) spawnToday();
+}, 30000);
 
 // ── Gym: log real-world actions ───────────────────────────────────────
 function weekStrip() {
@@ -1196,6 +1338,12 @@ function openJournal() {
     <p class="lead small">${new Set(S.fish.map((f) => f.species)).size} of ${FISH.length} species. Unknown ones show where and when to look.</p>
     <div class="fishgrid">${FISH.map((f) => { const mine = S.fish.filter((x) => x.species === f.id); const n = mine.length; const best = Math.max(0, ...mine.map((x) => x.cm || 0)); return `<div class="fishcell ${n ? '' : 'unknown'}">${fishSvg(f.color, n > 0)}<small>${n ? `${esc(f.name)}${best ? ` · ${best} cm` : ` ×${n}`}` : `${f.where === 'pond' ? 'Pond' : 'Sea'}, ${TIME_LABEL[f.time]}`}</small></div>`; }).join('')}</div>
     <p class="lead small">${S.gifts.length} gift${S.gifts.length === 1 ? '' : 's'} on your island.</p>
+    <h4>Bugs</h4>
+    <div class="fishgrid">${BUGS.map((b) => { const n = pocket.bugs[b.id] || 0; return `<div class="fishcell ${n ? '' : 'unknown'}"><span class="bugdot" style="background:${n ? b.color : '#cfc6b0'}"></span><small>${n ? `${esc(b.name)} ×${n}` : `${b.time === 'night' ? 'Night' : 'Day'} · ${b.seasons.map((x) => x[0].toUpperCase() + x.slice(1, 3)).join('/')}`}</small></div>`; }).join('')}</div>
+    <h4>Around the island</h4>
+    <div class="stats"><div><b>${pocket.weeds || 0}</b><small>weeds pulled</small></div><div><b>${pocket.clovers || 0}</b><small>clovers</small></div>
+      <div><b>${fruitTotal()}</b><small>fruit in pocket</small></div><div><b>${Object.values(pocket.shells).reduce((a, n) => a + n, 0)}</b><small>shells</small></div></div>
+    <p class="lead small">${SHELLS.map((sh) => `${sh.name} ×${pocket.shells[sh.id] || 0}`).join(' · ')}</p>
     <h4>Your answers</h4>
     <div class="answers">${S.lessons.length ? S.lessons.slice().reverse().map((a) => {
       const l = LESSONS.find((x) => x.id === a.id);

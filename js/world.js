@@ -164,6 +164,10 @@ function stripeTex(a, b, n = 6) {
   });
 }
 
+// Shared glow materials: lamps and windows brighten at night.
+const LAMP_MAT = new THREE.MeshLambertMaterial({ color: '#fff3c4', emissive: '#ffd36b', emissiveIntensity: 0.4 });
+const WINDOW_MAT = new THREE.MeshLambertMaterial({ color: '#3c4f6b', emissive: '#ffb347', emissiveIntensity: 0 });
+
 // ── Static props ───────────────────────────────────────────────────────
 let LEAF_MAT, LEAF_MAT_DARK;
 function tree(fruit = '#e8312f', seed = 1) {
@@ -173,12 +177,14 @@ function tree(fruit = '#e8312f', seed = 1) {
   cyl(0.2, 0.22, 0.08, '#7a4e2c', 0, 0.04, 0, g, 10);
   const blobs = [[0, 1.05, 0, 0.55], [-0.28, 0.95, 0.1, 0.38], [0.3, 0.98, 0.05, 0.4], [0.05, 1.4, 0, 0.42], [0, 1.0, 0.3, 0.38]];
   for (const [x, y, z, rad] of blobs) sph(rad, LEAF_MAT, x, y, z, g, 16);
+  g.userData.fruits = [];
   if (fruit) {
     for (let i = 0; i < 5; i++) {
       const a = -0.9 + (i / 4) * 1.8 + (r() - 0.5) * 0.3;
       const y = 0.9 + r() * 0.55;
-      sph(0.085, fruit, Math.sin(a) * 0.55, y, Math.cos(a) * 0.5 + 0.08, g, 10);
+      g.userData.fruits.push(sph(0.085, fruit, Math.sin(a) * 0.55, y, Math.cos(a) * 0.5 + 0.08, g, 10));
     }
+    g.userData.fruitColor = fruit;
   }
   g.userData.sway = r() * 6;
   return g;
@@ -269,7 +275,7 @@ function cottage() {
     const ws = new THREE.Shape();
     ws.moveTo(-0.2, 0); ws.lineTo(-0.2, 0.25); ws.absarc(0, 0.25, 0.2, Math.PI, 0, true); ws.lineTo(0.2, 0);
     mesh(new THREE.ExtrudeGeometry(ws, { depth: 0.04, bevelEnabled: true, bevelThickness: 0.02, bevelSize: 0.04, bevelSegments: 1 }), M('#c9733e'), x, 0.7, 0.84, g);
-    mesh(new THREE.ExtrudeGeometry(ws, { depth: 0.05, bevelEnabled: false }), M('#3c4f6b'), x, 0.7, 0.86, g).scale.set(0.8, 0.85, 1);
+    mesh(new THREE.ExtrudeGeometry(ws, { depth: 0.05, bevelEnabled: false }), WINDOW_MAT, x, 0.7, 0.86, g).scale.set(0.8, 0.85, 1);
     box(0.03, 0.4, 0.02, '#c9733e', x, 0.9, 0.92, g);
     box(0.32, 0.03, 0.02, '#c9733e', x, 0.9, 0.92, g);
   }
@@ -536,7 +542,7 @@ const BUILDERS = {
   lamppost: () => {
     const g = new THREE.Group();
     cyl(0.04, 0.06, 1.3, '#33363d', 0, 0.65, 0, g, 8);
-    const l = sph(0.13, new THREE.MeshLambertMaterial({ color: '#fff3c4', emissive: '#ffd36b', emissiveIntensity: 0.5 }), 0, 1.38, 0, g, 12);
+    const l = sph(0.13, LAMP_MAT, 0, 1.38, 0, g, 12);
     void l;
     mesh(new THREE.ConeGeometry(0.17, 0.12, 12), M('#33363d'), 0, 1.53, 0, g);
     return g;
@@ -963,7 +969,7 @@ function libraryModel() {
   // book stack + reading lamp outside
   [['#e5483b', 0], ['#3f7fc4', 0.05], ['#f2c94c', 0.1]].forEach(([c, y], i) => { const b = box(0.24, 0.05, 0.17, c, 0.78, 0.03 + y, 0.95, g); b.rotation.y = i * 0.3; });
   cyl(0.025, 0.035, 0.9, '#33363d', -0.82, 0.45, 0.95, g, 8);
-  sph(0.09, new THREE.MeshLambertMaterial({ color: '#fff3c4', emissive: '#ffd36b', emissiveIntensity: 0.5 }), -0.82, 0.95, 0.95, g, 10);
+  sph(0.09, LAMP_MAT, -0.82, 0.95, 0.95, g, 10);
   return g;
 }
 function gymModel() {
@@ -1320,6 +1326,40 @@ const GIFT_MODELS = {
   pumpkins: () => { const g = new THREE.Group(); [[0, 0, 0.2], [0.25, 0.1, 0.14], [-0.2, 0.15, 0.12]].forEach(([x, z, r]) => { const p = sph(r, '#ef8a3c', x, r * 0.8, z, g, 14); p.scale.y = 0.75; cyl(0.015, 0.02, 0.06, '#4fa53a', x, r * 1.4, z, g, 6); }); return g; },
 };
 
+
+// ── Seasons, time of day and weather ──────────────────────────────────
+const SEASON_LEAVES = {
+  spring: ['#5cc04a', '#86db66', '#46a83a'],
+  summer: ['#4cae3f', '#6ccb52', '#3c9632'],
+  autumn: ['#e0873a', '#f2b24a', '#c4572e'],
+  winter: ['#3f8a4a', '#eef4f6', '#2f7a3a'],
+};
+const SEASON_GRASS = {
+  spring: ['#6cc24c', '#94de6a', '#56a83c'],
+  summer: ['#62b947', '#86d35e', '#4f9e38'],
+  autumn: ['#86bb48', '#c2cf5a', '#6c9a38'],
+  winter: ['#e8eef1', '#ffffff', '#cfd9df'],
+};
+function seasonGrassTex([base, light, dark], seed) {
+  return canvasTex(128, (g, s) => {
+    g.fillStyle = base; g.fillRect(0, 0, s, s);
+    const r = rng(seed);
+    for (let i = 0; i < 26; i++) {
+      const x = r() * s, y = r() * s, sz = 3 + r() * 3;
+      g.fillStyle = r() < 0.6 ? light : dark;
+      g.beginPath(); g.moveTo(x, y - sz); g.lineTo(x + sz * 0.8, y + sz * 0.6); g.lineTo(x - sz * 0.8, y + sz * 0.6); g.closePath(); g.fill();
+    }
+  });
+}
+// Sky and light through the day: [hour, sky, hemisphere strength, sun colour, sun strength, lamps on 0..1]
+const DAY_KEYS = [
+  [0, '#16213d', 0.2, '#8fa4ff', 0.22, 1], [5, '#2a3358', 0.3, '#a4acff', 0.3, 1],
+  [6.5, '#f2b7a0', 1.15, '#ffb89a', 1.4, 0.5], [8, '#a8e3f7', 1.6, '#fff1d6', 2.4, 0],
+  [16.5, '#a8e3f7', 1.6, '#fff1d6', 2.4, 0], [18.5, '#f5a46b', 1.25, '#ffb070', 1.7, 0.6],
+  [20, '#3a3f6e', 0.4, '#b4a8ff', 0.4, 1], [24, '#16213d', 0.2, '#8fa4ff', 0.22, 1],
+];
+const WEATHER_TINT = { sunny: null, cloudy: ['#c9d3dc', 0.5, 0.65], rain: ['#8e9aa6', 0.7, 0.45], snow: ['#dfe6ee', 0.5, 0.6] };
+
 // ── The world ──────────────────────────────────────────────────────────
 export class World {
   constructor(canvas) {
@@ -1341,7 +1381,7 @@ export class World {
     this.stick = new THREE.Vector2();   // joystick input, length 0..1
     this.anims = [];
     this.energy = 0;
-    this.listeners = { creatureTap: [], itemTap: [], station: [], visitor: [], giftTap: [] };
+    this.listeners = { creatureTap: [], itemTap: [], station: [], visitor: [], giftTap: [], pickupTap: [], treeTap: [] };
 
     LEAF_MAT = new THREE.MeshLambertMaterial({ map: leafTex('#4cae3f', '#6ccb52', '#3c9632') });
     LEAF_MAT_DARK = new THREE.MeshLambertMaterial({ color: '#3f8f4a' });
@@ -1366,6 +1406,7 @@ export class World {
 
   _lights() {
     const hemi = new THREE.HemisphereLight('#fff6e0', '#6a9a50', 1.6);
+    this.hemi = hemi;
     this.scene.add(hemi);
     const sun = new THREE.DirectionalLight('#fff1d6', 2.4);
     sun.position.set(-6, 14, 8);
@@ -1382,6 +1423,7 @@ export class World {
   _terrain() {
     const grassTop = new THREE.MeshLambertMaterial({ map: grassTex() });
     const plateauTop = new THREE.MeshLambertMaterial({ map: plateauGrassTex() });
+    this.grassMats = { grassTop, plateauTop };
     const pathTop = new THREE.MeshLambertMaterial({ map: speckleTex('#dcb978', '#ecd29a', '#c49a5e', 9) });
     const sandTop = new THREE.MeshLambertMaterial({ map: speckleTex('#f3e3b3', '#fbf1d0', '#e2cd92', 13) });
     const seabed = M('#d9c48f');
@@ -1439,6 +1481,7 @@ export class World {
     const wt = waterTex(); wt.repeat.set(10, 10);
     this.waterTex = wt;
     const water = new THREE.Mesh(new THREE.PlaneGeometry(90, 90), new THREE.MeshLambertMaterial({ map: wt, transparent: true, opacity: 0.88 }));
+    this.waterMat = water.material;
     water.rotation.x = -Math.PI / 2; water.position.set(W / 2, -0.32, D / 2);
     water.receiveShadow = true;
     this.scene.add(water);
@@ -1457,7 +1500,7 @@ export class World {
     const lamp = (x, z, y = 0) => {
       const g = new THREE.Group();
       cyl(0.035, 0.05, 1.2, '#33363d', 0, 0.6, 0, g, 8);
-      sph(0.11, new THREE.MeshLambertMaterial({ color: '#fff3c4', emissive: '#ffd36b', emissiveIntensity: 0.5 }), 0, 1.28, 0, g, 10);
+      sph(0.11, LAMP_MAT, 0, 1.28, 0, g, 10);
       mesh(new THREE.ConeGeometry(0.15, 0.1, 10), M('#33363d'), 0, 1.4, 0, g);
       g.position.set(x, y, z); this.scene.add(g);
     };
@@ -1544,7 +1587,11 @@ export class World {
       this.occupied.add(`${kx},${kz}`);
     }
     const trees = [[21, 6, '#ff9f1c'], [0, 12, '#e8312f'], [21, 17, '#e8312f'], [6, 17, '#ff9f1c'], [3, 17, null], [19, 5, null], [17, 17, '#e8312f']];
-    trees.forEach(([x, z, f], i) => { const t = this._place(tree(f, i + 3), x, z); this.sways.push(t); });
+    this.fruitTrees = new Map();
+    trees.forEach(([x, z, f], i) => {
+      const t = this._place(tree(f, i + 3), x, z); this.sways.push(t);
+      if (f) this._registerFruitTree(`d${i}`, t, x, z);
+    });
     // backdrop trees on the terrace and beyond
     for (let x = -4; x < W + 4; x += 1) {
       const r = rng(x * 31 + 7);
@@ -1578,7 +1625,8 @@ export class World {
       const cx = x + 0.2 + tr() * 0.6, cz = z + 0.2 + tr() * 0.6;
       for (let k = 0; k < 3; k++) spots.push([cx + (k - 1) * 0.05, tileH(x, z), cz + (tr() - 0.5) * 0.04, (k - 1) * 0.35]);
     }
-    const tufts = new THREE.InstancedMesh(tuftGeo, M('#4f9e38'), spots.length);
+    const tufts = new THREE.InstancedMesh(tuftGeo, new THREE.MeshLambertMaterial({ color: '#4f9e38' }), spots.length);
+    this.tuftMesh = tufts;
     const o = new THREE.Object3D();
     spots.forEach(([x, y, z, rz], i) => { o.position.set(x, y + 0.07, z); o.rotation.set(0, 0, rz); o.updateMatrix(); tufts.setMatrixAt(i, o.matrix); });
     this.scene.add(tufts);
@@ -1604,6 +1652,7 @@ export class World {
     const [x, z] = item.slot;
     this._place(obj, x, z);
     this.built.set(id, obj);
+    if (obj.userData.fruits?.length) this._registerFruitTree(id, obj, x, z);
     if (animate) {
       obj.scale.setScalar(0.001);
       this._anim(0.7, (t) => {
@@ -1701,6 +1750,154 @@ export class World {
     return url;
   }
 
+  // ── Atmosphere ─────────────────────────────────────────────────────
+  setSeason(season) {
+    if (this.season === season) return;
+    this.season = season;
+    LEAF_MAT.map = leafTex(...SEASON_LEAVES[season]); LEAF_MAT.needsUpdate = true;
+    LEAF_MAT_DARK.color.set(season === 'winter' ? '#4f8a5a' : season === 'autumn' ? '#4a7a3f' : '#3f8f4a');
+    this.grassMats.grassTop.map = seasonGrassTex(SEASON_GRASS[season], 7); this.grassMats.grassTop.needsUpdate = true;
+    const pl = SEASON_GRASS[season].map((c) => new THREE.Color(c).offsetHSL(0, 0, 0.04).getStyle());
+    this.grassMats.plateauTop.map = seasonGrassTex(pl, 11); this.grassMats.plateauTop.needsUpdate = true;
+    if (this.tuftMesh) this.tuftMesh.material.color.set(season === 'winter' ? '#c9d6dc' : season === 'autumn' ? '#8a8a3a' : '#4f9e38');
+    // fallen leaves in autumn
+    if (this.leafLitter) { this.scene.remove(this.leafLitter); this.leafLitter = null; }
+    if (season === 'autumn') {
+      const r = rng(5), spots = [];
+      for (let i = 0; i < 260; i++) {
+        const x = r() * W, z = 1 + r() * (D - 4), t = tileAt(Math.floor(x), Math.floor(z));
+        if (t === '.' || t === 'H') spots.push([x, tileH(Math.floor(x), Math.floor(z)) + 0.012, z, r() * 6, ['#e0873a', '#f2b24a', '#c4572e', '#d9a03a'][Math.floor(r() * 4)]]);
+      }
+      const geo = new THREE.PlaneGeometry(0.09, 0.06);
+      const m = new THREE.InstancedMesh(geo, new THREE.MeshLambertMaterial({ side: THREE.DoubleSide }), spots.length);
+      const o = new THREE.Object3D(), c = new THREE.Color();
+      spots.forEach(([x, y, z, rot, col], i) => { o.position.set(x, y, z); o.rotation.set(-Math.PI / 2, 0, rot); o.updateMatrix(); m.setMatrixAt(i, o.matrix); m.setColorAt(i, c.set(col)); });
+      m.receiveShadow = true;
+      this.leafLitter = m; this.scene.add(m);
+    }
+  }
+  setWeather(kind) {
+    this.weather = kind;
+    if (this.precip) { this.scene.remove(this.precip); this.precip = null; }
+    if (kind !== 'rain' && kind !== 'snow') return;
+    const n = kind === 'rain' ? 520 : 380;
+    const geo = kind === 'rain' ? new THREE.BoxGeometry(0.012, 0.28, 0.012) : new THREE.SphereGeometry(0.035, 6, 4);
+    const mat = new THREE.MeshBasicMaterial({ color: kind === 'rain' ? '#d6ecf7' : '#ffffff', transparent: true, opacity: kind === 'rain' ? 0.55 : 0.9 });
+    const m = new THREE.InstancedMesh(geo, mat, n);
+    m.frustumCulled = false;
+    const r = rng(9);
+    m.userData.drops = Array.from({ length: n }, () => [(r() - 0.5) * 22, r() * 9, (r() - 0.5) * 20, 0.6 + r() * 0.8]);
+    this.precip = m; this.scene.add(m);
+  }
+  // hour: local time as a decimal (e.g. 18.5)
+  setTimeOfDay(hour) {
+    let a = DAY_KEYS[0], b = DAY_KEYS[1];
+    for (let i = 0; i < DAY_KEYS.length - 1; i++) if (hour >= DAY_KEYS[i][0] && hour <= DAY_KEYS[i + 1][0]) { a = DAY_KEYS[i]; b = DAY_KEYS[i + 1]; break; }
+    const t = (hour - a[0]) / Math.max(0.001, b[0] - a[0]);
+    const sky = new THREE.Color(a[1]).lerp(new THREE.Color(b[1]), t);
+    let hemiI = a[2] + (b[2] - a[2]) * t, sunI = a[4] + (b[4] - a[4]) * t;
+    const sunC = new THREE.Color(a[3]).lerp(new THREE.Color(b[3]), t);
+    const lamps = a[5] + (b[5] - a[5]) * t;
+    const w = WEATHER_TINT[this.weather];
+    if (w) { sky.lerp(new THREE.Color(w[0]), w[1] * (1 - lamps * 0.6)); sunI *= w[2]; hemiI *= 0.9; }
+    this.scene.background = sky;
+    this.scene.fog.color.copy(sky);
+    this.hemi.intensity = hemiI;
+    this.hemi.color.copy(new THREE.Color('#fff6e0').lerp(sunC, 0.4).lerp(new THREE.Color('#5f70c0'), lamps * 0.75));
+    this.hemi.groundColor.copy(new THREE.Color('#6a9a50').lerp(new THREE.Color('#25304f'), lamps * 0.8));
+    this.sun.color.copy(sunC);
+    this.sun.intensity = sunI;
+    this.sunHeight = 14 - lamps * 6;
+    LAMP_MAT.emissiveIntensity = 0.4 + lamps * 1.2;
+    WINDOW_MAT.emissiveIntensity = lamps * 0.9;
+    this.waterMat.color.copy(new THREE.Color('#ffffff').lerp(new THREE.Color('#6f86b0'), lamps * 0.8));
+    this.night = lamps;
+  }
+
+  // ── Things to collect around the island ──────────────────────────────
+  _registerFruitTree(key, g, x, z) {
+    this.fruitTrees.set(key, { g, x, z, color: g.userData.fruitColor });
+    g.traverse((o) => { o.userData.fruitTree = key; });
+  }
+  setFruit(key, on) { const t = this.fruitTrees.get(key); if (t) t.g.userData.fruits.forEach((f) => { f.visible = on; f.position.y = f.userData.y0 ?? f.position.y; }); }
+  fruitTreeKeys() { return [...this.fruitTrees.keys()]; }
+  // Walk next to a tile, face a point, then run `act`.
+  _goNextTo(x, z, face, act) {
+    if (this.state === 'build' || this.state === 'fish') return;
+    if (this.state === 'nap') this._wake();
+    this.stick.set(0, 0);
+    const arrive = () => { this.state = 'idle'; this.idleTimer = 5; this._faceToward(face); act(); };
+    const here = this._tileOf(this.pos);
+    if (Math.abs(here[0] - x) + Math.abs(here[1] - z) <= 1 && !(here[0] === x && here[1] === z && this.occupied.has(`${x},${z}`))) { arrive(); return; }
+    const path = this._findPath(here, (gx, gz) => Math.abs(gx - x) + Math.abs(gz - z) === 1);
+    if (path && path.length > 1) this._walk(path, arrive); else arrive();
+  }
+  shakeTree(key, done) {
+    const t = this.fruitTrees.get(key);
+    if (!t) return;
+    this._goNextTo(t.x, t.z, t.g.position, () => {
+      const fruits = t.g.userData.fruits.filter((f) => f.visible);
+      this._anim(0.7, (k) => { t.g.rotation.z = Math.sin(k * Math.PI * 8) * 0.06 * (1 - k); });
+      fruits.forEach((f, i) => {
+        f.userData.y0 = f.userData.y0 ?? f.position.y;
+        const y0 = f.userData.y0;
+        this._anim(0.6 + i * 0.08, (k) => { f.position.y = y0 - k * k * y0; if (k === 1) { f.visible = false; f.position.y = y0; } });
+      });
+      setTimeout(() => done && done(fruits.length), 750);
+    });
+  }
+  // Weeds, shells and bugs: little models that can be tapped and collected.
+  spawnPickups(list) {
+    this.pickups = this.pickups || new Map();
+    for (const p of this.pickups.values()) this.scene.remove(p.g);
+    this.pickups.clear();
+    for (const p of list) {
+      const g = new THREE.Group();
+      if (p.kind === 'weed') {
+        for (let i = 0; i < 5; i++) { const c = mesh(new THREE.ConeGeometry(0.05, 0.22, 4), M(this.season === 'autumn' ? '#7a8a2a' : this.season === 'winter' ? '#6a8a6a' : '#3f8f2f'), Math.sin(i * 1.3) * 0.08, 0.1, Math.cos(i * 1.3) * 0.08, g); c.rotation.z = Math.sin(i * 2.1) * 0.4; }
+      } else if (p.kind === 'shell') {
+        const sh = mesh(new THREE.SphereGeometry(0.09, 10, 6, 0, Math.PI * 2, 0, Math.PI / 2), M(p.color), 0, 0.01, 0, g); sh.scale.set(1, 0.5, 0.85);
+      } else if (p.kind === 'bug') {
+        const body = new THREE.Group(); g.add(body);
+        if (p.glow) sph(0.045, new THREE.MeshBasicMaterial({ color: p.color }), 0, 0, 0, body, 8);
+        else {
+          cyl(0.01, 0.01, 0.1, '#2a2320', 0, 0, 0, body, 4).rotation.x = Math.PI / 2;
+          for (const s of [-1, 1]) { const w = new THREE.Mesh(new THREE.CircleGeometry(0.08, 8), new THREE.MeshLambertMaterial({ color: p.color, side: THREE.DoubleSide })); w.position.set(s * 0.06, 0, 0); w.rotation.x = -Math.PI / 2; body.add(w); body.userData[s < 0 ? 'l' : 'r'] = w; }
+        }
+        g.userData.bug = { home: [p.x + 0.5, p.z + 0.5], phase: Math.random() * 6, glow: p.glow };
+      }
+      const hit = new THREE.Mesh(new THREE.SphereGeometry(p.kind === 'bug' ? 0.4 : 0.32, 6, 4), new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false }));
+      hit.position.y = 0.1; g.add(hit);
+      g.traverse((o) => { o.userData.pickup = p.id; });
+      g.position.set(p.x + 0.5, tileH(p.x, p.z), p.z + 0.5);
+      this.scene.add(g);
+      this.pickups.set(p.id, { ...p, g });
+    }
+  }
+  collect(id, done) {
+    const p = this.pickups?.get(id);
+    if (!p) return;
+    if (p.kind === 'bug') p.g.userData.bug.held = true;
+    const [tx, tz] = [Math.floor(p.g.position.x), Math.floor(p.g.position.z)];
+    this._goNextTo(tx, tz, p.g.position, () => {
+      const { body, arms } = this.creature.userData;
+      if (p.kind === 'bug') {
+        if (!this.net) { this.net = new THREE.Group(); cyl(0.012, 0.012, 0.5, '#8a5a35', 0, 0.25, 0, this.net, 5); const ring = mesh(new THREE.TorusGeometry(0.1, 0.012, 5, 14), M('#c7ccd4'), 0, 0.55, 0, this.net); ring.rotation.x = Math.PI / 2; this.net.position.set(0.17, 0.22, 0.05); body.add(this.net); }
+        this.net.visible = true;
+        this._anim(0.5, (k) => { this.net.rotation.x = -1.6 + Math.sin(k * Math.PI) * 1.8; if (k === 1) this.net.visible = false; });
+      } else {
+        this._anim(0.6, (k) => { body.scale.y = 1 - Math.sin(k * Math.PI) * 0.18; arms[1].position.y = 0.22 - Math.sin(k * Math.PI) * 0.1; });
+      }
+      setTimeout(() => {
+        this.pickups.delete(id);
+        this._puff(p.g.position, 0.5);
+        this.scene.remove(p.g);
+        this.hop();
+        done && done(p);
+      }, 550);
+    });
+  }
+
   // ── Visitors ───────────────────────────────────────────────────────
   setVisitors(list) {
     this.visitors = this.visitors || new Map();
@@ -1794,6 +1991,7 @@ export class World {
     g.position.set(x + 0.5, tileH(x, z), z + 0.5);
     this.scene.add(g);
     this.plants.set(key, g);
+    if (g.userData.fruits?.length) this._registerFruitTree(key, g, x, z);
     if (g.userData.sway !== undefined) this.sways.push(g);
     if (animate) {
       const full = g.scale.x;
@@ -2213,10 +2411,14 @@ export class World {
       const ndc = new THREE.Vector2(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
       ray.setFromCamera(ndc, this.camera);
       if (ray.intersectObject(this.creature, true).length) { this.hop(); this._emit('creatureTap'); return; }
+      const pk = ray.intersectObjects([...(this.pickups?.values() || [])].map((p) => p.g), true);
+      if (pk.length) { this._emit('pickupTap', pk[0].object.userData.pickup); return; }
       const vis = ray.intersectObjects([...(this.visitors?.values() || [])], true);
       if (vis.length) { this.visitVisitor(vis[0].object.userData.visitor); return; }
       const st = ray.intersectObjects([...this.stations.values(), ...this.keepers.values()], true);
       if (st.length) { this.visit(st[0].object.userData.station); return; }
+      const ft = ray.intersectObjects([...this.fruitTrees.values()].map((t) => t.g), true);
+      if (ft.length) { this._emit('treeTap', ft[0].object.userData.fruitTree); return; }
       const items = ray.intersectObjects([...this.built.values()], true);
       if (items.length) { this._emit('itemTap', items[0].object.userData.itemId); return; }
       const gifts = ray.intersectObjects([...(this.gifts?.values() || [])], true);
@@ -2327,6 +2529,29 @@ export class World {
       if (g.userData.bird) g.userData.bird.position.y = 0.66 + Math.abs(Math.sin(time * 3)) * ((time % 6) < 1 ? 0.04 : 0);
     }
 
+    // bugs flutter around their spot; fireflies blink
+    for (const p of this.pickups?.values() || []) {
+      const b = p.g.userData.bug;
+      if (!b) continue;
+      const t = time + b.phase;
+      if (!b.held) p.g.position.set(b.home[0] + Math.sin(t * 0.7) * 1.1, 0.45 + Math.sin(t * 2.3) * 0.15, b.home[1] + Math.sin(t * 0.53 + 1) * 0.9);
+      const body = p.g.children[0];
+      if (body.userData.l) { const f = Math.sin(t * 22) * 0.9; body.userData.l.rotation.y = f; body.userData.r.rotation.y = -f; body.rotation.y = Math.atan2(Math.cos(t * 0.7), Math.cos(t * 0.53 + 1)); }
+      if (b.glow) body.children[0].material.opacity = 1, body.children[0].visible = Math.sin(t * 3) > -0.3;
+    }
+
+    // rain or snow around the camera
+    if (this.precip) {
+      const m = this.precip, o = this._po || (this._po = new THREE.Object3D()), rain = this.weather === 'rain';
+      m.userData.drops.forEach((d, i) => {
+        d[1] -= dt * (rain ? 11 : 1.1) * d[3];
+        if (d[1] < -0.3) d[1] += 9;
+        const x = this.target.x + d[0] + (rain ? 0 : Math.sin(time * 0.8 + i) * 0.3), z = this.target.z + d[2];
+        o.position.set(x, d[1], z); o.rotation.set(0, 0, rain ? 0.12 : 0); o.updateMatrix(); m.setMatrixAt(i, o.matrix);
+      });
+      m.instanceMatrix.needsUpdate = true;
+    }
+
     // fish swimming in the pond
     for (const f of this.pondFish || []) {
       const u = f.userData, a = time * u.speed * u.dir + u.phase;
@@ -2363,7 +2588,7 @@ export class World {
     const pitch = THREE.MathUtils.degToRad(42);
     this.camera.position.set(this.target.x, Math.sin(pitch) * this.dist, this.target.z + Math.cos(pitch) * this.dist);
     this.camera.lookAt(this.target.x, 0, this.target.z);
-    this.sun.position.set(this.target.x - 6, 14, this.target.z + 8);
+    this.sun.position.set(this.target.x - 6, this.sunHeight || 14, this.target.z + 8);
     this.sun.target.position.set(this.target.x, 0, this.target.z);
 
     this.renderer.render(this.scene, this.camera);

@@ -70,6 +70,8 @@ Mastery comes from the review schedule (visitor questions and board puzzles): ea
 
 Energy (from reading and real-world logs) is what you spend at the workbench. Visitors and puzzles pay in mastery and gifts; fishing pays in fish.
 
+Around the island: the sky follows your real clock (pink dawn, orange sunset, blue night with lit windows and lamps), the season follows the month (spring green, autumn leaves, winter snow), and the weather changes daily (sun, cloud, rain, snow). Each day weeds pop up to pull (clear them all for a thank-you; some hide four-leaf clovers), shells wash up on the beach, and butterflies or moths come out depending on the hour and season (catch them with a net). Tap a fruit tree to shake it; fruit grows back the next day, and Pepper trades five fruit for a gift.
+
 Walking: **tap the ground** to walk Pip there, or **press and drag** for a joystick. The camera follows Pip. Tap Pip to chat, or tap anything you built to see which lesson it came from.
 
 No decay, no streak-shaming. At zero energy Pip just naps.

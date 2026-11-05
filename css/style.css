@@ -295,7 +295,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .reel .meter b { position: absolute; left: 0; right: 0; bottom: 0; background: linear-gradient(#ffd96a, #6cc04a); }
 
 /* fish collection */
-.fishgrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.fishgrid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
 .fishcell { display: flex; flex-direction: column; align-items: center; padding: 6px 2px; border: 2.5px solid var(--ink); border-radius: 14px; background: #eef9fc; text-align: center; }
 .fishcell.unknown { background: #f1ead6; border-color: #cdbf9c; }
 .fishcell small { font-weight: 800; font-size: 11px; line-height: 1.1; }
@@ -397,3 +397,4 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .focus-time { margin: 0; font-family: var(--display); font-weight: 800; font-size: 54px; line-height: 1; }
 .focus-what { margin: 0; font-family: var(--display); font-weight: 700; font-size: 20px; }
 .focus-tip { margin: 2px 0 16px; font-weight: 600; opacity: .7; }
+.bugdot { width: 26px; height: 18px; border-radius: 50% 50% 40% 40%; border: 2.5px solid var(--ink); margin: 4px 0 2px; }
