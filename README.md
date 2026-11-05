@@ -4,7 +4,11 @@ A private, single-user phone app: a little creature on a tile-based island that 
 
 No build step and no dependencies to install. It's plain HTML/JS with three.js vendored in `vendor/`. Everything is stored in `localStorage` on your phone.
 
-## Deploy (free, auto-updates on every push)
+## Deploy
+
+Live at **https://annika-thomas.github.io/life-coach-game/** (GitHub Pages, from this branch). Every push redeploys in a minute or two.
+
+### Alternative: Netlify (works with a private repo)
 
 The repo is private, so GitHub Pages would need a paid plan. Netlify's free tier deploys private repos.
 
