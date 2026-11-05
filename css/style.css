@@ -424,3 +424,16 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .menu-btn small { font-weight: 700; opacity: .65; }
 .menu-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--ink); }
 .sheet.menu-sheet { height: auto; }
+
+/* interactive demos under science, probability and robotics cards */
+.demo { margin: 6px 0 12px; padding: 10px 12px 12px; border: 2.5px solid var(--ink); border-radius: 16px; background: #f1f8f4; }
+.demo canvas { display: block; border: 2px solid #cfe3d6; border-radius: 10px; margin-bottom: 8px; touch-action: pan-y; }
+.demo-title { margin: 0 0 6px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .5px; color: #2f7a5a; }
+.demo-slider { display: block; margin: 4px 0; }
+.demo-slider span { display: flex; justify-content: space-between; font-size: 14px; }
+.demo-slider i { font-style: normal; font-weight: 800; }
+.demo-slider input { width: 100%; accent-color: #3f9f7a; height: 26px; }
+.demo-buttons { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 2px; }
+.demo-btn { padding: 6px 12px; border: 2.5px solid var(--ink); border-radius: 999px; background: #fffdf4; box-shadow: 0 2px 0 var(--ink); font-weight: 800; font-size: 13px; }
+.demo-btn:active { transform: translateY(2px); box-shadow: none; }
+.demo-read { margin: 6px 0 0; font-size: 14px; line-height: 1.45; }

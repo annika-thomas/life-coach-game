@@ -6,6 +6,7 @@ import { LESSONS, CATEGORIES } from './lessons.js';
 import { load, save, reset, dayKey, rhythm } from './state.js';
 import { ICON, leafAmt } from './icons.js';
 import { QUIZ } from './quiz.js';
+import { hasDemo, mountDemo } from './demos.js';
 import { MAPS, project } from './wine-maps.js';
 import { REGIONS, CHEESES, STYLES, TRAITS } from './wine-games.js';
 
@@ -405,6 +406,7 @@ function cardHtml(l) {
     </div>
     <div class="reading">
     ${l.body.map((p) => `<p>${esc(p)}</p>`).join('')}
+    ${hasDemo(l.id) ? `<div class="demo" data-demo="${l.id}"></div>` : ''}
     ${unlock ? `<div class="card-unlock">Counts toward the ${esc(unlock.name.toLowerCase())}</div>` : ''}
     <details class="take">
       <summary>Maple has a question for you <span>(optional, +1)</span></summary>
@@ -436,6 +438,7 @@ function openLessons(first) {
       card.querySelectorAll('.opt').forEach((x) => { x.disabled = true; if (x.dataset.right === '1') x.classList.add('right'); });
       card.querySelector('.guess-result').textContent = text;
       card.classList.add('guessed');
+      const demo = card.querySelector('.demo'); if (demo) mountDemo(demo, demo.dataset.demo);
     };
     card.querySelectorAll('.opt').forEach((o) => o.onclick = () => {
       if (card.classList.contains('guessed')) return;
@@ -1345,9 +1348,9 @@ function startToday(cats = null, teacher = null) {
           <p class="guess-q">${esc(g.q)}</p>
           <div class="opts">${shuffle([g.a, ...g.w]).map((o) => `<button class="opt" data-right="${o === g.a ? 1 : 0}">${esc(o)}</button>`).join('')}</div>
           <p class="guess-result"></p><button class="guess-skip">Skip the guess</button></div>
-        <div class="reading">${l.body.map((p) => `<p>${esc(p)}</p>`).join('')}</div></article>`);
+        <div class="reading">${l.body.map((p) => `<p>${esc(p)}</p>`).join('')}${hasDemo(l.id) ? `<div class="demo" data-demo="${l.id}"></div>` : ''}</div></article>`);
       const card = $('#tstep .card');
-      const reveal = (txt) => { card.querySelectorAll('.opt').forEach((x) => { x.disabled = true; if (x.dataset.right === '1') x.classList.add('right'); }); card.querySelector('.guess-result').textContent = txt; card.classList.add('guessed'); };
+      const reveal = (txt) => { card.querySelectorAll('.opt').forEach((x) => { x.disabled = true; if (x.dataset.right === '1') x.classList.add('right'); }); card.querySelector('.guess-result').textContent = txt; card.classList.add('guessed'); const demo = card.querySelector('.demo'); if (demo) mountDemo(demo, demo.dataset.demo); };
       card.querySelectorAll('.opt').forEach((o) => o.onclick = () => { const r = o.dataset.right === '1'; if (!r) o.classList.add('wrong'); reveal(r ? 'Correct.' : 'Not quite.'); });
       card.querySelector('.guess-skip').onclick = () => reveal('');
       const got = document.createElement('button');

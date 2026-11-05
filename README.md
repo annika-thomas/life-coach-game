@@ -89,6 +89,7 @@ js/cards/*.js               the card bank: 20 cards per category + visitor reque
 js/quiz.js                  recall questions (original cards; bank cards carry their own)
 js/wine-games.js            wine regions and cheeses (real coordinates), wine style profiles
 js/wine-maps.js             generated SVG outlines (Natural Earth via world-atlas)
+js/demos.js                 'Try it' simulations under some science, probability and robotics cards
 js/state.js                 localStorage save/load
 sw.js, manifest.webmanifest offline + home-screen install
 ```
