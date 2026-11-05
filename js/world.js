@@ -1073,6 +1073,36 @@ function chalkboardModel() {
   }
   return g;
 }
+// What each keeper does when nobody's visiting: a few spots to stroll
+// between (on paths, so builds never block them) and a little activity.
+const ROUTINES = {
+  library:     { act: 'read',     points: [[4.5, 10.5], [4.6, 11.45], [5.6, 11.4]],   face: null },
+  gym:         { act: 'exercise', points: [[17.5, 10.5], [17.5, 11.45], [16.5, 10.4]], face: null },
+  workbench:   { act: 'hammer',   points: [[13.5, 7.5], [13.4, 7.85], [13.6, 7.25]],  face: [12.5, 7.5] },
+  square:      { act: 'letters',  points: [[7.5, 9.5], [8.5, 9.6], [7.5, 10.4]],      face: [7.5, 8.5] },
+  market:      { act: 'stir',     points: [[11.5, 14.5], [10.5, 14.6], [10.5, 15.6]], face: [11.5, 13.5] },
+  observatory: { act: 'stargaze', points: [[14.5, 3.5], [14.5, 4.4], [15.3, 4.45]],   face: [13.5, 3.5] },
+};
+function keeperProp(act) {
+  const g = new THREE.Group();
+  if (act === 'read') {
+    for (const s of [-1, 1]) { const p = box(0.12, 0.16, 0.012, '#fffdf4', s * 0.06, 0, 0, g); p.rotation.y = s * -0.35; }
+    box(0.26, 0.17, 0.008, '#8a5a9e', 0, 0, -0.012, g);
+    g.position.set(0, 0.3, 0.22); g.rotation.x = -0.6;
+  } else if (act === 'letters') {
+    box(0.16, 0.11, 0.015, '#fffdf4', 0, 0, 0, g); sph(0.018, '#e5483b', 0, 0, 0.01, g, 6);
+    g.position.set(0.2, 0.3, 0.12);
+  } else if (act === 'stir') {
+    cyl(0.12, 0.1, 0.14, '#4a4f5a', 0, 0.07, 0, g, 14); cyl(0.1, 0.1, 0.01, '#e8c08a', 0, 0.13, 0, g, 14);
+    const ladle = new THREE.Group(); ladle.position.set(0.03, 0.2, 0); g.add(ladle);
+    cyl(0.008, 0.008, 0.28, '#8a5a35', 0, 0.06, 0, ladle, 4);
+    g.userData.ladle = ladle; g.position.set(0, 0, 0.32);
+  } else if (act === 'stargaze') {
+    cyl(0.01, 0.01, 0.06, '#ffffff', 0, 0, 0, g, 4); g.position.set(0.2, 0.3, 0.12);
+  }
+  g.visible = false;
+  return g;
+}
 const STATIONS = {
   library:     { model: libraryModel,     tiles: [[2, 9], [3, 9], [2, 10], [3, 10]],     at: [3.0, 10.0],  approach: [3, 11],  labelY: 2.7, keeper: makeMaple,  keeperAt: [4, 10], pin: true },
   gym:         { model: gymModel,         tiles: [[18, 9], [19, 9], [18, 10], [19, 10]], at: [19.0, 10.0], approach: [19, 11], labelY: 1.7, keeper: makeDot,    keeperAt: [17, 10], pin: true },
@@ -1426,6 +1456,12 @@ export class World {
       k.rotation.y = 0.35 * (kx > st.approach[0] ? -1 : 1);
       k.traverse((o) => { o.userData.station = id; });
       k.userData.phase = Math.random() * 6;
+      const R = ROUTINES[id];
+      if (R) {
+        const prop = keeperProp(R.act);
+        if (R.act === 'stir') k.add(prop); else k.userData.body.add(prop);
+        k.userData.ai = { ...R, prop, at: 0, mode: 'act', timer: 2 + Math.random() * 3, target: null };
+      }
       this.scene.add(k);
       this.keepers.set(id, k);
       this.occupied.add(`${kx},${kz}`);
@@ -1588,6 +1624,106 @@ export class World {
     return url;
   }
 
+  // ── Keepers' little routines ───────────────────────────────────────
+  _keeperTick(k, dt, time) {
+    const u = k.userData, ai = u.ai;
+    const { body, head, arms, hammer } = u;
+    const blink = ((time + u.phase) % 4.5) < 0.12;
+    u.eyes.forEach((e) => { e.scale.y = blink ? 0.2 : 1.15; });
+    const turnTo = (x, z, rate = 6) => {
+      const want = Math.atan2(x - k.position.x, z - k.position.z);
+      const d = Math.atan2(Math.sin(want - k.rotation.y), Math.cos(want - k.rotation.y));
+      k.rotation.y += d * Math.min(1, dt * rate);
+    };
+    const rest = () => {
+      body.position.y = Math.sin(time * 2.2 + u.phase) * 0.015; body.rotation.z *= 0.85;
+      head.rotation.x *= 0.85; head.rotation.y *= 0.85;
+      arms[0].position.set(-0.17, 0.22, 0.02); arms[1].position.set(0.17, 0.22, 0.02);
+      hammer.visible = false;
+    };
+    if (!ai) { rest(); return; }
+    // Pip is close: stop, put things down, look at Pip
+    const pipNear = Math.hypot(this.pos.x - k.position.x, this.pos.z - k.position.z) < 2.2 || time < (u.greetUntil || 0);
+    if (pipNear) {
+      ai.prop.visible = false; rest();
+      turnTo(this.pos.x, this.pos.z);
+      if (!ai.waved) { ai.waved = true; ai.waveEnd = time + 1.0; }
+      if (time < ai.waveEnd) {
+        const w = 1 - (ai.waveEnd - time);
+        arms[1].position.y = 0.22 + Math.sin(w * Math.PI) * 0.22;
+        arms[1].position.x = 0.17 + Math.sin(w * Math.PI * 6) * 0.03 * Math.sin(w * Math.PI);
+      }
+      return;
+    }
+    ai.waved = false;
+    ai.timer -= dt;
+    if (ai.mode === 'walk') {
+      ai.prop.visible = ai.act === 'letters';
+      const [tx, tz] = ai.target;
+      const dx = tx - k.position.x, dz = tz - k.position.z, dist = Math.hypot(dx, dz);
+      const step = 0.9 * dt;
+      turnTo(tx, tz, 8);
+      if (dist <= step) { k.position.x = tx; k.position.z = tz; ai.mode = 'act'; ai.timer = 3 + Math.random() * 4; }
+      else { k.position.x += (dx / dist) * step; k.position.z += (dz / dist) * step; }
+      k.position.y = tileH(Math.floor(k.position.x), Math.floor(k.position.z));
+      body.rotation.z = Math.sin(time * 12) * 0.035;
+      body.position.y = Math.abs(Math.sin(time * 12)) * 0.035;
+      hammer.visible = false;
+      return;
+    }
+    // doing their thing
+    if (ai.timer <= 0) {
+      const options = ai.points.map((p, i) => i).filter((i) => i !== ai.at);
+      ai.at = options[Math.floor(Math.random() * options.length)];
+      ai.target = ai.points[ai.at];
+      ai.mode = 'walk';
+      return;
+    }
+    rest();
+    if (ai.face && ai.at === 0) turnTo(ai.face[0], ai.face[1]);
+    else turnTo(this.camera.position.x, this.camera.position.z, 2);
+    ai.prop.visible = true;
+    const t = time + u.phase;
+    switch (ai.act) {
+      case 'read':
+        head.rotation.x = 0.35;
+        arms[0].position.set(-0.11, 0.3, 0.18); arms[1].position.set(0.11, 0.3, 0.18);
+        if ((t % 3) < 0.3) ai.prop.rotation.z = Math.sin((t % 3) / 0.3 * Math.PI) * 0.2;
+        break;
+      case 'exercise': { // jumping jacks
+        const j = Math.abs(Math.sin(t * 5));
+        body.position.y = j * 0.12;
+        arms[0].position.set(-0.17 - j * 0.06, 0.22 + j * 0.28, 0.02); arms[1].position.set(0.17 + j * 0.06, 0.22 + j * 0.28, 0.02);
+        ai.prop.visible = false;
+        break;
+      }
+      case 'hammer': {
+        hammer.visible = true; ai.prop.visible = false;
+        const sw = Math.sin(t * 7);
+        hammer.rotation.x = -1.2 + sw * 1.0;
+        arms[1].position.y = 0.22 + sw * 0.04;
+        break;
+      }
+      case 'letters':
+        if (ai.at === 0) { arms[1].position.set(0.15, 0.36 + Math.sin(t * 3) * 0.03, 0.12); ai.prop.position.set(0.15, 0.42, 0.16); }
+        else { arms[1].position.set(0.2, 0.28, 0.1); ai.prop.position.set(0.2, 0.3, 0.12); }
+        break;
+      case 'stir':
+        ai.prop.visible = ai.at === 0;
+        if (ai.at === 0) {
+          head.rotation.x = 0.3;
+          const a = t * 3;
+          ai.prop.userData.ladle.position.set(0.03 + Math.cos(a) * 0.04, 0.2, Math.sin(a) * 0.04);
+          arms[1].position.set(0.08 + Math.cos(a) * 0.04, 0.3, 0.2 + Math.sin(a) * 0.04);
+        } else { head.rotation.y = Math.sin(t * 0.8) * 0.4; }
+        break;
+      case 'stargaze':
+        if ((t % 8) < 4) { head.rotation.x = -0.45; ai.prop.visible = false; }
+        else { arms[1].position.set(0.14 + Math.sin(t * 6) * 0.04, 0.34 + Math.cos(t * 9) * 0.02, 0.14); ai.prop.position.copy(arms[1].position); }
+        break;
+    }
+  }
+
   // ── Fishing ─────────────────────────────────────────────────────────
   fishStart() {
     this.state = 'fish';
@@ -1693,7 +1829,7 @@ export class World {
       const k = this.keepers.get(id);
       if (k) {
         this._faceToward(k.position);
-        k.userData.face = Math.atan2(this.pos.x - k.position.x, this.pos.z - k.position.z);
+        k.userData.greetUntil = this.clock.elapsedTime + 8;
       } else this.faceAngle = 0; // the dock: face the sea
       this.hop();
       this._emit('station', id);
@@ -1940,16 +2076,7 @@ export class World {
     }
 
     // keepers: gentle bob, blink, turn to face Pip when talking
-    for (const k of this.keepers.values()) {
-      const u = k.userData;
-      u.body.position.y = Math.sin(time * 2.2 + u.phase) * 0.015;
-      const blink = ((time + u.phase) % 4.5) < 0.12;
-      u.eyes.forEach((e) => { e.scale.y = blink ? 0.2 : 1.15; });
-      if (u.face !== undefined) {
-        const d = Math.atan2(Math.sin(u.face - k.rotation.y), Math.cos(u.face - k.rotation.y));
-        k.rotation.y += d * Math.min(1, dt * 6);
-      }
-    }
+    for (const k of this.keepers.values()) this._keeperTick(k, dt, time);
 
     if (this.rod && this.rod.visible) {
       if (this.bobberRest && !this.casting) {
