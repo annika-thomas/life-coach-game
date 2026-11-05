@@ -255,6 +255,24 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .item-cost .ico { width: 20px; height: 20px; }
 .item.locked { opacity: .8; }
 
+/* quick guess before reading */
+.guess { background: #fff6dc; border: 2.5px solid var(--ink); border-radius: 18px; padding: 10px 12px 8px; margin: 8px 0 12px; }
+.guess-label { display: inline-block; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .5px; color: #b8352c; margin-right: 6px; }
+.guess-sub { font-size: 12.5px; font-weight: 600; color: #9d8f72; }
+.guess-q { font-family: var(--display); font-weight: 700; font-size: 18px; line-height: 1.3; margin: 4px 0 8px; }
+.opts { display: grid; gap: 6px; }
+.opt { text-align: left; padding: 9px 12px; border: 2.5px solid var(--ink); border-radius: 14px; background: #fffdf4; box-shadow: 0 2px 0 var(--ink); font-weight: 700; font-size: 15px; }
+.opt:disabled { color: var(--ink); opacity: .55; }
+.opt.right { background: #d8f6c4; opacity: 1; }
+.opt.wrong { background: #ffd6cf; opacity: 1; }
+.guess-result { margin: 8px 2px 0; font-weight: 800; font-size: 14px; }
+.guess-result:empty { display: none; }
+.guess-skip { display: block; margin: 8px auto 0; padding: 4px 10px; border: 0; background: none; font-weight: 700; font-size: 13px; color: #9d8f72; text-decoration: underline; }
+.card.guessed .guess-skip { display: none; }
+.card .reading { display: none; }
+.card.guessed .reading { display: block; animation: fadein .35s; }
+@keyframes fadein { from { opacity: 0; transform: translateY(6px); } }
+
 /* longer quiz answers in dialogue choices */
 .choice { max-width: min(86vw, 420px); white-space: normal; line-height: 1.2; }
 

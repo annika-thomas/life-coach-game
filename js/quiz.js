@@ -1,5 +1,6 @@
-// Recall questions per lesson card, asked at the dock when you hook a fish.
-// They rotate, so a card's second review asks a different question.
+// Recall questions per lesson card. Item 0 is the quick guess shown before
+// reading; at the dock they rotate starting from item 1, so the first
+// fishing question is never the one you just guessed.
 // [question, correct answer, [wrong answers], short explanation]
 const Q = (q, a, w, why) => ({ q, a, w, why });
 

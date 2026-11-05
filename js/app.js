@@ -295,8 +295,10 @@ function chipsHtml() {
 }
 const shuffle = (a) => { const b = a.slice(); for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; };
 
-// A card: read it, tap "Got it". Maple's question is optional and folded
-// away. Quizzing happens later, at the dock.
+// A card: a quick guess (you're not expected to know it; guessing before
+// reading helps the answer stick), then the reading, then "Got it".
+// Maple's opinion question is optional and folded away. The real quiz
+// happens later, at the dock.
 function cardHtml(l) {
   const c = CATEGORIES[l.cat];
   const prior = S.lessons.some((x) => x.id === l.id);
@@ -304,6 +306,14 @@ function cardHtml(l) {
   return `<article class="card" data-id="${l.id}">
     <div class="card-tag" style="--c:${c.color}">${c.label}${prior ? ' · reread' : ''}</div>
     <h3>${esc(l.title)}</h3>
+    <div class="guess">
+      <span class="guess-label">Quick guess</span><span class="guess-sub">Nobody's expected to know this. Guessing first helps it stick.</span>
+      <p class="guess-q">${esc(QUIZ[l.id][0].q)}</p>
+      <div class="opts">${shuffle([QUIZ[l.id][0].a, ...QUIZ[l.id][0].w]).map((o) => `<button class="opt" data-right="${o === QUIZ[l.id][0].a ? 1 : 0}">${esc(o)}</button>`).join('')}</div>
+      <p class="guess-result"></p>
+      <button class="guess-skip">Skip the guess</button>
+    </div>
+    <div class="reading">
     ${l.body.map((p) => `<p>${esc(p)}</p>`).join('')}
     ${unlock ? `<div class="card-unlock">Counts toward the ${esc(unlock.name.toLowerCase())}</div>` : ''}
     <details class="take">
@@ -314,6 +324,7 @@ function cardHtml(l) {
     <div class="card-actions">
       <button class="btn ghost skip">Skip</button>
       <button class="btn primary answer">Got it <span class="amt">${ICON.leaf}<span class="n">+1</span></span></button>
+    </div>
     </div>
   </article>`;
 }
@@ -331,6 +342,18 @@ function openLessons(first) {
   const wire = (card, l) => {
     const ta = card.querySelector('textarea');
     const btn = card.querySelector('.answer');
+    const reveal = (text) => {
+      card.querySelectorAll('.opt').forEach((x) => { x.disabled = true; if (x.dataset.right === '1') x.classList.add('right'); });
+      card.querySelector('.guess-result').textContent = text;
+      card.classList.add('guessed');
+    };
+    card.querySelectorAll('.opt').forEach((o) => o.onclick = () => {
+      if (card.classList.contains('guessed')) return;
+      const right = o.dataset.right === '1';
+      if (!right) o.classList.add('wrong');
+      reveal(right ? 'Nice guess. Here\'s the story.' : pick(['Most people miss this one. Here\'s why.', 'Good guess. The real answer is in here.']));
+    });
+    card.querySelector('.guess-skip').onclick = () => reveal('');
     ta.addEventListener('input', () => { btn.querySelector('.n').textContent = ta.value.trim().length >= 3 ? '+2' : '+1'; });
     btn.onclick = () => {
       const take = ta.value.trim();
@@ -384,7 +407,7 @@ function nextReview() {
   const id = due[0] || ids.sort((a, b) => S.reviews[a].last - S.reviews[b].last)[0];
   const r = S.reviews[id];
   const qs = QUIZ[id];
-  return { id, box: r.box, q: qs[r.n % qs.length], due: !!due.length };
+  return { id, box: r.box, q: qs[(r.n + 1) % qs.length], due: !!due.length };
 }
 function grade(id, right) {
   const r = S.reviews[id];
