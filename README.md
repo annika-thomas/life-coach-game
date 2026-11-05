@@ -1,6 +1,6 @@
 # Island Mentor
 
-A private, single-user phone app: a little creature on a tile-based island that can only build things when you feed it, either by **answering a lesson card** (+1 ⚡) or by **logging something real** you did (+2 ⚡). The world slowly fills up with things you learned about.
+A private, single-user phone app: a little creature on a tile-based island that can only build things when you feed it, either by **answering a lesson card** (+1 energy) or by **logging something real** you did (+2 energy). The world slowly fills up with things you learned about.
 
 No build step and no dependencies to install. It's plain HTML/JS with three.js vendored in `vendor/`. Everything is stored in `localStorage` on your phone.
 
@@ -26,7 +26,7 @@ Open the URL in **Safari** (iPhone) → Share → **Add to Home Screen**. It the
 
 - Use the home-screen icon from then on. On iPhone, home-screen apps keep their own storage, separate from Safari tabs.
 - Updates show up the next time you open it while online.
-- Back up now and then with 📔 Journal → Export data.
+- Back up now and then with Journal → Export data.
 
 ### Trying changes locally
 ```sh
