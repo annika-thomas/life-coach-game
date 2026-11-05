@@ -297,7 +297,11 @@ function pipLine() {
     'I like it here.',
   ]);
 }
-world.on('creatureTap', () => talk('pip', [pipLine()]));
+world.on('creatureTap', async () => {
+  if (S.daily?.todayDone) { talk('pip', [pipLine()]); return; }
+  const c = await talk('pip', ['Want to do today\'s learning? A few cards and a quick review.'], ['Let\'s go', 'Later']);
+  if (c === 0) setTimeout(() => startToday(), 200);
+});
 world.on('itemTap', (id) => {
   const it = ITEM_BY_ID[id];
   const src = unlockSource(it);
@@ -1247,7 +1251,21 @@ const CHAT = {
   market: ['pepper', ['The market smells great today.', 'Fancy a taste test?', 'Busy morning on the street.']],
   observatory: ['sage', ['Slow and steady, as they say.', 'Clear skies tonight, I hope.', 'A good question outlives its answer.']],
 };
+// Keepers who teach, and the topics they cover.
+const TEACH = {
+  library: { who: 'maple', cats: ['art', 'film', 'fashion', 'culture'], offer: ['Want to learn something? Art, film, fashion or culture.', 'I have a card or two set aside for you.'] },
+  square: { who: 'fennel', cats: DISTRICTS.square.cats, offer: ['News, travel, history. Want a quick lesson?', 'I\'ve got stories from all over. Want one?'] },
+  market: { who: 'pepper', cats: DISTRICTS.market.cats, offer: ['Food, wine, cheese. Shall I teach you something?', 'Pull up a stool. Want a little lesson?'] },
+  observatory: { who: 'sage', cats: DISTRICTS.observatory.cats, offer: ['Science, probability, robots, big ideas. Shall we?', 'I have a puzzle or two for you, if you like.'] },
+};
 async function keeperChat(id) {
+  const t = TEACH[id];
+  if (t) {
+    const c = await talk(t.who, [pick(t.offer)], ['Teach me', 'Not now']);
+    if (c === 0) setTimeout(() => startToday(t.cats, t.who), 200);
+    else await maybeKeeperGift(id);
+    return;
+  }
   const [who, lines] = CHAT[id] || [];
   if (!who) return VISIT[id]();
   await talk(who, [pick(lines)]);
@@ -1258,21 +1276,21 @@ async function keeperChat(id) {
 // One short, mixed session: new cards to read, and reviews of what's due,
 // each in whichever format suits the card (map, timeline, slider or a plain
 // recall question). Topics are mixed on purpose.
-function planToday() {
+function planToday(cats = null) {
   const now = Date.now();
-  const due = Object.keys(S.reviews).filter((id) => QUIZ[id] && S.reviews[id].due <= now).sort((a, b) => S.reviews[a].due - S.reviews[b].due);
+  const due = Object.keys(S.reviews).filter((id) => QUIZ[id] && S.reviews[id].due <= now && (!cats || cats.includes(CAT_OF[id]))).sort((a, b) => S.reviews[a].due - S.reviews[b].due);
   const reviews = due.slice(0, 5);
   const fresh = [];
-  const keep = filters; filters = new Set(); // Today mixes every topic
-  const usedCats = new Set(reviews.map((id) => CAT_OF[id]));
-  for (let i = 0; i < (reviews.length >= 4 ? 2 : 3); i++) {
+  const keep = filters; filters = new Set(cats || []); // Today mixes every topic; a keeper sticks to theirs
+  const usedCats = new Set(cats ? [] : reviews.map((id) => CAT_OF[id]));
+  for (let i = 0; i < (cats ? (reviews.length >= 3 ? 1 : 2) : reviews.length >= 4 ? 2 : 3); i++) {
     let pickd = null;
     for (let tries = 0; tries < 12 && !pickd; tries++) { const c = nextLesson(fresh.map((l) => l.id)); if (!usedCats.has(c.cat) || tries === 11) pickd = c; }
     fresh.push(pickd); usedCats.add(pickd.cat);
   }
   filters = keep;
   const steps = [];
-  const readTimeline = S.lessons.map((l) => LESSONS.find((x) => x.id === l.id)).filter((l) => l?.timeline);
+  const readTimeline = S.lessons.map((l) => LESSONS.find((x) => x.id === l.id)).filter((l) => l?.timeline && (!cats || cats.includes(l.cat)));
   const timelineReady = new Set(readTimeline.map((l) => l.timeline.year)).size >= 4;
   // interleave: review, new, review, new...
   const revSteps = reviews.map((id) => ({ kind: 'review', id }));
@@ -1299,13 +1317,14 @@ function renderTodayTag() {
   todayEl.innerHTML = done ? `${ICON.check}<b>Today</b>` : `<b>Today</b><small>${planToday().length} steps</small>`;
 }
 todayEl.onclick = () => startToday();
-function startToday() {
-  const steps = planToday();
+function startToday(cats = null, teacher = null) {
+  const steps = planToday(cats);
+  const title = teacher ? `${CAST[teacher].name()}'s lesson` : 'Today';
   if (!steps.length) { toast('Nothing to do yet. Read a card at the library first.'); return; }
   const log = { newCards: 0, reviews: 0, right: 0, topics: new Set() };
   let i = 0;
   const frame = (title, inner) => {
-    openSheet('Today', `<div class="today-bar"><i style="width:${(i / steps.length) * 100}%"></i></div><p class="today-kind">${title}</p><div id="tstep">${inner}</div>`, 'today-sheet');
+    openSheet(title, `<div class="today-bar"><i style="width:${(i / steps.length) * 100}%"></i></div><p class="today-kind">${title}</p><div id="tstep">${inner}</div>`, 'today-sheet');
   };
   const next = () => { i += 1; if (i < steps.length) show(); else finish(); };
   const cont = (label = 'Continue') => {
@@ -1383,7 +1402,7 @@ function startToday() {
         });
       }
     } else if (st.kind === 'timeline') {
-      const pool = S.lessons.map((x) => LESSONS.find((y) => y.id === x.id)).filter((x) => x?.timeline);
+      const pool = S.lessons.map((x) => LESSONS.find((y) => y.id === x.id)).filter((x) => x?.timeline && (!cats || cats.includes(x.cat)));
       const years = new Set();
       const evs = shuffle(pool).filter((x) => !years.has(x.timeline.year) && years.add(x.timeline.year)).slice(0, 4);
       frame('Timeline', `<p class="guess-q">Earliest at the top.</p>
@@ -1403,20 +1422,20 @@ function startToday() {
     }
   };
   const finish = () => {
-    const first = !S.daily.todayDone;
-    S.daily.todayDone = true;
+    const first = !cats && !S.daily.todayDone;
+    if (!cats) S.daily.todayDone = true;
     if (first) S.energy += 1;
     const news = masteryNews();
     commit(); renderTodayTag();
     const topics = [...log.topics].map((c) => CATEGORIES[c].label);
-    openSheet('Today', `<div class="today-done">
-      <p class="today-big">Done for today${first ? ` <span class="amt">${ICON.leaf}+1</span>` : ''}</p>
+    openSheet(title, `<div class="today-done">
+      <p class="today-big">${cats ? 'Lesson done' : 'Done for today'}${first ? ` <span class="amt">${ICON.leaf}+1</span>` : ''}</p>
       <div class="stats"><div><b>${log.newCards}</b><small>new cards</small></div><div><b>${log.right}/${log.reviews}</b><small>remembered</small></div><div><b>${topics.length}</b><small>topics</small></div></div>
       ${topics.length ? `<p class="lead">${esc(topics.join(', '))}</p>` : ''}
       ${news.map((n) => `<p class="today-news">${esc(n)}</p>`).join('')}
       <button class="btn primary wide" id="tmore">Keep going</button>
       <button class="btn ghost wide" id="tclose">Back to the island</button></div>`, 'today-sheet');
-    $('#tmore').onclick = () => startToday();
+    $('#tmore').onclick = () => startToday(cats, teacher);
     $('#tclose').onclick = closeSheet;
   };
   show();
@@ -1574,12 +1593,14 @@ if (!S.introDone) {
   setTimeout(async () => {
     await talk('pip', [
       'Oh! You\'re here.',
-      'Tap Today up top whenever you want to learn something. I\'ll build the island while you do.',
+      'Everyone here can teach you something. Tap Maple, Fennel, Pepper or Sage, or tap Today up top for a bit of everything.',
     ]);
     S.introDone = true; save(S);
     toast('Tap a building to go in. Tap the ground to walk.');
   }, 2600);
 }
+
+if (S.introDone && !S.seenTeachHint) setTimeout(() => { toast('Tap Maple, Fennel, Pepper or Sage to learn from them'); S.seenTeachHint = true; save(S); }, 3500);
 
 if ('serviceWorker' in navigator && location.protocol !== 'file:') {
   // When an update installs, reload once so every file comes from the new version.

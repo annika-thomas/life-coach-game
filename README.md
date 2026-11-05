@@ -38,7 +38,7 @@ Then open `http://localhost:8080`, or `http://<laptop-ip>:8080` from your phone 
 
 **Today** (top left, under the clock) is the heart of it: a short, mixed session of a few new cards (each with a quick guess first) and reviews of what's due, in whichever format suits the card: a map, a Timeline, a number slider or a recall question. Topics are mixed on purpose. It ends with a summary of what you learned and what's getting stronger.
 
-Places open straight away when you tap them; keepers just say a line if you tap them (and occasionally have a small gift). Visitors drop by to say hello.
+The keepers teach: tap **Maple** (art, film, fashion, culture), **Fennel** (news, travel, history), **Pepper** (food, wine, cheese) or **Sage** (science, probability, robotics, philosophy) for a short lesson on their topics (new cards plus their due reviews). Tap Pip for the mixed Today session. Buildings open straight away when you tap them. Visitors drop by to say hello.
 
 | Place | What it does |
 |---|---|
