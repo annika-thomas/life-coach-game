@@ -36,7 +36,6 @@ const HEIGHT = { H: 1, '.': 0, '#': 0, S: 0.5, s: -0.2, w: -0.8 };
 const tileH = (x, z) => HEIGHT[tileAt(x, z)];
 
 const HOME = [8, 10];    // where Pip stands
-const VIEW = [8, 8.6];   // fixed camera look-at point (tile coords)
 
 // ── Small helpers ──────────────────────────────────────────────────────
 const matCache = new Map();
@@ -561,9 +560,12 @@ export class World {
     this.scene.fog = new THREE.Fog('#a8e3f7', 38, 70);
     this.camera = new THREE.PerspectiveCamera(32, 1, 0.1, 200);
     this.clock = new THREE.Clock();
-    this.target = new THREE.Vector3(VIEW[0], 0, VIEW[1]);
+    this.target = new THREE.Vector3(HOME[0] + 0.5, 0, HOME[1] - 1);
     this.built = new Map();
     this.occupied = new Set();
+    this.ground = [];
+    this.path = [];
+    this.stick = new THREE.Vector2();   // joystick input, length 0..1
     this.anims = [];
     this.energy = 0;
     this.listeners = { creatureTap: [], itemTap: [] };
@@ -644,6 +646,7 @@ export class World {
         inst.setColorAt(i, col.setRGB(k, k, k));
       });
       this.scene.add(inst);
+      this.ground.push(inst);
     }
     // stairs
     for (let z = 0; z < D; z++) for (let x = 0; x < W; x++) {
@@ -655,6 +658,7 @@ export class World {
         m.position.set(x + 0.5, (top + BOT) / 2, z + k / 3 + 1 / 6);
         m.receiveShadow = true;
         this.scene.add(m);
+        this.ground.push(m);
       }
     }
     // water
@@ -761,27 +765,34 @@ export class World {
     const item = ITEM_BY_ID[id];
     if (!item) return;
     if (this.state === 'nap') this._wake();
+    this.stick.set(0, 0);
     const [sx, sz] = item.slot;
     const site = new THREE.Vector3(sx + 0.5, tileH(sx, sz), sz + 0.5);
-    this.state = 'build';
-    const { hammer, arms } = this.creature.userData;
-    hammer.visible = true;
-    let hits = 0;
-    this._anim(1.8, (t) => {
-      const swing = Math.sin(t * Math.PI * 8);
-      hammer.rotation.x = -1.2 + swing * 1.1;
-      arms[1].position.y = 0.22 + swing * 0.04;
-      const h = Math.floor(t * 4);
-      if (h > hits) { hits = h; this._puff(site, 0.4); }
-      if (t === 1) {
-        hammer.visible = false;
-        this.placeBuilt(id, true);
-        this.state = 'idle';
-        this.idleTimer = 3;
-        this.hop();
-        done && done();
-      }
-    });
+    const hammer = () => {
+      this.state = 'build';
+      this._faceToward(site);
+      const { hammer: tool, arms } = this.creature.userData;
+      tool.visible = true;
+      let hits = 0;
+      this._anim(1.8, (t) => {
+        const swing = Math.sin(t * Math.PI * 8);
+        tool.rotation.x = -1.2 + swing * 1.1;
+        arms[1].position.y = 0.22 + swing * 0.04;
+        const h = Math.floor(t * 4);
+        if (h > hits) { hits = h; this._puff(site, 0.4); }
+        if (t === 1) {
+          tool.visible = false;
+          this.placeBuilt(id, true);
+          this.state = 'idle';
+          this.idleTimer = 4;
+          this.hop();
+          done && done();
+        }
+      });
+    };
+    const path = this._findPath(this._tileOf(this.pos), (x, z) => Math.abs(x - sx) + Math.abs(z - sz) === 1);
+    if (path && path.length > 1) this._walk(path, hammer);
+    else hammer();
   }
 
   hop() {
@@ -796,12 +807,93 @@ export class World {
     return { x: (v.x * 0.5 + 0.5) * r.width + r.left, y: (-v.y * 0.5 + 0.5) * r.height + r.top };
   }
 
-  // ── Moods (all in place) ─────────────────────────────────────────
+  // ── Movement ─────────────────────────────────────────────────────────
+  _tileOf(p) { return [Math.floor(p.x), Math.floor(p.z)]; }
+  _walkable(x, z) { return tileAt(x, z) !== 'w' && !this.occupied.has(`${x},${z}`); }
+  // Height of the ground under a point; stairs are a smooth ramp.
+  _groundY(x, z) {
+    const tx = Math.floor(x), tz = Math.floor(z);
+    if (tileAt(tx, tz) === 'S') return 1 - (z - tz);
+    return tileH(tx, tz);
+  }
+  // Can Pip stand at (x, z), coming from tile (fx, fz)? Checks a small radius.
+  _canStand(x, z, fx, fz) {
+    const R = 0.2;
+    for (const [ox, oz] of [[0, 0], [R, R], [R, -R], [-R, R], [-R, -R]]) {
+      const tx = Math.floor(x + ox), tz = Math.floor(z + oz);
+      if (tx === fx && tz === fz) continue;
+      if (!this._walkable(tx, tz)) return false;
+      if (Math.abs(tileH(tx, tz) - tileH(fx, fz)) > 0.6) return false;
+    }
+    return true;
+  }
+  _findPath([sx, sz], isGoal) {
+    const key = (x, z) => `${x},${z}`;
+    const prev = new Map([[key(sx, sz), null]]);
+    const q = [[sx, sz]];
+    while (q.length) {
+      const [x, z] = q.shift();
+      if (isGoal(x, z) && this._walkable(x, z)) {
+        const out = []; let k = key(x, z);
+        while (k) { out.unshift(k.split(',').map(Number)); k = prev.get(k); }
+        return out;
+      }
+      for (const [dx, dz] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+        const nx = x + dx, nz = z + dz, nk = key(nx, nz);
+        if (prev.has(nk) || !this._walkable(nx, nz)) continue;
+        if (Math.abs(tileH(nx, nz) - tileH(x, z)) > 0.6) continue;
+        prev.set(nk, key(x, z));
+        q.push([nx, nz]);
+      }
+    }
+    return null;
+  }
+  _walk(path, onArrive) {
+    this.state = 'walk';
+    this.path = path.slice(1).map(([x, z]) => new THREE.Vector3(x + 0.5, 0, z + 0.5));
+    this.onArrive = onArrive;
+  }
+  // Tap on the ground: walk to that tile (or the nearest reachable spot next to it).
+  walkTo(x, z) {
+    if (this.state === 'build') return;
+    if (this.state === 'nap') this._wake();
+    const exact = this._walkable(x, z);
+    const path = this._findPath(this._tileOf(this.pos), exact
+      ? (gx, gz) => gx === x && gz === z
+      : (gx, gz) => Math.abs(gx - x) + Math.abs(gz - z) === 1);
+    if (!path) return false;
+    this._marker(x, z);
+    if (path.length > 1) this._walk(path, () => { this.state = 'idle'; this.idleTimer = 4; });
+    return true;
+  }
+  _faceToward(p) {
+    const dx = p.x - this.pos.x, dz = p.z - this.pos.z;
+    if (dx * dx + dz * dz > 1e-6) this.faceAngle = Math.atan2(dx, dz);
+  }
+  _stepAnim(time) {
+    const { body } = this.creature.userData;
+    body.rotation.z = Math.sin(time * 14) * 0.12;
+    body.position.y = Math.abs(Math.sin(time * 14)) * 0.05;
+  }
+  _marker(x, z) {
+    const ring = new THREE.Mesh(new THREE.RingGeometry(0.22, 0.3, 24), new THREE.MeshBasicMaterial({ color: '#fff8e4', transparent: true, opacity: 0.9 }));
+    ring.rotation.x = -Math.PI / 2;
+    ring.position.set(x + 0.5, tileH(x, z) + 0.02, z + 0.5);
+    this.scene.add(ring);
+    this._anim(0.8, (t) => {
+      ring.scale.setScalar(1 + t * 0.6);
+      ring.material.opacity = 0.9 * (1 - t);
+      if (t === 1) { this.scene.remove(ring); ring.geometry.dispose(); ring.material.dispose(); }
+    });
+  }
+
+  // ── Moods ────────────────────────────────────────────────────────────
   _goNap() {
     this.state = 'nap';
     const { eyes, body } = this.creature.userData;
     eyes.forEach((e) => e.scale.set(1.1, 0.18, 0.6));
     body.rotation.x = 0.15;
+    this.faceAngle = 0;
   }
   _wake() {
     this.state = 'idle';
@@ -863,14 +955,57 @@ export class World {
   _input() {
     const el = this.canvas;
     const ray = new THREE.Raycaster();
-    el.addEventListener('pointerup', (e) => {
+    const ui = document.createElement('div');
+    ui.className = 'stick';
+    ui.innerHTML = '<i></i>';
+    document.body.appendChild(ui);
+    const knob = ui.firstChild;
+    const RADIUS = 55;
+    let down = null;
+    el.addEventListener('pointerdown', (e) => {
+      if (down) return;
+      down = { id: e.pointerId, x: e.clientX, y: e.clientY, drag: false };
+      el.setPointerCapture(e.pointerId);
+    });
+    el.addEventListener('pointermove', (e) => {
+      if (!down || e.pointerId !== down.id) return;
+      const dx = e.clientX - down.x, dy = e.clientY - down.y;
+      if (!down.drag && Math.hypot(dx, dy) > 14) {
+        if (this.state === 'build') return;
+        down.drag = true;
+        if (this.state === 'nap') this._wake();
+        this.path = []; this.onArrive = null;
+        ui.style.left = `${down.x}px`; ui.style.top = `${down.y}px`;
+        ui.classList.add('show');
+      }
+      if (!down.drag) return;
+      const len = Math.hypot(dx, dy), k = Math.min(len, RADIUS) / (len || 1);
+      knob.style.transform = `translate(${dx * k}px, ${dy * k}px)`;
+      this.stick.set(dx * k / RADIUS, dy * k / RADIUS);
+    });
+    const end = (e) => {
+      if (!down || e.pointerId !== down.id) return;
+      const wasDrag = down.drag;
+      down = null;
+      this.stick.set(0, 0);
+      ui.classList.remove('show');
+      knob.style.transform = '';
+      if (wasDrag || e.type === 'pointercancel') return;
       const r = el.getBoundingClientRect();
       const ndc = new THREE.Vector2(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
       ray.setFromCamera(ndc, this.camera);
       if (ray.intersectObject(this.creature, true).length) { this.hop(); this._emit('creatureTap'); return; }
-      const hits = ray.intersectObjects([...this.built.values()], true);
-      if (hits.length) this._emit('itemTap', hits[0].object.userData.itemId);
-    });
+      const items = ray.intersectObjects([...this.built.values()], true);
+      if (items.length) { this._emit('itemTap', items[0].object.userData.itemId); return; }
+      const g = ray.intersectObjects(this.ground, false);
+      if (g.length) {
+        const p = g[0].point;
+        // nudge into the tile whose top we hit (avoids landing on a cliff face)
+        this.walkTo(Math.floor(p.x), Math.floor(p.z - 0.001));
+      }
+    };
+    el.addEventListener('pointerup', end);
+    el.addEventListener('pointercancel', end);
   }
 
   // ── Main loop ───────────────────────────────────────────────────────
@@ -884,7 +1019,31 @@ export class World {
     // creature brain
     const c = this.creature;
     const { body, head, arms } = c.userData;
-    if (this.state === 'idle') {
+    const steering = this.stick.lengthSq() > 0.02 && this.state !== 'build';
+    if (steering) {
+      // screen up = away from camera (-z); camera has no yaw, so this maps directly
+      const speed = 2.8 * Math.min(1, this.stick.length());
+      const dir = new THREE.Vector3(this.stick.x, 0, this.stick.y).normalize();
+      const [fx, fz] = this._tileOf(this.pos);
+      const nx = this.pos.x + dir.x * speed * dt, nz = this.pos.z + dir.z * speed * dt;
+      if (this._canStand(nx, nz, fx, fz)) { this.pos.x = nx; this.pos.z = nz; }
+      else if (this._canStand(nx, this.pos.z, fx, fz)) this.pos.x = nx;      // slide along walls
+      else if (this._canStand(this.pos.x, nz, fx, fz)) this.pos.z = nz;
+      this.faceAngle = Math.atan2(dir.x, dir.z);
+      this.state = 'idle'; this.idleTimer = 4;
+      this._stepAnim(time);
+    } else if (this.state === 'walk') {
+      const next = this.path[0];
+      if (!next) { this.state = 'idle'; const cb = this.onArrive; this.onArrive = null; cb && cb(); }
+      else {
+        const d = next.clone().sub(this.pos); d.y = 0;
+        const step = 2.4 * dt;
+        this._faceToward(next);
+        if (d.length() <= step) { this.pos.x = next.x; this.pos.z = next.z; this.path.shift(); }
+        else { d.normalize().multiplyScalar(step); this.pos.add(d); }
+        this._stepAnim(time);
+      }
+    } else if (this.state === 'idle') {
       body.rotation.z *= 0.9;
       body.position.y = Math.sin(time * 2.5) * 0.015;
       this.idleTimer -= dt;
@@ -897,6 +1056,13 @@ export class World {
       body.position.y = 0;
       head.position.y = 0.55 + Math.sin(time * 1.4) * 0.015;
       if (Math.floor(time * 0.8) !== this._lastZ) { this._lastZ = Math.floor(time * 0.8); this._zzz(); }
+    }
+
+    this.pos.y += (this._groundY(this.pos.x, this.pos.z) - this.pos.y) * Math.min(1, dt * 12);
+    c.position.copy(this.pos);
+    if (this.faceAngle !== undefined) {
+      const diff = Math.atan2(Math.sin(this.faceAngle - c.rotation.y), Math.cos(this.faceAngle - c.rotation.y));
+      c.rotation.y += diff * Math.min(1, dt * 10);
     }
 
     // ambient life
@@ -913,6 +1079,10 @@ export class World {
     }
 
     // camera — tilted top-down diorama
+    const follow = new THREE.Vector3(
+      Math.max(4.5, Math.min(W - 4.5, this.pos.x)), 0,
+      Math.max(5, Math.min(D - 4.5, this.pos.z - 1)));
+    this.target.lerp(follow, Math.min(1, dt * 3));
     const pitch = THREE.MathUtils.degToRad(42);
     this.camera.position.set(this.target.x, Math.sin(pitch) * this.dist, this.target.z + Math.cos(pitch) * this.dist);
     this.camera.lookAt(this.target.x, 0, this.target.z);

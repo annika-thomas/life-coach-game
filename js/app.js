@@ -354,6 +354,7 @@ $('#energy').onclick = openBuild;
 renderHud();
 setTimeout(() => $('#title-sign').classList.add('gone'), 2200);
 setTimeout(() => say(S.lessons.length || S.logs.length ? idleLine() : `Hi! I'm ${S.creatureName}. Feed me a lesson or a walk and I'll build us an island.`, 6000), 2600);
+if (!S.seenWalkHint) setTimeout(() => { toast('Tap the ground to walk · drag to steer'); S.seenWalkHint = true; save(S); }, 9000);
 
 if ('serviceWorker' in navigator && location.protocol !== 'file:') {
   navigator.serviceWorker.register('sw.js').catch(() => {});

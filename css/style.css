@@ -189,3 +189,10 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .answers .a { margin: 0; font-weight: 600; }
 .field { display: block; font-weight: 800; }
 .row { display: flex; gap: 8px; margin-top: 12px; }
+
+/* floating joystick (appears where you press and drag) */
+.stick { position: fixed; left: 0; top: 0; width: 110px; height: 110px; margin: -55px 0 0 -55px; border-radius: 50%; z-index: 3; pointer-events: none;
+  background: rgba(255,248,228,.35); border: 3px solid rgba(74,59,51,.45); opacity: 0; transition: opacity .15s; }
+.stick.show { opacity: 1; }
+.stick i { position: absolute; left: 50%; top: 50%; width: 46px; height: 46px; margin: -23px 0 0 -23px; border-radius: 50%;
+  background: var(--cream); border: 3px solid var(--ink); box-shadow: 0 3px 0 var(--ink); }

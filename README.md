@@ -38,7 +38,7 @@ Then open `http://localhost:8080`, or `http://<laptop-ip>:8080` from your phone 
 
 | Screen | What it does |
 |---|---|
-| **Home** | A fixed view of the island: Pip, energy leaves, a clock badge. Pip stays in place (bobs, blinks, waves, looks around, naps at 0 energy). Tap Pip or anything you built. |
+| **Home** | The island, Pip, energy leaves, a clock badge. **Tap the ground** to walk Pip there, or **press and drag** for a joystick; the camera follows. Tap Pip or anything you built. At 0 energy Pip naps between walks. |
 | **Learn** | An endless feed of ~2-minute cards across 14 categories. Each ends with an opinion question; answering pays +1. Chips filter categories. Skip is free but pays nothing. |
 | **I moved** | Workout / Walk / Cooked / Read, optional note, this week's strip. +2 each. |
 | **Build** | Everything Pip can make, priced in energy, labelled with the lesson that unlocked it. |
