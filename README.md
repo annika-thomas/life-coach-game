@@ -24,7 +24,7 @@ Then open `http://<your-laptop-ip>:8080` on your phone. (Offline caching needs H
 
 | Screen | What it does |
 |---|---|
-| **Home** | The island, Pip, energy leaves, a clock badge. Drag to look around; tap Pip or anything you built. |
+| **Home** | A fixed view of the island: Pip, energy leaves, a clock badge. Pip stays in place (bobs, blinks, waves, looks around, naps at 0 energy). Tap Pip or anything you built. |
 | **Learn** | An endless feed of ~2-minute cards across 14 categories. Each ends with an opinion question; answering pays +1. Chips filter categories. Skip is free but pays nothing. |
 | **I moved** | Workout / Walk / Cooked / Read, optional note, this week's strip. +2 each. |
 | **Build** | Everything Pip can make, priced in energy, labelled with the lesson that unlocked it. |
@@ -48,6 +48,6 @@ sw.js, manifest.webmanifest offline + home-screen install
 Append to `LESSONS` in `js/lessons.js`: `{ id, cat, level, title, body: [para, para], question, unlocks }`. `level: 2` cards are held back until you've done a level-1 card in that category. The picker prefers unseen cards and avoids repeating the last few categories.
 
 ### Adding builds
-Add an entry in `js/items.js` (pick a free grass tile from `MAP` in `world.js`) and a matching model function in `BUILDERS` in `world.js`.
+Add an entry in `js/items.js` (pick a free grass tile from `MAP` in `world.js`, inside the fixed view: roughly x 4–11, z 3–13) and a matching model function in `BUILDERS` in `world.js`.
 
 After changing files, bump `VERSION` in `sw.js` so installed copies pick up the update.

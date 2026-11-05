@@ -275,7 +275,7 @@ function openLog() {
     floatReward('+2 ⚡', $('#log-go'));
     newlyUnlocked();
     closeSheet();
-    world.focusCreature();
+
     setTimeout(() => { world.hop(); say(pick(['You moved! I feel so awake now.', 'Real-world energy is the best kind. +2!', 'Nice. Shall we build something?'])); }, 350);
   };
 }
@@ -286,7 +286,7 @@ function openBuild() {
     const built = isBuilt(it), unlocked = isUnlocked(it), p = progress(it);
     const src = unlockSource(it);
     const state = built ? 'built' : unlocked ? (S.energy >= it.cost ? 'ready' : 'short') : 'locked';
-    const note = built ? 'Built ✓ · tap to visit'
+    const note = built ? 'Built ✓'
       : unlocked ? (src ? `Unlocked by “${esc(src)}”` : reqLabel(it))
       : `${reqLabel(it)} — ${p.have}/${p.need}`;
     return `<button class="item ${state}" data-id="${it.id}" ${state === 'locked' || state === 'short' ? 'aria-disabled="true"' : ''}>
@@ -300,7 +300,7 @@ function openBuild() {
   openSheet('Build', `<p class="lead">${esc(S.creatureName)} has <b>${S.energy} ⚡</b>. Learn things to unlock more.</p><div class="items">${rows.join('')}</div>`, 'build');
   sheet.querySelectorAll('.item').forEach((b) => b.onclick = () => {
     const it = ITEM_BY_ID[b.dataset.id];
-    if (b.classList.contains('built')) { closeSheet(); world.focusItem(it.id); say(`${it.emoji} The ${it.name.toLowerCase()}!`); return; }
+    if (b.classList.contains('built')) { closeSheet(); say(`${it.emoji} The ${it.name.toLowerCase()}!`); return; }
     if (b.classList.contains('locked')) { toast(`Locked — ${reqLabel(it)}`); return; }
     if (b.classList.contains('short')) { toast(`Needs ${it.cost - S.energy} more ⚡`); return; }
     S.energy -= it.cost;

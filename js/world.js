@@ -35,7 +35,8 @@ const tileAt = (x, z) => (x < 0 || z < 0 || x >= W || z >= D ? 'w' : MAP[z][x]);
 const HEIGHT = { H: 1, '.': 0, '#': 0, S: 0.5, s: -0.2, w: -0.8 };
 const tileH = (x, z) => HEIGHT[tileAt(x, z)];
 
-const HOME = [9, 10];
+const HOME = [8, 10];    // where Pip stands
+const VIEW = [8, 8.6];   // fixed camera look-at point (tile coords)
 
 // ── Small helpers ──────────────────────────────────────────────────────
 const matCache = new Map();
@@ -560,8 +561,7 @@ export class World {
     this.scene.fog = new THREE.Fog('#a8e3f7', 38, 70);
     this.camera = new THREE.PerspectiveCamera(32, 1, 0.1, 200);
     this.clock = new THREE.Clock();
-    this.target = new THREE.Vector3(8, 0, 10);
-    this.desired = this.target.clone();
+    this.target = new THREE.Vector3(VIEW[0], 0, VIEW[1]);
     this.built = new Map();
     this.occupied = new Set();
     this.anims = [];
@@ -579,7 +579,6 @@ export class World {
     this.pos = new THREE.Vector3(HOME[0] + 0.5, 0, HOME[1] + 0.5);
     this.creature.position.copy(this.pos);
     this.state = 'idle';
-    this.path = [];
     this.idleTimer = 2;
     this._input();
     this.resize();
@@ -710,16 +709,17 @@ export class World {
       t.position.set(sx + 0.5 + (sx < 0 ? -r() * 1.5 : r() * 1.5), 0, z + r() * 0.5);
       this.scene.add(t);
     }
-    [[4, 5, 1], [4, 6, 2], [9, 7, 3], [1, 7, 4], [14, 8, 5], [0, 13, 6], [12, 10, 7]].forEach(([x, z, s]) => {
+    [[4, 5, 1], [4, 8, 2], [8, 7, 3], [1, 7, 4], [14, 8, 5], [0, 13, 6], [12, 10, 7]].forEach(([x, z, s]) => {
       const f = flowerCluster(s); f.position.set(x + 0.5, 0, z + 0.5); this.scene.add(f);
     });
     // little grass tufts scattered over open grass (non-blocking)
     const tuftGeo = new THREE.ConeGeometry(0.035, 0.16, 4);
     const spots = [];
     const tr = rng(99);
+    const slotTiles = new Set(ITEMS.map((i) => i.slot.join(',')));
     for (let z = 1; z < 16; z++) for (let x = 0; x < W; x++) {
       const t = tileAt(x, z);
-      if ((t !== '.' && t !== 'H') || this.occupied.has(`${x},${z}`) || tr() > 0.35) continue;
+      if ((t !== '.' && t !== 'H') || this.occupied.has(`${x},${z}`) || slotTiles.has(`${x},${z}`) || tr() > 0.35) continue;
       const cx = x + 0.2 + tr() * 0.6, cz = z + 0.2 + tr() * 0.6;
       for (let k = 0; k < 3; k++) spots.push([cx + (k - 1) * 0.05, tileH(x, z), cz + (tr() - 0.5) * 0.04, (k - 1) * 0.35]);
     }
@@ -729,14 +729,6 @@ export class World {
     this.scene.add(tufts);
     this._place(rock(), 15, 15);
     this._place(rock(), 3, 3);
-    // a short fence along the terrace edge
-    for (let x = 9; x < 12; x++) {
-      const g = new THREE.Group();
-      box(0.07, 0.4, 0.07, '#c98f55', -0.45, 0.2, 0, g);
-      box(1, 0.06, 0.04, '#c98f55', 0, 0.3, 0, g);
-      box(1, 0.06, 0.04, '#c98f55', 0, 0.16, 0, g);
-      g.position.set(x + 0.5, 1, 3.85); this.scene.add(g);
-    }
   }
 
   // ── Public API ───────────────────────────────────────────────────────
@@ -768,46 +760,34 @@ export class World {
   build(id, done) {
     const item = ITEM_BY_ID[id];
     if (!item) return;
-    const [sx, sz] = item.slot;
-    this.focusTile(sx, sz);
     if (this.state === 'nap') this._wake();
-    const start = this._tileOf(this.pos);
-    const path = this._findPath(start, (x, z) => Math.abs(x - sx) + Math.abs(z - sz) === 1);
-    const face = new THREE.Vector3(sx + 0.5, 0, sz + 0.5);
-    const doBuild = () => {
-      this.state = 'build';
-      this._faceToward(face);
-      const { hammer, arms } = this.creature.userData;
-      hammer.visible = true;
-      let hits = 0;
-      this._anim(1.8, (t) => {
-        const swing = Math.sin(t * Math.PI * 8);
-        hammer.rotation.x = -1.2 + swing * 1.1;
-        arms[1].position.y = 0.22 + swing * 0.04;
-        const h = Math.floor(t * 4);
-        if (h > hits) { hits = h; this._puff(face, 0.4); }
-        if (t === 1) {
-          hammer.visible = false;
-          this.placeBuilt(id, true);
-          this.state = 'idle';
-          this.idleTimer = 3;
-          this.hop();
-          done && done();
-        }
-      });
-    };
-    if (path && path.length > 1) this._walk(path, doBuild);
-    else doBuild();
+    const [sx, sz] = item.slot;
+    const site = new THREE.Vector3(sx + 0.5, tileH(sx, sz), sz + 0.5);
+    this.state = 'build';
+    const { hammer, arms } = this.creature.userData;
+    hammer.visible = true;
+    let hits = 0;
+    this._anim(1.8, (t) => {
+      const swing = Math.sin(t * Math.PI * 8);
+      hammer.rotation.x = -1.2 + swing * 1.1;
+      arms[1].position.y = 0.22 + swing * 0.04;
+      const h = Math.floor(t * 4);
+      if (h > hits) { hits = h; this._puff(site, 0.4); }
+      if (t === 1) {
+        hammer.visible = false;
+        this.placeBuilt(id, true);
+        this.state = 'idle';
+        this.idleTimer = 3;
+        this.hop();
+        done && done();
+      }
+    });
   }
 
   hop() {
     const { body } = this.creature.userData;
     this._anim(0.5, (t) => { body.position.y = Math.sin(t * Math.PI) * 0.35; });
   }
-
-  focusTile(x, z) { this.desired.set(x + 0.5, 0, z + 0.5); this._clampTarget(this.desired); }
-  focusItem(id) { const it = ITEM_BY_ID[id]; if (it) this.focusTile(...it.slot); }
-  focusCreature() { this.desired.set(this.pos.x, 0, this.pos.z); this._clampTarget(this.desired); }
 
   creatureScreenPos() {
     const v = this.creature.position.clone(); v.y += 1.45;
@@ -816,48 +796,12 @@ export class World {
     return { x: (v.x * 0.5 + 0.5) * r.width + r.left, y: (-v.y * 0.5 + 0.5) * r.height + r.top };
   }
 
-  // ── Movement ─────────────────────────────────────────────────────────
-  _tileOf(p) { return [Math.floor(p.x), Math.floor(p.z)]; }
-  _walkable(x, z) {
-    const t = tileAt(x, z);
-    return t !== 'w' && !this.occupied.has(`${x},${z}`);
-  }
-  _findPath([sx, sz], isGoal) {
-    const key = (x, z) => `${x},${z}`;
-    const prev = new Map([[key(sx, sz), null]]);
-    const q = [[sx, sz]];
-    while (q.length) {
-      const [x, z] = q.shift();
-      if (isGoal(x, z) && this._walkable(x, z)) {
-        const out = []; let k = key(x, z);
-        while (k) { out.unshift(k.split(',').map(Number)); k = prev.get(k); }
-        return out;
-      }
-      for (const [dx, dz] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
-        const nx = x + dx, nz = z + dz, nk = key(nx, nz);
-        if (prev.has(nk) || !this._walkable(nx, nz)) continue;
-        if (Math.abs(tileH(nx, nz) - tileH(x, z)) > 0.6) continue;
-        prev.set(nk, key(x, z));
-        q.push([nx, nz]);
-      }
-    }
-    return null;
-  }
-  _walk(path, onArrive) {
-    this.state = 'walk';
-    this.path = path.slice(1).map(([x, z]) => new THREE.Vector3(x + 0.5, tileH(x, z), z + 0.5));
-    this.onArrive = onArrive;
-  }
-  _faceToward(p) {
-    const dx = p.x - this.pos.x, dz = p.z - this.pos.z;
-    this.faceAngle = Math.atan2(dx, dz);
-  }
+  // ── Moods (all in place) ─────────────────────────────────────────
   _goNap() {
     this.state = 'nap';
     const { eyes, body } = this.creature.userData;
     eyes.forEach((e) => e.scale.set(1.1, 0.18, 0.6));
     body.rotation.x = 0.15;
-    this.faceAngle = 0;
   }
   _wake() {
     this.state = 'idle';
@@ -867,14 +811,25 @@ export class World {
     this.idleTimer = 0.5;
     this.hop();
   }
-  _wander() {
-    const [cx, cz] = this._tileOf(this.pos);
-    const r = Math.random;
-    const tx = Math.max(1, Math.min(W - 2, HOME[0] + Math.round((r() - 0.5) * 8)));
-    const tz = Math.max(4, Math.min(16, HOME[1] + Math.round((r() - 0.5) * 8)));
-    const path = this._findPath([cx, cz], (x, z) => x === tx && z === tz);
-    if (path && path.length > 1) this._walk(path.slice(0, 7), () => { this.state = 'idle'; this.idleTimer = 3 + Math.random() * 4; });
-    else this.idleTimer = 2;
+  _fidget() {
+    // little in-place idle moments: look around, wave, or a happy hop
+    const { head, arms } = this.creature.userData;
+    const r = Math.random();
+    if (r < 0.4) {
+      const dir = Math.random() < 0.5 ? -1 : 1;
+      this._anim(1.6, (t) => { head.rotation.y = Math.sin(t * Math.PI) * 0.6 * dir; });
+    } else if (r < 0.75) {
+      this._anim(1.2, (t) => {
+        arms[0].position.y = 0.22 + Math.sin(t * Math.PI) * 0.22;
+        arms[0].position.x = -0.17 - Math.sin(t * Math.PI) * 0.06 + Math.sin(t * Math.PI * 6) * 0.03 * Math.sin(t * Math.PI);
+      });
+    } else {
+      this.hop();
+    }
+  }
+  _blink() {
+    const { eyes } = this.creature.userData;
+    this._anim(0.18, (t) => { const k = t < 1 ? Math.max(0.15, Math.abs(1 - 2 * t)) : 1; eyes.forEach((e) => { e.scale.y = 1.15 * k; }); });
   }
 
   // ── Effects ──────────────────────────────────────────────────────────
@@ -901,41 +856,20 @@ export class World {
     const w = this.canvas.clientWidth, h = this.canvas.clientHeight;
     this.renderer.setSize(w, h, false);
     this.camera.aspect = w / h;
-    const vis = w < h ? 7.5 : 13; // tiles visible across
+    const vis = w < h ? 9 : 14; // tiles visible across
     this.dist = Math.max(12, Math.min(40, vis / (2 * Math.tan(THREE.MathUtils.degToRad(this.camera.fov / 2)) * this.camera.aspect)));
     this.camera.updateProjectionMatrix();
   }
-  _clampTarget(v) {
-    v.x = Math.max(4, Math.min(W - 4, v.x));
-    v.z = Math.max(3.5, Math.min(D - 3, v.z));
-  }
   _input() {
     const el = this.canvas;
-    let down = null, moved = false;
     const ray = new THREE.Raycaster();
-    el.addEventListener('pointerdown', (e) => { down = { x: e.clientX, y: e.clientY, t: this.desired.clone() }; moved = false; el.setPointerCapture(e.pointerId); });
-    el.addEventListener('pointermove', (e) => {
-      if (!down) return;
-      const dx = e.clientX - down.x, dy = e.clientY - down.y;
-      if (Math.abs(dx) + Math.abs(dy) > 6) moved = true;
-      if (!moved) return;
-      const k = this.dist / el.clientHeight * 0.75;
-      this.desired.set(down.t.x - dx * k, 0, down.t.z - dy * k * 1.3);
-      this._clampTarget(this.desired);
-    });
     el.addEventListener('pointerup', (e) => {
-      if (down && !moved) {
-        const r = el.getBoundingClientRect();
-        const ndc = new THREE.Vector2(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
-        ray.setFromCamera(ndc, this.camera);
-        const hitC = ray.intersectObject(this.creature, true);
-        if (hitC.length) { this.hop(); this._emit('creatureTap'); }
-        else {
-          const hits = ray.intersectObjects([...this.built.values()], true);
-          if (hits.length) this._emit('itemTap', hits[0].object.userData.itemId);
-        }
-      }
-      down = null;
+      const r = el.getBoundingClientRect();
+      const ndc = new THREE.Vector2(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+      ray.setFromCamera(ndc, this.camera);
+      if (ray.intersectObject(this.creature, true).length) { this.hop(); this._emit('creatureTap'); return; }
+      const hits = ray.intersectObjects([...this.built.values()], true);
+      if (hits.length) this._emit('itemTap', hits[0].object.userData.itemId);
     });
   }
 
@@ -950,41 +884,19 @@ export class World {
     // creature brain
     const c = this.creature;
     const { body, head, arms } = c.userData;
-    if (this.state === 'walk') {
-      const next = this.path[0];
-      if (!next) { this.state = 'idle'; const cb = this.onArrive; this.onArrive = null; cb && cb(); }
-      else {
-        const d = next.clone().sub(this.pos); d.y = 0;
-        const step = 2.0 * dt;
-        this._faceToward(next);
-        if (d.length() <= step) { this.pos.x = next.x; this.pos.z = next.z; this.path.shift(); }
-        else { d.normalize().multiplyScalar(step); this.pos.add(d); }
-        // height follows terrain (smooth across stairs)
-        const targetY = tileH(...this._tileOf(this.pos));
-        this.pos.y += (targetY - this.pos.y) * Math.min(1, dt * 10);
-        body.rotation.z = Math.sin(time * 14) * 0.12;
-        body.position.y = Math.abs(Math.sin(time * 14)) * 0.05;
-      }
-    } else if (this.state === 'idle') {
+    if (this.state === 'idle') {
       body.rotation.z *= 0.9;
       body.position.y = Math.sin(time * 2.5) * 0.015;
       this.idleTimer -= dt;
       if (this.idleTimer <= 0) {
         if (this.energy <= 0) this._goNap();
-        else if (Math.random() < 0.55) this._wander();
-        else { this.faceAngle = 0; this.idleTimer = 3 + Math.random() * 3; }
+        else { this._fidget(); this.idleTimer = 3 + Math.random() * 4; }
       }
+      if (Math.random() < dt * 0.35) this._blink();
     } else if (this.state === 'nap') {
       body.position.y = 0;
       head.position.y = 0.55 + Math.sin(time * 1.4) * 0.015;
       if (Math.floor(time * 0.8) !== this._lastZ) { this._lastZ = Math.floor(time * 0.8); this._zzz(); }
-    }
-    if (this.state !== 'build') arms.forEach((a, i) => { a.position.y = 0.22 + (this.state === 'walk' ? Math.sin(time * 14 + i * Math.PI) * 0.03 : 0); });
-    c.position.copy(this.pos);
-    if (this.faceAngle !== undefined) {
-      let diff = this.faceAngle - c.rotation.y;
-      diff = Math.atan2(Math.sin(diff), Math.cos(diff));
-      c.rotation.y += diff * Math.min(1, dt * 8);
     }
 
     // ambient life
@@ -1001,7 +913,6 @@ export class World {
     }
 
     // camera — tilted top-down diorama
-    this.target.lerp(this.desired, Math.min(1, dt * 3));
     const pitch = THREE.MathUtils.degToRad(42);
     this.camera.position.set(this.target.x, Math.sin(pitch) * this.dist, this.target.z + Math.cos(pitch) * this.dist);
     this.camera.lookAt(this.target.x, 0, this.target.z);
