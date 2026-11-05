@@ -146,7 +146,7 @@ export const QUIZ = {
     Q('How many pairs do 23 people make?', '253', ['23', '46', '529'], 'Lots of pairs, each with a small chance.'),
   ],
   'stats-baserate': [
-    Q('Rare condition, test 90% accurate, 9% false positives. You test positive. Chance you have it?', 'About 9%', ['About 90%', 'About 50%', 'About 1%'], 'Of ~98 positives in 1,000 people, only 9 are real.'),
+    Q('1 in 100 people have a condition. A test catches 90% of them, but also flags 9% of healthy people. You test positive. Chance you have it?', 'About 9%', ['About 90%', 'About 50%', 'About 1%'], 'In 1,000 people: 9 true positives, about 89 false ones. 9 out of ~98 is about 9%.'),
     Q('Why is a positive result so unreliable when a condition is rare?', 'False positives swamp the true ones', ['The test is broken', 'People misreport symptoms', 'Labs mix up samples'], 'The base rate matters.'),
   ],
   'sci-skyblue': [
