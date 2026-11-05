@@ -42,9 +42,11 @@ There are no menu buttons. You visit places on the island, each with a keeper. T
 |---|---|
 | **Library** (Maple) | An endless feed of short cards across 14 categories. Each card opens with a **quick guess** (you're not expected to know it; guessing first helps it stick, and you can skip it), then the reading, then **Got it** (+1 energy). Maple's opinion question is folded away; write your take for +1 more. |
 | **Gym** (Dot) | Log something real: Workout / Walk / Cooked / Read, optional note, this week's strip. +2 energy each. |
-| **Dock** | Fishing. Cast, tap on the bite, hold to keep the fish in the bar, then answer a question about a card you've read to land it. Questions follow a spaced-repetition schedule. Catching fish raises **mastery** and fills your pond; it doesn't pay energy. |
+| **Dock** and **Pond** | Fishing, just for fun. 20 species across the sea and the pond, some only at dawn, dusk or night. Watch the shadows (bigger shadow, bigger fish), wait out the nibbles, tap on the bite, then hold to keep the fish in the bar; each species fights differently. Caught species swim in the pond; the journal tracks sizes and hints where to find the rest. |
+| **Town square** (Fennel) | Two puzzles a day on the notice board, built from cards you've read: **Timeline** (drag five events into order) and **Guess of the day** (a number on a slider). Both count as reviews. A perfect score earns a gift. |
+| **Visitors** | One or two travellers turn up each day. They ask about something you've read, or for advice that draws on a card. A right answer earns a gift. These, with the board puzzles, are how you recall what you've read. |
 | **Workbench** (Bram) | Plans grouped by district. Shows what's ready, what needs more mastery, and what you haven't discovered yet. |
-| **District keepers** | Fennel (town square), Pepper (market street) and Sage (observatory hill) tell you how their district is growing and open the library filtered to their topics. |
+| **District keepers** | Fennel (town square), Pepper (market street) and Sage (observatory hill) tell you how their district is growing and open the library filtered to their topics. Any keeper might have a little gift for you, at most once a day. |
 | **Journal** (top right) | Topic mastery dots, fish collection, your takes, settings, export/reset. |
 
 ### Districts, mastery and growing items
@@ -62,9 +64,9 @@ Each topic has three items:
 2. **Second item** unlocks at mastery 2.
 3. **Third item** unlocks at mastery 3.
 
-Mastery comes from the review schedule: each card earns points as it moves up the boxes, and a topic reaches level 1, 2, 3 at 1, 3, 6 points. Only reviews that are actually due move a card up, so it can't be rushed, and mastery never goes down.
+Mastery comes from the review schedule (visitor questions and board puzzles): each card earns points as it moves up the boxes, and a topic reaches level 1, 2, 3 at 1, 3, 6 points. Only reviews that are actually due move a card up, so it can't be rushed, and mastery never goes down.
 
-Energy (from reading and real-world logs) is what you spend at the workbench. Fishing pays in mastery, fish and growth instead.
+Energy (from reading and real-world logs) is what you spend at the workbench. Visitors and puzzles pay in mastery and gifts; fishing pays in fish.
 
 Walking: **tap the ground** to walk Pip there, or **press and drag** for a joystick. The camera follows Pip. Tap Pip to chat, or tap anything you built to see which lesson it came from.
 
@@ -77,14 +79,15 @@ index.html, css/style.css   HUD, sheets, layout
 js/app.js                   screens, energy, unlock logic, lesson picker
 js/world.js                 the 3D island: map, terrain, props, creature, camera
 js/items.js                 districts + build catalogue (cost, unlock rule, tile slot)
-js/lessons.js               lesson bank + category list
-js/quiz.js                  two recall questions per card, asked when fishing
+js/lessons.js               original cards, categories, merges the card bank
+js/cards/*.js               the card bank: 20 cards per category + visitor requests
+js/quiz.js                  recall questions (original cards; bank cards carry their own)
 js/state.js                 localStorage save/load
 sw.js, manifest.webmanifest offline + home-screen install
 ```
 
-### Adding lessons
-Append to `LESSONS` in `js/lessons.js`: `{ id, cat, level, title, body: [para, para], question, unlocks }`, and add at least two questions for it in `js/quiz.js` (the first is the quick guess; the dock rotates through them starting with the second). `level: 2` cards are held back until you've done a level-1 card in that category. The picker prefers unseen cards and avoids repeating the last few categories.
+### Adding cards
+Add to the right file in `js/cards/` (one per category): `{ id, level, title, body: [para, para], question, quiz: [{ q, a, w: [..], why }, ...], timeline: { event, year } | null, estimate: { q, answer, unit, min, max } | null }`. The first quiz question is the quick guess before reading. `requests` in the same file are visitor advice questions. `level: 2` cards are held back until you've done a level-1 card in that category. The picker prefers unseen cards and avoids repeating the last few categories.
 
 ### Adding builds
 Add an entry in `js/items.js` (pick a free grass tile in the right district from `MAP` in `world.js`, not used by a station, keeper or tree) and a matching model function in `BUILDERS` in `world.js`. Signature items take a `stage` argument (1-3).

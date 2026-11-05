@@ -9,9 +9,11 @@ import * as cheese from './cheese.js';
 import * as film from './film.js';
 import * as food from './food.js';
 import * as travel from './travel.js';
+import * as art from './art.js';
+import * as culture from './culture.js';
 import * as philosophy from './philosophy.js';
 import * as stats from './stats.js';
 import * as science from './science.js';
 import * as history from './history.js';
 
-export const CARD_SETS = { news, robotics, fashion, wine, cheese, film, food, travel, philosophy, stats, science, history };
+export const CARD_SETS = { news, robotics, fashion, wine, cheese, film, food, travel, art, culture, philosophy, stats, science, history };

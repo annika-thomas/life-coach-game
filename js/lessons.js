@@ -47,7 +47,7 @@ export const LESSONS = [
     title: 'The "Thucydides Trap"',
     body: [
       'The ancient historian Thucydides wrote that the Peloponnesian War was made inevitable by "the rise of Athens and the fear that this instilled in Sparta." In 2017 the political scientist Graham Allison turned that into a framework: he studied sixteen cases over 500 years where a rising power challenged a ruling one, and found that twelve ended in war.',
-      'The idea is now a staple of commentary on US–China relations. Critics push back hard: the case selection is debatable, nuclear weapons change the maths, and treating war as a historical pattern risks making it feel natural, even self-fulfilling. Allison himself says the point is the four cases that did not end in war, and what the people involved did differently.',
+      'The idea is now a staple of commentary on US-China relations. Critics push back hard: the case selection is debatable, nuclear weapons change the maths, and treating war as a historical pattern risks making it feel natural, even self-fulfilling. Allison himself says the point is the four cases that did not end in war, and what the people involved did differently.',
     ],
     question: 'Is a framework like this useful for thinking about the world, or does naming the "trap" make people more likely to fall into it?',
   },
