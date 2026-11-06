@@ -166,6 +166,7 @@ function stripeTex(a, b, n = 6) {
 
 // Shared glow materials: lamps and windows brighten at night.
 const LAMP_MAT = new THREE.MeshLambertMaterial({ color: '#fff3c4', emissive: '#ffd36b', emissiveIntensity: 0.4 });
+let GLOW_TEX = null;
 const WINDOW_MAT = new THREE.MeshLambertMaterial({ color: '#3c4f6b', emissive: '#ffb347', emissiveIntensity: 0 });
 
 // ── Static props ───────────────────────────────────────────────────────
@@ -1315,7 +1316,7 @@ const GIFT_MODELS = {
   mushstool: () => { const g = new THREE.Group(); cyl(0.08, 0.1, 0.28, '#f4ead2', 0, 0.14, 0, g, 10); const c = mesh(new THREE.SphereGeometry(0.2, 14, 8, 0, Math.PI * 2, 0, Math.PI / 2), M('#e5483b'), 0, 0.27, 0, g); void c; for (let i = 0; i < 4; i++) sph(0.03, '#ffffff', Math.sin(i * 1.6) * 0.12, 0.38, Math.cos(i * 1.6) * 0.12, g, 6); return g; },
   umbrella: () => { const g = new THREE.Group(); cyl(0.25, 0.25, 0.04, '#f4f1e8', 0, 0.45, 0, g, 16); cyl(0.02, 0.02, 1.3, '#7a7f8a', 0, 0.65, 0, g, 6); mesh(new THREE.ConeGeometry(0.6, 0.25, 8), new THREE.MeshLambertMaterial({ map: stripeTex('#ffffff', '#3fa7b8', 8) }), 0, 1.3, 0, g); for (const a of [0, 2.1, 4.2]) cyl(0.08, 0.08, 0.25, '#f4f1e8', Math.sin(a) * 0.45, 0.13, Math.cos(a) * 0.45, g, 10); return g; },
   windchime: () => { const g = new THREE.Group(); box(0.05, 1.2, 0.05, '#7a4e2c', 0, 0.6, 0, g); box(0.35, 0.04, 0.04, '#7a4e2c', 0.15, 1.18, 0, g); const h = new THREE.Group(); h.position.set(0.28, 1.15, 0); g.add(h); for (let i = 0; i < 4; i++) cyl(0.012, 0.012, 0.18 + i * 0.03, '#c7ccd4', -0.06 + i * 0.04, -0.12 - i * 0.015, 0, h, 6); g.userData.chime = h; return g; },
-  stonelantern: () => { const g = new THREE.Group(); const st = M('#b9b2a6', { flatShading: true }); box(0.3, 0.08, 0.3, st, 0, 0.04, 0, g); cyl(0.06, 0.08, 0.35, st, 0, 0.25, 0, g, 6); box(0.26, 0.2, 0.26, st, 0, 0.52, 0, g); box(0.14, 0.1, 0.27, new THREE.MeshLambertMaterial({ color: '#fff3c4', emissive: '#ffd36b', emissiveIntensity: 0.6 }), 0, 0.52, 0, g); mesh(new THREE.ConeGeometry(0.26, 0.16, 4), st, 0, 0.7, 0, g).rotation.y = Math.PI / 4; return g; },
+  stonelantern: () => { const g = new THREE.Group(); const st = M('#b9b2a6', { flatShading: true }); box(0.3, 0.08, 0.3, st, 0, 0.04, 0, g); cyl(0.06, 0.08, 0.35, st, 0, 0.25, 0, g, 6); box(0.26, 0.2, 0.26, st, 0, 0.52, 0, g); box(0.14, 0.1, 0.27, LAMP_MAT, 0, 0.52, 0, g); mesh(new THREE.ConeGeometry(0.26, 0.16, 4), st, 0, 0.7, 0, g).rotation.y = Math.PI / 4; return g; },
   wheelbarrow: () => { const g = new THREE.Group(); box(0.5, 0.18, 0.34, '#c46a4a', 0, 0.3, 0, g); const w = cyl(0.1, 0.1, 0.05, '#33363d', 0.3, 0.1, 0, g, 12); w.rotation.x = Math.PI / 2; for (const z of [-0.12, 0.12]) { box(0.04, 0.2, 0.04, '#7a4e2c', -0.2, 0.12, z, g); const hnd = box(0.4, 0.03, 0.03, '#7a4e2c', -0.35, 0.3, z, g); void hnd; } const pal = ['#ff4d4d', '#ffd23f', '#ff8fc8', '#ffffff']; for (let i = 0; i < 7; i++) sph(0.05, pal[i % 4], -0.15 + (i % 4) * 0.1, 0.42, -0.08 + Math.floor(i / 4) * 0.14, g, 6); return g; },
   haybale: () => { const g = new THREE.Group(); const b = cyl(0.25, 0.25, 0.45, '#e8c56a', 0, 0.25, 0, g, 16); b.rotation.z = Math.PI / 2; for (const x of [-0.12, 0.12]) { const r = mesh(new THREE.TorusGeometry(0.25, 0.012, 4, 20), M('#c49a3a'), x, 0.25, 0, g); r.rotation.y = Math.PI / 2; } return g; },
   scarecrow: () => { const g = new THREE.Group(); box(0.05, 1.1, 0.05, '#7a4e2c', 0, 0.55, 0, g); box(0.7, 0.05, 0.05, '#7a4e2c', 0, 0.85, 0, g); box(0.3, 0.35, 0.16, '#4a9b6e', 0, 0.78, 0, g); sph(0.14, '#e8c56a', 0, 1.15, 0, g, 10); cyl(0.22, 0.22, 0.02, '#8a5a35', 0, 1.25, 0, g, 12); cyl(0.1, 0.12, 0.12, '#8a5a35', 0, 1.31, 0, g, 10); return g; },
@@ -1418,6 +1419,43 @@ export class World {
     sun.shadow.normalBias = 0.02;
     this.sun = sun;
     this.scene.add(sun, sun.target);
+    this.glows = [];
+  }
+
+  // A warm pool of light: a point light plus a soft disc on the ground, both fading in at dusk.
+  _addGlow(x, y, z, groundY, strength = 1, radius = 1.6) {
+    if (!GLOW_TEX) {
+      const c = document.createElement('canvas'); c.width = c.height = 128;
+      const g = c.getContext('2d'); const grd = g.createRadialGradient(64, 64, 0, 64, 64, 64);
+      grd.addColorStop(0, 'rgba(255,214,140,1)'); grd.addColorStop(0.45, 'rgba(255,190,110,0.45)'); grd.addColorStop(1, 'rgba(255,170,90,0)');
+      g.fillStyle = grd; g.fillRect(0, 0, 128, 128);
+      GLOW_TEX = new THREE.CanvasTexture(c); GLOW_TEX.colorSpace = THREE.SRGBColorSpace;
+    }
+    const light = new THREE.PointLight('#ffc477', 0, radius * 2.6, 2);
+    light.position.set(x, y, z); this.scene.add(light);
+    const disc = new THREE.Mesh(new THREE.PlaneGeometry(radius * 2, radius * 2), new THREE.MeshBasicMaterial({ map: GLOW_TEX, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false }));
+    disc.rotation.x = -Math.PI / 2; disc.position.set(x, groundY + 0.03, z); disc.renderOrder = 2;
+    this.scene.add(disc);
+    const glow = { light, disc, strength };
+    this.glows.push(glow); this._applyGlow(glow);
+    return glow;
+  }
+  _applyGlow({ light, disc, strength }) {
+    const n = this.night || 0;
+    light.intensity = n * 2.6 * strength;   // stays in the scene: toggling lights recompiles shaders
+    disc.material.opacity = n * 0.55 * strength; disc.visible = n > 0.02;
+  }
+  // Give every lamp bulb inside obj its own pool of light.
+  _glowLamps(obj) {
+    obj.updateMatrixWorld(true);
+    const p = new THREE.Vector3();
+    obj.traverse((o) => {
+      if (!o.isMesh || o.material !== LAMP_MAT || o.userData.glowed) return;
+      o.userData.glowed = true;
+      o.getWorldPosition(p);
+      const gy = tileH(Math.floor(p.x), Math.floor(p.z));
+      this._addGlow(p.x, p.y, p.z, Math.min(gy, p.y - 0.3), 1);
+    });
   }
 
   _terrain() {
@@ -1633,6 +1671,8 @@ export class World {
     this._place(rock(), 20, 18);
     this._place(rock(), 20, 3);
     this._districtDecor();
+    this._glowLamps(this.scene);
+    this._addGlow(10.5, 0.75, 7.7, 0, 0.6, 1.8);   // light spilling from the cottage windows
   }
 
   // ── Public API ───────────────────────────────────────────────────────
@@ -1652,6 +1692,7 @@ export class World {
     const [x, z] = item.slot;
     this._place(obj, x, z);
     this.built.set(id, obj);
+    this._glowLamps(obj);
     if (obj.userData.fruits?.length) this._registerFruitTree(id, obj, x, z);
     if (animate) {
       obj.scale.setScalar(0.001);
@@ -1812,6 +1853,7 @@ export class World {
     WINDOW_MAT.emissiveIntensity = lamps * 0.9;
     this.waterMat.color.copy(new THREE.Color('#ffffff').lerp(new THREE.Color('#6f86b0'), lamps * 0.8));
     this.night = lamps;
+    for (const g of this.glows) this._applyGlow(g);
   }
 
   // ── Things to collect around the island ──────────────────────────────
