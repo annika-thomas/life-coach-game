@@ -2223,6 +2223,29 @@ export class World {
     }
     return null;
   }
+  _reachable([sx, sz], limit = 400) {
+    const seen = new Set([`${sx},${sz}`]), out = [[sx, sz]], q = [[sx, sz]];
+    while (q.length && out.length < limit) {
+      const [x, z] = q.shift();
+      for (const [dx, dz] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+        const nx = x + dx, nz = z + dz, k = `${nx},${nz}`;
+        if (seen.has(k) || !this._walkable(nx, nz) || Math.abs(tileH(nx, nz) - tileH(x, z)) > 0.6) continue;
+        seen.add(k); out.push([nx, nz]); q.push([nx, nz]);
+      }
+    }
+    return out;
+  }
+  // Safety net: if Pip ends up somewhere he can't leave, hop him back home.
+  _rescueIfTrapped() {
+    const [x, z] = this._tileOf(this.pos);
+    const bad = !this._walkable(x, z) && !DOCK.has(`${x},${z}`);
+    if (!bad && this._reachable([x, z], 12).length >= 6) return;
+    this._puff(this.pos);
+    this.pos.set(HOME[0] + 0.5, tileH(HOME[0], HOME[1]), HOME[1] + 0.5);
+    this.path = []; this.state = 'idle'; this.idleTimer = 3;
+    this._puff(this.pos);
+    this.hop();
+  }
   _walk(path, onArrive) {
     this.state = 'walk';
     this.path = path.slice(1).map(([x, z]) => new THREE.Vector3(x + 0.5, 0, z + 0.5));
@@ -2274,9 +2297,13 @@ export class World {
     if (this.state === 'build') return;
     if (this.state === 'nap') this._wake();
     const exact = this._walkable(x, z);
-    const path = this._findPath(this._tileOf(this.pos), exact
+    let path = this._findPath(this._tileOf(this.pos), exact
       ? (gx, gz) => gx === x && gz === z
       : (gx, gz) => Math.abs(gx - x) + Math.abs(gz - z) === 1);
+    if (!path) {
+      const near = this._reachable(this._tileOf(this.pos)).sort((a, b) => Math.hypot(a[0] - x, a[1] - z) - Math.hypot(b[0] - x, b[1] - z))[0];
+      if (near) path = this._findPath(this._tileOf(this.pos), (gx, gz) => gx === near[0] && gz === near[1]);
+    }
     if (!path) return false;
     this._marker(x, z);
     if (path.length > 1) this._walk(path, () => { this.state = 'idle'; this.idleTimer = 4; });
@@ -2452,9 +2479,15 @@ export class World {
       const dir = new THREE.Vector3(this.stick.x, 0, this.stick.y).normalize();
       const [fx, fz] = this._tileOf(this.pos);
       const nx = this.pos.x + dir.x * speed * dt, nz = this.pos.z + dir.z * speed * dt;
+      const bx = this.pos.x, bz = this.pos.z;
       if (this._canStand(nx, nz, fx, fz)) { this.pos.x = nx; this.pos.z = nz; }
       else if (this._canStand(nx, this.pos.z, fx, fz)) this.pos.x = nx;      // slide along walls
       else if (this._canStand(this.pos.x, nz, fx, fz)) this.pos.z = nz;
+      // caught on a corner for a while? step to the middle of the tile and carry on
+      if (Math.hypot(this.pos.x - bx, this.pos.z - bz) < 1e-4) {
+        this._blocked = (this._blocked || 0) + dt;
+        if (this._blocked > 0.9) { this._blocked = 0; this.pos.x = fx + 0.5; this.pos.z = fz + 0.5; this._rescueIfTrapped(); }
+      } else this._blocked = 0;
       this.faceAngle = Math.atan2(dir.x, dir.z);
       this.state = 'idle'; this.idleTimer = 4;
       this._stepAnim(time);
@@ -2470,6 +2503,8 @@ export class World {
         this._stepAnim(time);
       }
     } else if (this.state === 'idle') {
+      this._trapCheck = (this._trapCheck || 0) + dt;
+      if (this._trapCheck > 2) { this._trapCheck = 0; this._rescueIfTrapped(); }
       body.rotation.z *= 0.9;
       body.position.y = Math.sin(time * 2.5) * 0.015;
       this.idleTimer -= dt;
