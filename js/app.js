@@ -184,7 +184,9 @@ function positionPlaces() {
   }
   const alert = $('#bench-alert');
   const kp = world.keeperScreenPos('workbench', 1.35);
-  const on = !busy && kp && kp.visible && affordable().length > 0 && world.stationDistance('workbench') >= 1.6;
+  // only for builds you haven't looked at yet
+  const fresh = affordable().some((i) => !(S.seenPlans || []).includes(i.id));
+  const on = !busy && kp && kp.visible && fresh && world.stationDistance('workbench') >= 1.6;
   alert.classList.toggle('show', !!on);
   if (on) alert.style.transform = `translate(${Math.round(kp.x)}px, ${Math.round(kp.y)}px) translate(-50%, -100%)`;
 }
@@ -1525,6 +1527,8 @@ function itemRow(it) {
   </button>` };
 }
 function openBuild() {
+  S.seenPlans = [...new Set([...(S.seenPlans || []), ...affordable().map((i) => i.id)])];
+  save(S);
   const order = { ready: 0, short: 1, plan: 2, built: 3, locked: 4 };
   const ready = ITEMS.filter((it) => !isBuilt(it) && isUnlocked(it)).map(itemRow).sort((a, b) => order[a.state] - order[b.state]);
   const groups = GROUPS.map((g) => {
