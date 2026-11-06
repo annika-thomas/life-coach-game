@@ -36,9 +36,9 @@ Then open `http://localhost:8080`, or `http://<laptop-ip>:8080` from your phone 
 
 ## How it plays
 
-**Today** (top left, under the clock) is the heart of it: a short, mixed session of a few new cards (each with a quick guess first) and reviews of what's due, in whichever format suits the card: a map, a Timeline, a number slider or a recall question. Topics are mixed on purpose. It ends with a summary of what you learned and what's getting stronger.
+**Every topic has one card a day.** Fourteen topics, so up to fourteen cards a day. **Maple** (art, film, fashion, culture), **Fennel** (news, travel, history), **Pepper** (food, wine, cheese) and **Sage** (science, probability, robotics, philosophy) each show a red mark while one of their topics still has today's card waiting. Tap them for their topic list, a Review button when cards are due, and their **museum**: every card you've learned in their topics, brightening as you remember it, tap to reread. Each topic counts the days you've done it; missing a day loses nothing. After today's card you can keep learning more in that topic, as much as you like.
 
-The keepers teach: tap **Maple** (art, film, fashion, culture), **Fennel** (news, travel, history), **Pepper** (food, wine, cheese) or **Sage** (science, probability, robotics, philosophy) for a short lesson on their topics (new cards plus their due reviews). Tap Pip for the mixed Today session. Buildings open straight away when you tap them. Visitors drop by to say hello.
+**Today** (top left) shows how many of the 14 topics you've done and opens all of them in one list, plus a review of everything due. A topic lesson runs that topic's due reviews first (as a map, Timeline, number slider or recall question), then the new card with a quick guess before the reading. Once every card in a topic is read, its daily card becomes a refresher review. Buildings open straight away when you tap them. Visitors drop by to say hello.
 
 | Place | What it does |
 |---|---|
@@ -69,7 +69,7 @@ Each topic has three items:
 
 Mastery comes from the review schedule (Today's reviews and the board puzzles): each card earns points as it moves up the boxes, and a topic reaches level 1, 2, 3 at 1, 3, 6 points. Only reviews that are actually due move a card up, so it can't be rushed, and mastery never goes down.
 
-Energy (from reading and real-world logs) is what you spend at the workbench. Reviews and puzzles pay in mastery; finishing Today pays 1 energy; fishing pays in fish.
+Energy (from reading and real-world logs) is what you spend at the workbench. Reviews and puzzles pay in mastery; fishing pays in fish.
 
 Around the island: the sky follows your real clock (pink dawn, orange sunset, blue night with lit windows and lamps), the season follows the month (spring green, autumn leaves, winter snow), and the weather changes daily (sun, cloud, rain, snow). Each day weeds pop up to pull (clear them all for a thank-you; some hide four-leaf clovers), shells wash up on the beach, and butterflies or moths come out depending on the hour and season (catch them with a net). Tap a fruit tree to shake it; fruit grows back the next day, and Pepper trades five fruit for a gift.
 

@@ -182,13 +182,22 @@ function positionPlaces() {
     const p = world.stationScreenPos(id);
     el.style.transform = `translate(${Math.round(p.x)}px, ${Math.round(p.y)}px) translate(-50%, -100%)`;
   }
-  const alert = $('#bench-alert');
-  const kp = world.keeperScreenPos('workbench', 1.35);
-  // only for builds you haven't looked at yet
+  // Bram: only for builds you haven't looked at yet. Teachers: a card is waiting today.
   const fresh = affordable().some((i) => !(S.seenPlans || []).includes(i.id));
-  const on = !busy && kp && kp.visible && fresh && world.stationDistance('workbench') >= 1.6;
-  alert.classList.toggle('show', !!on);
-  if (on) alert.style.transform = `translate(${Math.round(kp.x)}px, ${Math.round(kp.y)}px) translate(-50%, -100%)`;
+  markOver('workbench', fresh, busy, 1.35);
+  for (const id of Object.keys(TEACH)) markOver(id, TEACH[id].cats.some((c) => !topicDone(c)), busy, 1.5);
+}
+const marks = {};
+function markOver(id, want, busy, lift) {
+  let el = marks[id];
+  if (!el) {
+    el = marks[id] = id === 'workbench' ? $('#bench-alert') : $('#bench-alert').cloneNode(true);
+    if (id !== 'workbench') { el.removeAttribute('id'); document.body.appendChild(el); }
+  }
+  const kp = want && !busy && world.keeperScreenPos(id, lift);
+  const on = kp && kp.visible && world.stationDistance(id) >= 1.6;
+  el.classList.toggle('show', !!on);
+  if (on) el.style.transform = `translate(${Math.round(kp.x)}px, ${Math.round(kp.y)}px) translate(-50%, -100%)`;
 }
 world.onFrame = positionPlaces;
 
@@ -301,9 +310,10 @@ function pipLine() {
   ]);
 }
 world.on('creatureTap', async () => {
-  if (S.daily?.todayDone) { talk('pip', [pipLine()]); return; }
-  const c = await talk('pip', ['Want to do today\'s learning? A few cards and a quick review.'], ['Let\'s go', 'Later']);
-  if (c === 0) setTimeout(() => startToday(), 200);
+  const left = ALL_CATS.filter((c) => !topicDone(c)).length;
+  if (!left) { talk('pip', [pipLine()]); return; }
+  const c = await talk('pip', [`${left} topic${left > 1 ? 's' : ''} left today.`], ['Show me', 'Later']);
+  if (c === 0) setTimeout(openHub, 200);
 });
 world.on('itemTap', (id) => {
   const it = ITEM_BY_ID[id];
@@ -739,7 +749,7 @@ function ensureDay() {
 }
 ensureDay();
 world.setVisitors(S.daily.visitors.filter((v) => !v.done));
-setInterval(() => { if (S.daily.date !== today() && !talking && !sheet.classList.contains('open')) { ensureDay(); world.setVisitors(S.daily.visitors.filter((v) => !v.done)); applyAtmosphere(); spawnToday(); } }, 60000);
+setInterval(() => { if (S.daily.date !== today() && !talking && !sheet.classList.contains('open')) { ensureDay(); world.setVisitors(S.daily.visitors.filter((v) => !v.done)); applyAtmosphere(); spawnToday(); renderTodayTag(); } }, 60000);
 
 // What a visitor asks: advice drawing on a card you've read, a review
 // question that's due, or (before you've read anything) just hello.
@@ -1230,7 +1240,7 @@ VISIT.gym = () => openLog();
 VISIT.workbench = () => openBuild();
 VISIT.dock = () => goFishing('dock');
 VISIT.pond = () => goFishing('pond');
-VISIT.observatory = () => { filters = new Set(DISTRICTS.observatory.cats); openLessons(); };
+VISIT.observatory = () => openKeeper('observatory');
 VISIT.square = () => placeMenu('Town board', '', [
   { label: `Today's timeline${S.daily.timeline ? ` · ${S.daily.timeline.score}/5` : ''}`, sub: 'Put five events in order', fn: openTimeline },
   { label: `Guess of the day${S.daily.guess ? ' · done' : ''}`, sub: 'A number from one of your cards', fn: openGuess },
@@ -1258,19 +1268,13 @@ const CHAT = {
 };
 // Keepers who teach, and the topics they cover.
 const TEACH = {
-  library: { who: 'maple', cats: ['art', 'film', 'fashion', 'culture'], offer: ['Want to learn something? Art, film, fashion or culture.', 'I have a card or two set aside for you.'] },
-  square: { who: 'fennel', cats: DISTRICTS.square.cats, offer: ['News, travel, history. Want a quick lesson?', 'I\'ve got stories from all over. Want one?'] },
-  market: { who: 'pepper', cats: DISTRICTS.market.cats, offer: ['Food, wine, cheese. Shall I teach you something?', 'Pull up a stool. Want a little lesson?'] },
-  observatory: { who: 'sage', cats: DISTRICTS.observatory.cats, offer: ['Science, probability, robots, big ideas. Shall we?', 'I have a puzzle or two for you, if you like.'] },
+  library: { who: 'maple', dk: 'arts', cats: DISTRICTS.arts.cats, offer: ['Want to learn something? Art, film, fashion or culture.', 'I have a card or two set aside for you.'] },
+  square: { who: 'fennel', dk: 'square', cats: DISTRICTS.square.cats, offer: ['News, travel, history. Want a quick lesson?', 'I\'ve got stories from all over. Want one?'] },
+  market: { who: 'pepper', dk: 'market', cats: DISTRICTS.market.cats, offer: ['Food, wine, cheese. Shall I teach you something?', 'Pull up a stool. Want a little lesson?'] },
+  observatory: { who: 'sage', dk: 'observatory', cats: DISTRICTS.observatory.cats, offer: ['Science, probability, robots, big ideas. Shall we?', 'I have a puzzle or two for you, if you like.'] },
 };
 async function keeperChat(id) {
-  const t = TEACH[id];
-  if (t) {
-    const c = await talk(t.who, [pick(t.offer)], ['Teach me', 'Not now']);
-    if (c === 0) setTimeout(() => startToday(t.cats, t.who), 200);
-    else await maybeKeeperGift(id);
-    return;
-  }
+  if (TEACH[id]) { openKeeper(id); return; }
   if (id === 'workbench') {
     const can = affordable();
     const line = can.length ? `You've got enough for the ${can[0].name.toLowerCase()}${can.length > 1 ? ` and ${can.length - 1} more` : ''}. Want to see the plans?` : pick(['Measure twice, cut once.', 'Not enough energy for anything new yet.']);
@@ -1327,14 +1331,113 @@ function reviewFormat(id) {
 }
 const todayEl = $('#today');
 function renderTodayTag() {
-  const done = S.daily.todayDone;
-  todayEl.classList.toggle('done', !!done);
-  todayEl.innerHTML = done ? `${ICON.check}<b>Today</b>` : `<b>Today</b><small>${planToday().length} steps</small>`;
+  const n = ALL_CATS.filter(topicDone).length;
+  todayEl.classList.toggle('done', n === ALL_CATS.length);
+  todayEl.innerHTML = n === ALL_CATS.length ? `${ICON.check}<b>Today</b>` : `<b>Today</b><small>${n} of ${ALL_CATS.length} topics</small>`;
 }
-todayEl.onclick = () => startToday();
-function startToday(cats = null, teacher = null) {
-  const steps = planToday(cats);
-  const title = teacher ? `${CAST[teacher].name()}'s lesson` : 'Today';
+todayEl.onclick = () => openHub();
+
+// ── Daily topics ──────────────────────────────────────────────────────
+// Every topic has one card a day. Do it and that topic's tally goes up by a
+// day; miss a day and nothing is lost. After that you can keep learning
+// (more cards) or review, as much as you like.
+const ALL_CATS = Object.keys(CATEGORIES);
+S.topicDays = S.topicDays || {};
+const topicDone = (cat) => !!S.daily.topics?.[cat];
+function markTopic(cat) {
+  S.daily.topics = S.daily.topics || {};
+  if (S.daily.topics[cat]) return;
+  S.daily.topics[cat] = true;
+  const t = S.topicDays[cat] = S.topicDays[cat] || { n: 0, last: '' };
+  if (t.last !== today()) { t.n += 1; t.last = today(); }
+  save(S); renderTodayTag();
+}
+const keeperOfCat = (cat) => Object.keys(TEACH).find((id) => TEACH[id].cats.includes(cat));
+const catCards = (cat) => LESSONS.filter((l) => l.cat === cat && QUIZ[l.id]);
+const unreadIn = (cat) => { const seen = new Set(S.lessons.map((l) => l.id)); return catCards(cat).filter((l) => !seen.has(l.id)); };
+// a card read in the last few hours isn't worth reviewing yet
+const dueIn = (cats) => { const now = Date.now(); return Object.keys(S.reviews).filter((id) => QUIZ[id] && S.reviews[id].due <= now && (S.reviews[id].n || now - S.reviews[id].last > 4 * 36e5) && cats.includes(CAT_OF[id])).sort((a, b) => S.reviews[a].due - S.reviews[b].due); };
+function freshCard(cat) {
+  const keep = filters; filters = new Set([cat]);
+  const l = unreadIn(cat).length ? nextLesson() : null;
+  filters = keep;
+  return l && l.cat === cat ? l : null;
+}
+// A topic lesson: what's due in that topic first, then a new card. Once every
+// card in a topic has been read, the daily card becomes a refresher.
+function topicLesson(cat, back) {
+  const daily = !topicDone(cat);
+  const steps = dueIn([cat]).slice(0, 2).map((id) => ({ kind: 'review', id }));
+  const l = freshCard(cat);
+  if (l) steps.push({ kind: 'new', card: l, daily });
+  else if (daily) {
+    const read = S.lessons.filter((x) => x.cat === cat && S.reviews[x.id]).map((x) => x.id).filter((id) => !steps.some((st) => st.id === id));
+    const id = read.sort((a, b) => S.reviews[a].last - S.reviews[b].last)[0];
+    if (id) steps.push({ kind: 'review', id, daily: true });
+  } else if (!steps.length) { toast(`You've read every ${CATEGORIES[cat].label.toLowerCase()} card. Reviews will keep coming.`); return; }
+  if (daily && steps.length) steps[steps.length - 1].daily = true;
+  startToday(null, null, { steps, title: CATEGORIES[cat].label, after: back });
+}
+function reviewLesson(cats, back) {
+  const steps = dueIn(cats).slice(0, 6).map((id) => ({ kind: 'review', id }));
+  if (!steps.length) { toast('Nothing due right now.'); return; }
+  startToday(null, null, { steps, title: 'Review', after: back });
+}
+const dots = (cat) => `<b class="lv">${[1, 2, 3].map((l) => `<u class="${mastery(cat) >= l ? 'on' : ''}"></u>`).join('')}</b>`;
+function topicRow(cat) {
+  const c = CATEGORIES[cat], done = topicDone(cat), days = S.topicDays[cat]?.n || 0;
+  const left = unreadIn(cat).length;
+  const sub = done ? (left ? 'Done today · learn more' : 'Done today') : left ? "Today's card" : "Today's refresher";
+  return `<button class="topic-btn ${done ? 'done' : ''}" data-cat="${cat}" style="--c:${c.color}"><i></i><span><b>${c.label}</b><small>${sub}</small></span><em>${days ? `${days} day${days > 1 ? 's' : ''}` : ''}</em>${done ? ICON.check : ''}</button>`;
+}
+function wireTopicRows(back) { sheet.querySelectorAll('.topic-btn').forEach((b) => b.onclick = () => topicLesson(b.dataset.cat, back)); }
+function openKeeper(id) {
+  const t = TEACH[id], name = CAST[t.who].name();
+  const left = t.cats.filter((c) => !topicDone(c)).length;
+  const due = dueIn(t.cats).length;
+  const back = { label: `Back to ${name}`, fn: () => openKeeper(id) };
+  openSheet(name, `<p class="lead">${left ? `${left} of ${t.cats.length} topics left today.` : 'All done here today.'}</p>
+    <div class="topic-list">${t.cats.map(topicRow).join('')}</div>
+    <div class="menu keeper-more">
+      ${due ? `<button class="menu-btn" id="k-rev"><b>Review</b><small>${due} card${due > 1 ? 's' : ''} due</small></button>` : ''}
+      <button class="menu-btn" id="k-mus"><b>Museum</b><small>${t.cats.reduce((a, c) => a + catCards(c).length - unreadIn(c).length, 0)} of ${t.cats.reduce((a, c) => a + catCards(c).length, 0)} cards on display</small></button>
+    </div>`, 'keeper-sheet');
+  wireTopicRows(back);
+  if (due) $('#k-rev').onclick = () => reviewLesson(t.cats, back);
+  $('#k-mus').onclick = () => openMuseum(id);
+}
+// Everything in one place: each keeper's topics, and everything due.
+function openHub() {
+  const due = dueIn(ALL_CATS).length;
+  const back = { label: 'Back to today', fn: openHub };
+  openSheet('Today', `
+    ${due ? `<div class="menu"><button class="menu-btn" id="h-rev"><b>Review</b><small>${due} card${due > 1 ? 's' : ''} due across every topic</small></button></div>` : ''}
+    ${Object.values(TEACH).map((t) => `<h4>${CAST[t.who].name()}</h4><div class="topic-list">${t.cats.map(topicRow).join('')}</div>`).join('')}`, 'keeper-sheet');
+  wireTopicRows(back);
+  if (due) $('#h-rev').onclick = () => reviewLesson(ALL_CATS, back);
+}
+// A keeper's museum: every card in their topics, filled in as you learn them.
+function openMuseum(id) {
+  const t = TEACH[id], read = new Set(S.lessons.map((l) => l.id));
+  openSheet(`${CAST[t.who].name()}'s museum`, t.cats.map((cat) => {
+    const c = CATEGORIES[cat], cards = catCards(cat), n = cards.filter((l) => read.has(l.id)).length;
+    return `<div class="mus-head" style="--c:${c.color}"><i></i><b>${c.label}</b>${dots(cat)}<small>${n}/${cards.length}</small></div>
+      ${n ? `<div class="mus-grid">${cards.filter((l) => read.has(l.id)).map((l) => `<button class="mus-cell b${S.reviews[l.id]?.box || 1}" data-id="${l.id}" style="--c:${c.color}"><span>${esc(l.title)}</span></button>`).join('')}</div>` : ''}
+      <p class="mus-left">${n === cards.length ? 'Every card on display.' : `${cards.length - n} still to find`}</p>`;
+  }).join('') + '<p class="lead small">Exhibits brighten as you remember them in reviews. Tap one to reread it.</p>', 'museum');
+  sheet.querySelectorAll('.mus-cell[data-id]').forEach((b) => b.onclick = () => openReader(b.dataset.id, () => openMuseum(id)));
+}
+function openReader(cardId, back) {
+  const l = LESSONS.find((x) => x.id === cardId), c = CATEGORIES[l.cat];
+  openSheet(c.label, `<article class="card guessed"><h3>${esc(l.title)}</h3><div class="reading">${l.body.map((p) => `<p>${esc(p)}</p>`).join('')}${hasDemo(l.id) ? `<div class="demo" data-demo="${l.id}"></div>` : ''}</div></article>
+    <button class="btn ghost wide" id="r-back">Back</button>`, 'today-sheet');
+  const demo = sheet.querySelector('.demo'); if (demo) mountDemo(demo, demo.dataset.demo);
+  $('#r-back').onclick = back;
+}
+// plan: { steps, title, after } runs a custom set of steps (a topic lesson or reviews).
+function startToday(cats = null, teacher = null, plan = null) {
+  const steps = plan ? plan.steps : planToday(cats);
+  const title = plan ? plan.title : teacher ? `${CAST[teacher].name()}'s lesson` : 'Today';
   if (!steps.length) { toast('Nothing to do yet. Read a card at the library first.'); return; }
   const log = { newCards: 0, reviews: 0, right: 0, topics: new Set() };
   let i = 0;
@@ -1349,7 +1452,7 @@ function startToday(cats = null, teacher = null) {
     $('#tstep').appendChild(b);
     b.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   };
-  const recordReview = (id, right) => { grade(id, right); log.reviews += 1; log.right += right ? 1 : 0; log.topics.add(CAT_OF[id]); };
+  const recordReview = (id, right) => { grade(id, right); log.reviews += 1; log.right += right ? 1 : 0; log.topics.add(CAT_OF[id]); if (steps[i]?.daily) markTopic(CAT_OF[id]); };
   const show = () => {
     const st = steps[i];
     if (st.kind === 'new') {
@@ -1371,6 +1474,7 @@ function startToday(cats = null, teacher = null) {
         S.lessons.push({ id: l.id, cat: l.cat, answer: '', ts: Date.now() });
         scheduleNew(l.id);
         S.energy += 1; log.newCards += 1; log.topics.add(l.cat);
+        if (st.daily) markTopic(l.cat);
         commit(); floatReward(1, got); newlyUnlocked();
         next();
       };
@@ -1437,20 +1541,18 @@ function startToday(cats = null, teacher = null) {
     }
   };
   const finish = () => {
-    const first = !cats && !S.daily.todayDone;
-    if (!cats) S.daily.todayDone = true;
-    if (first) S.energy += 1;
+    const first = false;
     const news = masteryNews();
     commit(); renderTodayTag();
     const topics = [...log.topics].map((c) => CATEGORIES[c].label);
     openSheet(title, `<div class="today-done">
-      <p class="today-big">${cats ? 'Lesson done' : 'Done for today'}${first ? ` <span class="amt">${ICON.leaf}+1</span>` : ''}</p>
+      <p class="today-big">${plan || cats ? 'Lesson done' : 'Done for today'}${first ? ` <span class="amt">${ICON.leaf}+1</span>` : ''}</p>
       <div class="stats"><div><b>${log.newCards}</b><small>new cards</small></div><div><b>${log.right}/${log.reviews}</b><small>remembered</small></div><div><b>${topics.length}</b><small>topics</small></div></div>
       ${topics.length ? `<p class="lead">${esc(topics.join(', '))}</p>` : ''}
       ${news.map((n) => `<p class="today-news">${esc(n)}</p>`).join('')}
-      <button class="btn primary wide" id="tmore">Keep going</button>
+      <button class="btn primary wide" id="tmore">${plan?.after ? esc(plan.after.label) : 'Keep going'}</button>
       <button class="btn ghost wide" id="tclose">Back to the island</button></div>`, 'today-sheet');
-    $('#tmore').onclick = () => startToday(cats, teacher);
+    $('#tmore').onclick = () => (plan?.after ? plan.after.fn() : startToday(cats, teacher));
     $('#tclose').onclick = closeSheet;
   };
   show();
@@ -1610,14 +1712,14 @@ if (!S.introDone) {
   setTimeout(async () => {
     await talk('pip', [
       'Oh! You\'re here.',
-      'Everyone here can teach you something. Tap Maple, Fennel, Pepper or Sage, or tap Today up top for a bit of everything.',
+      'Maple, Fennel, Pepper and Sage each have a card a day for every topic they teach. A red mark means they have one waiting.',
     ]);
     S.introDone = true; save(S);
     toast('Tap a building to go in. Tap the ground to walk.');
   }, 2600);
 }
 
-if (S.introDone && !S.seenTeachHint) setTimeout(() => { toast('Tap Maple, Fennel, Pepper or Sage to learn from them'); S.seenTeachHint = true; save(S); }, 3500);
+if (S.introDone && !S.seenDailyHint) setTimeout(() => { toast('A red mark over Maple, Fennel, Pepper or Sage means a card is waiting'); S.seenDailyHint = true; save(S); }, 3500);
 
 if ('serviceWorker' in navigator && location.protocol !== 'file:') {
   // When an update installs, reload once so every file comes from the new version.
