@@ -52,8 +52,28 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .round-btn:active, .action:active, .btn:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--ink); }
 
 /* wooden title sign */
-.title-sign { position: fixed; top: 30%; left: 50%; transform: translate(-50%, -50%); z-index: 6; pointer-events: none; transition: opacity .6s, transform .6s; }
-.title-sign.gone { opacity: 0; transform: translate(-50%, -80%) scale(.9); }
+/* loading cover */
+.splash { position: fixed; inset: 0; z-index: 50; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 26px;
+  background: linear-gradient(#a8e3f7, #d6f1e0 70%, #a7dc8a); transition: opacity .5s ease; }
+.splash.gone { opacity: 0; pointer-events: none; }
+.title-sign { pointer-events: none; animation: sign-in .6s cubic-bezier(.3, 1.5, .5, 1) both; }
+@keyframes sign-in { from { transform: translateY(-30px) scale(.9); opacity: 0; } }
+.splash-dots { display: flex; gap: 8px; }
+.splash-dots i { width: 12px; height: 12px; border-radius: 50%; background: #fff8e4; border: 3px solid #5e3a1e; animation: dot 1s ease-in-out infinite; }
+.splash-dots i:nth-child(2) { animation-delay: .15s; }
+.splash-dots i:nth-child(3) { animation-delay: .3s; }
+@keyframes dot { 0%, 100% { transform: translateY(0); } 40% { transform: translateY(-10px); } }
+
+/* Pip's greeting bubble */
+.greet { position: fixed; left: 0; top: 0; z-index: 4; width: max-content; max-width: min(210px, 60vw); opacity: 0; pointer-events: none;
+  transition: opacity .25s; }
+.greet.show { opacity: 1; pointer-events: auto; }
+.greet p { margin: 0; padding: 10px 16px; background: #fffdf4; border: 3px solid var(--ink); border-radius: 20px; box-shadow: 0 3px 0 var(--ink);
+  font-family: var(--display); font-weight: 700; font-size: 15.5px; line-height: 1.2; text-align: center; position: relative; padding: 8px 14px; }
+.greet p::after { content: ''; position: absolute; left: 50%; bottom: -11px; width: 14px; height: 14px; background: #fffdf4;
+  border-right: 3px solid var(--ink); border-bottom: 3px solid var(--ink); transform: translateX(-50%) rotate(45deg); }
+.greet.pop p { animation: pop .35s cubic-bezier(.3, 1.6, .5, 1); }
+@keyframes pop { from { transform: scale(.6); } }
 .plank {
   padding: 10px 28px 6px; border: 4px solid #5e3a1e; border-radius: 14px;
   background: repeating-linear-gradient(0deg, #d9a066 0 10px, #cf955b 10px 12px, #d9a066 12px 22px);

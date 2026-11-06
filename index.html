@@ -12,6 +12,8 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icons/icon-192.png">
   <link rel="apple-touch-icon" href="icons/icon-180.png">
+  <link rel="preload" href="fonts/baloo-2-latin-800-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/nunito-latin-800-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -34,10 +36,16 @@
 
   <button class="today-tag" id="today" aria-label="Today's learning"></button>
 
-  <div class="title-sign" id="title-sign">
-    <div class="plank"><span>Island Mentor</span></div>
-    <div class="posts"><i></i><i></i></div>
+  <!-- covers the island while it loads, so it appears all at once -->
+  <div class="splash" id="splash">
+    <div class="title-sign">
+      <div class="plank"><span>Island Mentor</span></div>
+      <div class="posts"><i></i><i></i></div>
+    </div>
+    <div class="splash-dots"><i></i><i></i><i></i></div>
   </div>
+  <!-- Pip's greeting -->
+  <div class="greet" id="greet"><p></p></div>
 
   <!-- dialogue: tap anywhere to advance -->
   <div class="dlg-catch" id="dlg-catch"></div>

@@ -1754,6 +1754,27 @@ export class World {
     this._anim(0.5, (t) => { body.position.y = Math.sin(t * Math.PI) * 0.35; });
   }
 
+  // Happy to see you: turn to the camera, two little hops and a wave.
+  greet() {
+    if (this.state === 'nap') return;
+    this.path = []; this.state = 'idle'; this.idleTimer = 5;
+    this._faceToward(new THREE.Vector3(this.pos.x, 0, this.pos.z + 5));
+    const { body, arms } = this.creature.userData;
+    const arm = arms[1], ax = arm.position.x, ay = arm.position.y;
+    this._anim(1.8, (t) => {
+      body.position.y = t < 0.5 ? Math.abs(Math.sin(t * Math.PI * 4)) * 0.22 : 0;
+      const w = t < 1 ? Math.sin(Math.min(1, t * 4) * Math.PI / 2) * (t > 0.8 ? (1 - t) * 5 : 1) : 0;
+      arm.position.y = ay + w * (0.2 + Math.sin(t * Math.PI * 10) * 0.035);
+      arm.position.x = ax + w * 0.05;
+      if (t === 1) { arm.position.set(ax, ay, arm.position.z); body.position.y = 0; }
+    });
+  }
+  // Compile every shader up front so the first seconds don't stutter.
+  warmUp() {
+    this.renderer.compile(this.scene, this.camera);
+    this.renderer.render(this.scene, this.camera);
+  }
+
   creatureScreenPos() {
     const v = this.creature.position.clone(); v.y += 1.45;
     v.project(this.camera);

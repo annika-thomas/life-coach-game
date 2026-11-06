@@ -182,6 +182,11 @@ function positionPlaces() {
     const p = world.stationScreenPos(id);
     el.style.transform = `translate(${Math.round(p.x)}px, ${Math.round(p.y)}px) translate(-50%, -100%)`;
   }
+  if (greetEl.classList.contains('show')) {
+    if (busy) greetEl.classList.remove('show');
+    const gp = world.creatureScreenPos();
+    greetEl.style.transform = `translate(${Math.round(gp.x)}px, ${Math.round(gp.y - 6)}px) translate(-50%, -100%)`;
+  }
   // Bram: only for builds you haven't looked at yet. Teachers: a card is waiting today.
   const fresh = affordable().some((i) => !(S.seenPlans || []).includes(i.id));
   markOver('workbench', fresh, busy, 1.35);
@@ -195,7 +200,7 @@ function markOver(id, want, busy, lift) {
     if (id !== 'workbench') { el.removeAttribute('id'); document.body.appendChild(el); }
   }
   const kp = want && !busy && world.keeperScreenPos(id, lift);
-  const on = kp && kp.visible && world.stationDistance(id) >= 1.6;
+  const on = kp && kp.visible && kp.y > 170 && world.stationDistance(id) >= 1.6; // not under the HUD
   el.classList.toggle('show', !!on);
   if (on) el.style.transform = `translate(${Math.round(kp.x)}px, ${Math.round(kp.y)}px) translate(-50%, -100%)`;
 }
@@ -1686,12 +1691,14 @@ function openJournal() {
       return l ? `<details><summary><i style="background:${CATEGORIES[a.cat].color}"></i>${esc(l.title)}</summary><p class="q">${esc(l.question)}</p><p class="a">${esc(a.answer)}</p></details>` : '';
     }).join('') : '<p class="lead">No takes yet.</p>'}</div>
     <h4>Settings</h4>
+    <label class="field">Your name <input id="you" value="${esc(S.userName || '')}" maxlength="20" placeholder="So ${esc(S.creatureName)} can say hi"></label>
     <label class="field">Your creature's name <input id="name" value="${esc(S.creatureName)}" maxlength="16"></label>
     <div class="row">
       <button id="export" class="btn ghost">Export data</button>
       <button id="wipe" class="btn ghost danger">Start over</button>
     </div>
   `, 'journal');
+  $('#you').onchange = (e) => { S.userName = e.target.value.trim(); commit(); };
   $('#name').onchange = (e) => { S.creatureName = e.target.value.trim() || 'Pip'; commit(); };
   $('#export').onclick = () => {
     const blob = new Blob([JSON.stringify(S, null, 2)], { type: 'application/json' });
@@ -1707,8 +1714,7 @@ $('#btn-journal').onclick = openJournal;
 $('#energy').onclick = () => world.visit('workbench');
 
 renderHud();
-setTimeout(() => $('#title-sign').classList.add('gone'), 2200);
-if (!S.introDone) {
+function intro() {
   setTimeout(async () => {
     await talk('pip', [
       'Oh! You\'re here.',
@@ -1716,17 +1722,73 @@ if (!S.introDone) {
     ]);
     S.introDone = true; save(S);
     toast('Tap a building to go in. Tap the ground to walk.');
-  }, 2600);
+  }, 400);
 }
 
-if (S.introDone && !S.seenDailyHint) setTimeout(() => { toast('A red mark over Maple, Fennel, Pepper or Sage means a card is waiting'); S.seenDailyHint = true; save(S); }, 3500);
+// ── Hello ─────────────────────────────────────────────────────────────
+// Pip is glad you came: a speech bubble over its head when you open the
+// app (or come back to it), about the time of day, how long you were
+// away and what's waiting.
+const greetEl = $('#greet');
+let greetTimer = 0;
+function greetLines() {
+  const h = new Date().getHours(), last = S.lastOpen || 0, away = Date.now() - last;
+  const you = S.userName ? `, ${S.userName}` : '';
+  let hi;
+  if (S.energy <= 0) hi = pick([`Oh! You're here${you}.`, `Mm? Oh, hi${you}!`]);
+  else if (away > 3 * DAY) hi = pick([`You're back${you}! I missed you.`, `There you are${you}! It's been a while.`]);
+  else if (!last || dayKey(last) !== today()) hi = h < 5 ? `Up late${you}?` : h < 12 ? `Good morning${you}!` : h < 17 ? `Good afternoon${you}!` : `Good evening${you}!`;
+  else if (away < 30 * 6e4) hi = pick(['Oh, hi again!', 'Back already!']);
+  else hi = pick([`Hi again${you}!`, 'Yay, you came back!']);
+  const left = ALL_CATS.filter((c) => !topicDone(c));
+  let next;
+  if (S.energy <= 0) next = 'I was napping. One card and I\'m wide awake.';
+  else if (!left.length) next = pick(['We did all 14 topics today.', 'Every topic done today. Look at us.']);
+  else if (left.length < ALL_CATS.length) next = `${ALL_CATS.length - left.length} topic${ALL_CATS.length - left.length > 1 ? 's' : ''} done today. ${left.length} to go.`;
+  else {
+    const t = TEACH[keeperOfCat(pick(left))];
+    next = pick([`${CAST[t.who].name()} has a card waiting for you.`, `Fourteen new cards today. ${CAST[t.who].name()} is ready when you are.`]);
+  }
+  const extra = S.daily.weather === 'rain' ? 'It\'s raining. Good reading weather.' : S.daily.weather === 'snow' ? 'It snowed! Everything is so quiet.' : (h >= 21 || h < 5) ? 'The stars are out tonight.' : null;
+  return extra && Math.random() < 0.4 ? [hi, extra, next] : [hi, next];
+}
+function sayBubble(lines) {
+  clearTimeout(greetTimer);
+  let k = 0;
+  const step = () => {
+    if (k >= lines.length) { greetEl.classList.remove('show'); return; }
+    greetEl.querySelector('p').textContent = lines[k++];
+    greetEl.classList.remove('pop'); void greetEl.offsetWidth; greetEl.classList.add('show', 'pop');
+    greetTimer = setTimeout(step, 1600 + lines[k - 1].length * 45);
+  };
+  step();
+}
+function greet() {
+  if (!S.introDone) return;
+  world.greet();
+  sayBubble(greetLines());
+  S.lastOpen = Date.now(); save(S);
+}
+greetEl.onclick = () => { greetEl.classList.remove('show'); clearTimeout(greetTimer); if (ALL_CATS.some((c) => !topicDone(c))) openHub(); };
+// Coming back to the app after a while counts as opening it.
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden') { S.lastOpen = Date.now(); save(S); return; }
+  if (Date.now() - (S.lastOpen || 0) > 20 * 6e4 && !talking && !sheet.classList.contains('open')) setTimeout(greet, 400);
+});
+
+// Start: wait for fonts and shaders behind the cover, then show the island in one go.
+(async () => {
+  try { await Promise.race([document.fonts.ready, new Promise((r) => setTimeout(r, 1500))]); } catch (e) { /* fine */ }
+  try { world.warmUp(); } catch (e) { /* fine */ }
+  await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+  $('#splash').classList.add('gone');
+  setTimeout(() => $('#splash').remove(), 600);
+  if (!S.introDone) { intro(); return; }
+  setTimeout(greet, 500);
+  if (!S.seenDailyHint) setTimeout(() => { toast('A red mark over Maple, Fennel, Pepper or Sage means a card is waiting'); S.seenDailyHint = true; save(S); }, 9000);
+})();
 
 if ('serviceWorker' in navigator && location.protocol !== 'file:') {
-  // When an update installs, reload once so every file comes from the new version.
-  const hadController = !!navigator.serviceWorker.controller;
-  let reloaded = false;
-  navigator.serviceWorker.addEventListener('controllerchange', () => {
-    if (hadController && !reloaded) { reloaded = true; location.reload(); }
-  });
+  // Files are fetched network-first, so the page is already current; no reload on update.
   navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).then((r) => r.update()).catch(() => {});
 }
