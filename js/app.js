@@ -1736,7 +1736,7 @@ function greetLines() {
   const you = S.userName ? `, ${S.userName}` : '';
   let hi;
   if (S.energy <= 0) hi = pick([`Oh! You're here${you}.`, `Mm? Oh, hi${you}!`]);
-  else if (away > 3 * DAY) hi = pick([`You're back${you}! I missed you.`, `There you are${you}! It's been a while.`]);
+  else if (away > 3 * DAY) hi = pick([`Hi${you}! So happy to see you.`, `Yay, it's you${you}!`]);
   else if (!last || dayKey(last) !== today()) hi = h < 5 ? `Up late${you}?` : h < 12 ? `Good morning${you}!` : h < 17 ? `Good afternoon${you}!` : `Good evening${you}!`;
   else if (away < 30 * 6e4) hi = pick(['Oh, hi again!', 'Back already!']);
   else hi = pick([`Hi again${you}!`, 'Yay, you came back!']);
