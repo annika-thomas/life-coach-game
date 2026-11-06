@@ -1,5 +1,5 @@
 // Offline cache for the app shell. Bump VERSION when files change.
-const VERSION = 'island-v32';
+const VERSION = 'island-v33';
 const FILES = [
   './', 'index.html', 'manifest.webmanifest', 'css/style.css',
   'js/app.js', 'js/world.js', 'js/items.js', 'js/lessons.js', 'js/state.js', 'js/icons.js', 'js/quiz.js', 'js/wine-maps.js', 'js/wine-games.js', 'js/demos.js', 'js/cards/index.js', 'js/cards/news.js', 'js/cards/robotics.js', 'js/cards/fashion.js', 'js/cards/wine.js', 'js/cards/cheese.js', 'js/cards/film.js', 'js/cards/food.js', 'js/cards/travel.js', 'js/cards/art.js', 'js/cards/culture.js', 'js/cards/philosophy.js', 'js/cards/stats.js', 'js/cards/science.js', 'js/cards/history.js',

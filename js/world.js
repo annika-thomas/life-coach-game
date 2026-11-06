@@ -5,13 +5,20 @@ import * as THREE from '../vendor/three.module.min.js';
 import { ITEMS, ITEM_BY_ID } from './items.js';
 
 // ── Map ────────────────────────────────────────────────────────────────
-// H plateau (observatory hill)  . grass   # dirt path   c cobbles (town square)
-// S stairs   s sand   w water (sea + fish pond)
-const MAP = [
-  'HHHHHHHHHHHHHHHHHHHHHH',
-  'HHHHHHHHHHHHHHHHHHHHHH',
-  'HHHHHHHHHHHHHHHHHHHHHH',
-  'HHHHHHHHHHHHHHHHHHHHHH',
+// One island, four neighbourhoods joined by the main road:
+//   the town (Pip's cottage, Fennel's square, the gym, the dock) in the middle,
+//   Maple's arts quarter to the west, Pepper's market to the east and Sage's
+//   hill up the stairs to the north. Wooded cliffs ring it; the sea is south.
+// Tiles: H plateau  F wooded cliff (not walkable)  . grass  # dirt path
+//        P path up on the plateau  c cobbles  S stairs  s sand  w water
+// Coordinates keep the town where it always was (0..21); the other
+// neighbourhoods sit at negative x, x > 21 and negative z.
+const X0 = -22, X1 = 44, Z0 = -16, Z1 = 22;
+const TOWN = [
+  'HHHHHPHHHHHHHHHHPHHHHH',
+  'HHHHHPHHHHHHHHHHPHHHHH',
+  'HHHHHPHHHHHHHHHHPHHHHH',
+  'HHHHHPHHHHHHHHHHPHHHHH',
   'HHHHHSHHHHHHHHHHSHHHHH',
   '.....#..........#.....',
   '.....#..........#.....',
@@ -19,7 +26,7 @@ const MAP = [
   '.....#..ccccc...#.....',
   '.....#..ccccc...#.....',
   '.....#....#.....#.....',
-  '..##################..',
+  '######################',
   '..........#...........',
   '..........#...........',
   '..........#...........',
@@ -31,10 +38,65 @@ const MAP = [
   'wwwwwwwwwwwwwwwwwwwwww',
   'wwwwwwwwwwwwwwwwwwwwww',
 ];
+// Arts quarter, x -20..-1, rows z 5..17
+const ARTS = [
+  '....................',
+  '....................',
+  '....................',
+  '.......cccccc.......',
+  '.......cccccc.......',
+  '.........##.........',
+  '####################',
+  '.........#..........',
+  '.........#..........',
+  '.........#..........',
+  '.........#..........',
+  '....................',
+  '....................',
+];
+// Market, x 22..41, rows z 5..17
+const MARKET = [
+  '....................',
+  '....................',
+  '....................',
+  '......cccccccc......',
+  '......cccccccc......',
+  '..........#.........',
+  '####################',
+  '..........#.........',
+  '..........#.........',
+  '..........#.........',
+  '..........#.........',
+  '....................',
+  '....................',
+];
+const MAP = (() => {
+  const rows = [];
+  for (let z = Z0; z < Z1; z++) {
+    let row = '';
+    for (let x = X0; x < X1; x++) {
+      let t;
+      if (z >= 0 && x >= 0 && x <= 21) t = TOWN[z][x];
+      else if (z >= 18) t = z >= 20 ? 'w' : (z === 19 || x < -18 || x > 40 || (x > 26 && x < 32)) ? 's' : '.';
+      else if (z >= 5) t = x < -20 || x > 41 ? 'F' : x < 0 ? ARTS[z - 5][x + 20] : MARKET[z - 5][x - 22];
+      else {
+        // Sage's hill: plateau ringed by woods, with paths up from both stairs
+        const inside = x >= -2 && x <= 23 && z >= -13;
+        if (!inside) t = 'F';
+        else if ((x === 5 || x === 16) && z >= -7) t = 'P';
+        else if (z === -7 && x >= 5 && x <= 16) t = 'P';
+        else t = 'H';
+      }
+      row += t;
+    }
+    rows.push(row);
+  }
+  return rows;
+})();
 const W = MAP[0].length;
 const D = MAP.length;
-const tileAt = (x, z) => (x < 0 || z < 0 || x >= W || z >= D ? 'w' : MAP[z][x]);
-const HEIGHT = { H: 1, '.': 0, '#': 0, c: 0, S: 0.5, s: -0.2, w: -0.8 };
+const tileAt = (x, z) => { const i = x - X0, j = z - Z0; return i < 0 || j < 0 || i >= W || j >= D ? 'w' : MAP[j][i]; };
+const HEIGHT = { H: 1, F: 1, P: 1, '.': 0, '#': 0, c: 0, S: 0.5, s: -0.2, w: -0.8 };
 // The fishing dock: wooden planks over the sand and water you can walk on.
 const DOCK = new Set(['10,19', '10,20', '10,21']);
 const tileH = (x, z) => (DOCK.has(`${x},${z}`) ? -0.1 : HEIGHT[tileAt(x, z)]);
@@ -1104,12 +1166,12 @@ function chalkboardModel() {
 // What each keeper does when nobody's visiting: a few spots to stroll
 // between (on paths, so builds never block them) and a little activity.
 const ROUTINES = {
-  library:     { act: 'read',     points: [[4.5, 10.5], [4.6, 11.45], [5.6, 11.4]],   face: null },
+  library:     { act: 'read',     points: [[-8.5, 7.5], [-8.4, 8.45], [-7.4, 8.4]],   face: null },
   gym:         { act: 'exercise', points: [[17.5, 10.5], [17.5, 11.45], [16.5, 10.4]], face: null },
   workbench:   { act: 'hammer',   points: [[13.5, 7.5], [13.4, 7.85], [13.6, 7.25]],  face: [12.5, 7.5] },
   square:      { act: 'letters',  points: [[7.5, 9.5], [8.5, 9.6], [7.5, 10.4]],      face: [7.5, 8.5] },
-  market:      { act: 'stir',     points: [[11.5, 14.5], [10.5, 14.6], [10.5, 15.6]], face: [11.5, 13.5] },
-  observatory: { act: 'stargaze', points: [[14.5, 3.5], [14.5, 4.4], [15.3, 4.45]],   face: [13.5, 3.5] },
+  market:      { act: 'stir',     points: [[31.5, 9.5], [30.5, 9.6], [32.5, 9.6]],    face: [31.5, 8.5] },
+  observatory: { act: 'stargaze', points: [[12.5, -8.5], [13.4, -8.45], [13.5, -9.4]], face: [11.5, -8.5] },
 };
 function keeperProp(act) {
   const g = new THREE.Group();
@@ -1132,15 +1194,15 @@ function keeperProp(act) {
   return g;
 }
 const STATIONS = {
-  library:     { model: libraryModel,     tiles: [[2, 9], [3, 9], [2, 10], [3, 10]],     at: [3.0, 10.0],  approach: [3, 11],  labelY: 2.7, keeper: makeMaple,  keeperAt: [4, 10], pin: true },
+  library:     { model: libraryModel,     tiles: [[-11, 6], [-10, 6], [-11, 7], [-10, 7]], at: [-10.0, 7.0], approach: [-10, 8], labelY: 2.7, keeper: makeMaple, keeperAt: [-9, 7], pin: true },
   gym:         { model: gymModel,         tiles: [[18, 9], [19, 9], [18, 10], [19, 10]], at: [19.0, 10.0], approach: [19, 11], labelY: 1.7, keeper: makeDot,    keeperAt: [17, 10], pin: true },
   workbench:   { model: workbenchModel,   tiles: [[12, 7]],                              at: [12.5, 7.5],  approach: [12, 8],  labelY: 1.4, keeper: makeBram,   keeperAt: [13, 7], pin: true },
   dock:        { model: dockModel,        tiles: [],                                     at: [10.5, 20.5], approach: [10, 21], labelY: 1.1, pin: true },
   pond:        { model: pondModel,        tiles: [],                                     at: [16.5, 15.9], approach: [16, 14], labelY: 0.8 },
   home:        { model: null,             tiles: [],                                     at: [10.5, 6.0],  approach: [10, 7],  labelY: 2.9 },
   square:      { model: noticeBoardModel, tiles: [[7, 8]],                               at: [7.5, 8.5],   approach: [8, 8],   labelY: 1.8, keeper: makeFennel, keeperAt: [7, 9] },
-  market:      { model: stallModel,       tiles: [[11, 13]],                             at: [11.5, 13.5], approach: [10, 13], labelY: 1.8, keeper: makePepper, keeperAt: [11, 14] },
-  observatory: { model: chalkboardModel,  tiles: [[13, 3]],                              at: [13.5, 3.5],  approach: [12, 3],  labelY: 2.0, keeper: makeSage,   keeperAt: [14, 3] },
+  market:      { model: stallModel,       tiles: [[31, 8]],                              at: [31.5, 8.5],  approach: [30, 8],  labelY: 1.8, keeper: makePepper, keeperAt: [31, 9], pin: true },
+  observatory: { model: chalkboardModel,  tiles: [[11, -8]],                             at: [11.5, -7.5], approach: [11, -7], labelY: 2.6, keeper: makeSage,   keeperAt: [12, -8], pin: true },
 };
 export const PINNED = Object.keys(STATIONS).filter((k) => STATIONS[k].pin);
 
@@ -1431,19 +1493,30 @@ export class World {
       g.fillStyle = grd; g.fillRect(0, 0, 128, 128);
       GLOW_TEX = new THREE.CanvasTexture(c); GLOW_TEX.colorSpace = THREE.SRGBColorSpace;
     }
-    const light = new THREE.PointLight('#ffc477', 0, radius * 2.6, 2);
-    light.position.set(x, y, z); this.scene.add(light);
     const disc = new THREE.Mesh(new THREE.PlaneGeometry(radius * 2, radius * 2), new THREE.MeshBasicMaterial({ map: GLOW_TEX, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false }));
     disc.rotation.x = -Math.PI / 2; disc.position.set(x, groundY + 0.03, z); disc.renderOrder = 2;
     this.scene.add(disc);
-    const glow = { light, disc, strength };
+    const glow = { pos: new THREE.Vector3(x, y, z), radius, disc, strength };
     this.glows.push(glow); this._applyGlow(glow);
     return glow;
   }
-  _applyGlow({ light, disc, strength }) {
+  _applyGlow({ disc, strength }) {
     const n = this.night || 0;
-    light.intensity = n * 2.6 * strength;   // stays in the scene: toggling lights recompiles shaders
     disc.material.opacity = n * 0.55 * strength; disc.visible = n > 0.02;
+  }
+  // A few real lights, moved to whichever lamps are nearest the camera. The
+  // count never changes (that would recompile every shader).
+  _updateGlowLights() {
+    if (!this.glowPool) {
+      this.glowPool = Array.from({ length: 6 }, () => { const l = new THREE.PointLight('#ffc477', 0, 4, 2); this.scene.add(l); return l; });
+    }
+    const n = this.night || 0, t = this.target;
+    const near = n > 0.02 ? this.glows.slice().sort((a, b) => a.pos.distanceToSquared(t) - b.pos.distanceToSquared(t)) : [];
+    this.glowPool.forEach((l, i) => {
+      const g = near[i];
+      if (!g) { l.intensity = 0; return; }
+      l.position.copy(g.pos); l.distance = g.radius * 2.6; l.intensity = n * 2.6 * g.strength;
+    });
   }
   // Give every lamp bulb inside obj its own pool of light.
   _glowLamps(obj) {
@@ -1474,10 +1547,12 @@ export class World {
       '#': { top: pathTop, side: cliff, list: [] },
       c: { top: new THREE.MeshLambertMaterial({ map: cobbleTex() }), side: cliff, list: [] },
       H: { top: plateauTop, side: cliff, list: [] },
+      F: { top: plateauTop, side: cliff, list: [] },
+      P: { top: pathTop, side: cliff, list: [] },
       s: { top: sandTop, side: sandSide, list: [] },
       w: { top: seabed, side: sandSide, list: [] },
     };
-    for (let z = 0; z < D; z++) for (let x = 0; x < W; x++) {
+    for (let z = Z0; z < Z1; z++) for (let x = X0; x < X1; x++) {
       const t = tileAt(x, z);
       if (t === 'S') continue;
       groups[t].list.push([x, z]);
@@ -1503,7 +1578,7 @@ export class World {
       this.ground.push(inst);
     }
     // stairs
-    for (let z = 0; z < D; z++) for (let x = 0; x < W; x++) {
+    for (let z = Z0; z < Z1; z++) for (let x = X0; x < X1; x++) {
       if (tileAt(x, z) !== 'S') continue;
       for (let k = 0; k < 3; k++) {
         const top = 1 - (k + 1) / 3 + 0.17;
@@ -1516,22 +1591,112 @@ export class World {
       }
     }
     // water
-    const wt = waterTex(); wt.repeat.set(10, 10);
+    const wt = waterTex(); wt.repeat.set(20, 20);
     this.waterTex = wt;
-    const water = new THREE.Mesh(new THREE.PlaneGeometry(90, 90), new THREE.MeshLambertMaterial({ map: wt, transparent: true, opacity: 0.88 }));
+    const water = new THREE.Mesh(new THREE.PlaneGeometry(180, 180), new THREE.MeshLambertMaterial({ map: wt, transparent: true, opacity: 0.88 }));
     this.waterMat = water.material;
-    water.rotation.x = -Math.PI / 2; water.position.set(W / 2, -0.32, D / 2);
+    water.rotation.x = -Math.PI / 2; water.position.set((X0 + X1) / 2, -0.32, (Z0 + Z1) / 2);
     water.receiveShadow = true;
     this.scene.add(water);
     // backdrop: more plateau behind and beside, so edges read as land
-    const backTop = new THREE.Mesh(new THREE.BoxGeometry(60, 2.6, 20), [cliff, cliff, plateauTop, bottom, cliff, cliff]);
-    backTop.position.set(W / 2, -0.3, -10); this.scene.add(backTop);
+    const backTop = new THREE.Mesh(new THREE.BoxGeometry(W + 40, 2.6, 20), [cliff, cliff, plateauTop, bottom, cliff, cliff]);
+    backTop.position.set((X0 + X1) / 2, -0.3, Z0 - 10); this.scene.add(backTop);
     for (const sx of [-1, 1]) {
-      const side = new THREE.Mesh(new THREE.BoxGeometry(20, 1.6, D - 3), [cliff, cliff, grassTop, bottom, cliff, cliff]);
-      side.position.set(sx < 0 ? -10 : W + 10, -0.8, (D - 3) / 2);
+      const side = new THREE.Mesh(new THREE.BoxGeometry(20, 2.6, Z1 - Z0 - 4), [cliff, cliff, plateauTop, bottom, cliff, cliff]);
+      side.position.set(sx < 0 ? X0 - 10 : X1 + 10, -0.3, (Z0 + Z1 - 4) / 2);
       side.receiveShadow = true;
       this.scene.add(side);
     }
+  }
+
+  // Woods on every cliff tile and beyond the edges, as a few instanced meshes.
+  _forest() {
+    const spots = [];
+    const r = rng(404);
+    for (let z = Z0 - 7; z < 19; z++) for (let x = X0 - 7; x < X1 + 7; x++) {
+      const outside = x < X0 || x >= X1 || z < Z0;
+      if (!outside && tileAt(x, z) !== 'F') continue;
+      if (outside && z >= 17) continue;
+      if (r() < 0.12) continue;
+      spots.push([x + 0.5 + (r() - 0.5) * 0.5, outside ? 1.0 : 1, z + 0.5 + (r() - 0.5) * 0.5, 0.85 + r() * 0.45, r() < 0.5]);
+    }
+    const o = new THREE.Object3D();
+    const geos = { trunk: new THREE.CylinderGeometry(0.08, 0.12, 0.45, 6), cone1: new THREE.ConeGeometry(0.5, 0.75, 7), cone2: new THREE.ConeGeometry(0.36, 0.6, 7), blob: new THREE.SphereGeometry(0.55, 8, 6) };
+    const make = (geo, mat, list, place) => {
+      if (!list.length) return;
+      const m = new THREE.InstancedMesh(geo, mat, list.length);
+      list.forEach((sp, i) => { place(o, sp); o.updateMatrix(); m.setMatrixAt(i, o.matrix); });
+      m.computeBoundingSphere();   // per chunk, so chunks off screen are skipped
+      m.castShadow = true; m.receiveShadow = true;
+      this.scene.add(m);
+    };
+    // chunks of 12x12 tiles
+    const chunks = new Map();
+    for (const sp of spots) { const k = `${Math.floor(sp[0] / 12)},${Math.floor(sp[2] / 12)}`; if (!chunks.has(k)) chunks.set(k, []); chunks.get(k).push(sp); }
+    for (const list of chunks.values()) {
+      const pines = list.filter((sp) => sp[4]), rounds = list.filter((sp) => !sp[4]);
+      make(geos.trunk, M('#7a4e2c'), list, (o, [x, y, z, k]) => { o.position.set(x, y + 0.22 * k, z); o.scale.setScalar(k); });
+      make(geos.cone1, LEAF_MAT_DARK, pines, (o, [x, y, z, k]) => { o.position.set(x, y + 0.6 * k, z); o.scale.setScalar(k); });
+      make(geos.cone2, LEAF_MAT_DARK, pines, (o, [x, y, z, k]) => { o.position.set(x, y + 1.0 * k, z); o.scale.setScalar(k); });
+      make(geos.blob, LEAF_MAT, rounds, (o, [x, y, z, k]) => { o.position.set(x, y + 0.95 * k, z); o.scale.set(k, k * 0.95, k); });
+    }
+  }
+
+  // The three neighbourhoods around town: signs, lamps, trees and the odd building.
+  _neighbourhoods(lamp) {
+    const sign = (text, color, x, z, rot = 0) => {
+      const g = new THREE.Group();
+      for (const sx of [-0.32, 0.32]) cyl(0.035, 0.035, 0.9, '#8a5a35', sx, 0.45, 0, g, 6);
+      const b = new THREE.Mesh(new THREE.BoxGeometry(0.95, 0.3, 0.05), [M('#7a4e2c'), M('#7a4e2c'), M('#7a4e2c'), M('#7a4e2c'), new THREE.MeshLambertMaterial({ map: signTex(text, color) }), M('#7a4e2c')]);
+      b.position.y = 0.78; b.castShadow = true; g.add(b);
+      g.rotation.y = rot;
+      this._place(g, x, z);
+    };
+    const flowers = (list) => list.forEach(([x, z, k]) => { const f = flowerCluster(k); f.position.set(x + 0.5, tileH(x, z), z + 0.5); this.scene.add(f); });
+    const trees = (list) => list.forEach(([x, z, fruit], i) => { const t = this._place(tree(fruit, x * 7 + z + i), x, z); this.sways.push(t); });
+    // Arts quarter (west)
+    sign('ARTS', '#8a5a9e', -1, 10);
+    lamp(-13.1, 7.9); lamp(-6.9, 7.9);
+    lamp(-13.1, 10.1); lamp(-6.9, 10.1);
+    trees([[-19, 6, null], [-12, 14, null], [-19, 15, '#ff9f1c'], [-2, 16, null], [-9, 16, '#e8312f']]);
+    flowers([[-17, 8, 21], [-14, 9, 22], [-6, 9, 23], [-12, 12, 24], [-9, 13, 25], [-18, 10, 26], [-3, 8, 27], [-7, 16, 28]]);
+    // Market (east)
+    sign('MARKET', '#e5483b', 22, 10);
+    lamp(27.9, 7.9); lamp(36.1, 7.9);
+    lamp(27.9, 10.1); lamp(36.1, 10.1);
+    for (const [x, z] of [[29, 8], [34, 8]]) {
+      const st = stallModel(); this._place(st, x, z);
+    }
+    const flagCols = ['#e5483b', '#f2c94c', '#3fa7b8', '#4a9b6e', '#e27fb0'];
+    for (const x of [28.1, 35.9]) cyl(0.03, 0.03, 1.8, '#8a5a35', x, 0.9, 7.9, this.scene, 6);
+    for (let i = 0; i < 18; i++) {
+      const t = (i + 0.5) / 18, x = 28.1 + t * 7.8, y = 1.72 - Math.sin(t * Math.PI) * 0.35;
+      const f = mesh(new THREE.ConeGeometry(0.07, 0.14, 3), M(flagCols[i % 5]), x, y - 0.07, 7.9, this.scene);
+      f.rotation.z = Math.PI; f.castShadow = false;
+    }
+    // vineyard rows
+    for (let row = 0; row < 3; row++) for (let i = 0; i < 4; i++) {
+      const v = new THREE.Group();
+      cyl(0.03, 0.03, 0.6, '#8a5a35', 0, 0.3, 0, v, 5);
+      sph(0.2, LEAF_MAT, 0, 0.55, 0, v, 8).scale.set(1.4, 0.8, 0.7);
+      for (const dx of [-0.12, 0.1]) sph(0.05, '#6b2f5e', dx, 0.42, 0.12, v, 6);
+      this._place(v, 38 + i, 12 + row * 2);
+    }
+    trees([[24, 6, '#e8312f'], [41, 6, null], [25, 16, '#ff9f1c'], [33, 16, null], [41, 16, '#e8312f']]);
+    flowers([[23, 8, 31], [27, 9, 32], [33, 6, 33], [36, 10, 34], [29, 15, 35], [31, 12, 36]]);
+    // Sage's hill (north): the observatory, lamps along the path
+    const dome = new THREE.Group();
+    cyl(1.25, 1.35, 1.2, '#f4efe2', 0, 0.6, 0, dome, 24);
+    const top = sph(1.28, '#c9d3dc', 0, 1.2, 0, dome, 24); top.scale.y = 0.85;
+    box(0.36, 1.5, 0.2, '#3a4660', 0, 1.6, 1.0, dome).rotation.x = -0.55;
+    const door = new THREE.Shape(); door.moveTo(-0.25, 0); door.lineTo(-0.25, 0.5); door.absarc(0, 0.5, 0.25, Math.PI, 0, true); door.lineTo(0.25, 0);
+    mesh(new THREE.ExtrudeGeometry(door, { depth: 0.05, bevelEnabled: false }), M('#2f6fa8'), 0, 0, 1.3, dome);
+    dome.position.set(10.5, 1, -10.5); this.scene.add(dome);
+    for (let x = 9; x <= 11; x++) for (let z = -12; z <= -10; z++) this.occupied.add(`${x},${z}`);
+    for (const z of [-1.5, -5.5]) { lamp(4.6, z, 1); lamp(16.4, z, 1); }
+    lamp(8.4, -6.6, 1); lamp(13.6, -6.6, 1);
+    trees([[1, -10, null], [22, -9, null], [6, -12, '#ff9f1c'], [-1, -7, null], [23, -3, null], [18, -6, '#e8312f']]);
+    flowers([[3, -6, 41], [9, -5, 42], [15, -2, 43], [19, -8, 44], [7, -10, 45], [1, -1, 46]]);
   }
 
   _districtDecor() {
@@ -1560,12 +1725,13 @@ export class World {
       }
     }
     // arts corner: a low white picket fence along the road
-    for (let x = 0; x < 2; x++) {
+    for (const x of [-20, -19, -18, -17, -4, -3, -2]) {
       const g = new THREE.Group();
       for (let i = 0; i < 4; i++) box(0.06, 0.32, 0.04, '#fbf6ec', -0.4 + i * 0.27, 0.16, 0, g);
       box(1, 0.05, 0.03, '#fbf6ec', 0, 0.2, 0, g);
       g.position.set(x + 0.5, 0, 10.9); this.scene.add(g);
     }
+    this._neighbourhoods(lamp);
     // fish pond: a clearer water surface so the fish show, and a stone rim
     const pond = new THREE.Mesh(new THREE.PlaneGeometry(3, 2), new THREE.MeshLambertMaterial({ color: '#7fd3e8', transparent: true, opacity: 0.45 }));
     pond.rotation.x = -Math.PI / 2; pond.position.set(16.5, -0.1, 16.0); this.scene.add(pond);
@@ -1602,7 +1768,8 @@ export class World {
     for (const [id, st] of Object.entries(STATIONS)) {
       if (!st.model) continue;
       const m = st.model();
-      m.position.set(st.at[0], 0, st.at[1]);
+      const th = tileH(Math.floor(st.at[0]), Math.floor(st.at[1]));
+      m.position.set(st.at[0], th > 0 ? th : 0, st.at[1]);
       m.traverse((o) => { o.userData.station = id; });
       this.scene.add(m);
       this.stations.set(id, m);
@@ -1630,25 +1797,7 @@ export class World {
       const t = this._place(tree(f, i + 3), x, z); this.sways.push(t);
       if (f) this._registerFruitTree(`d${i}`, t, x, z);
     });
-    // backdrop trees on the terrace and beyond
-    for (let x = -4; x < W + 4; x += 1) {
-      const r = rng(x * 31 + 7);
-      const z = r() * 0.8;
-      const t = r() < 0.45 ? conifer(x + 50) : tree(r() < 0.5 ? null : '#e8312f', x + 100);
-      t.position.set(x + 0.5 + (r() - 0.5) * 0.4, 1, z + 0.2);
-      t.scale.setScalar(0.9 + r() * 0.35);
-      this.scene.add(t);
-      if (x >= 0 && x < W) this.occupied.add(`${x},0`);
-      const t2 = r() < 0.6 ? conifer(x + 80) : tree(null, x + 140);
-      t2.position.set(x + 0.5, 1.2, -1.2 - r() * 1.5); t2.scale.setScalar(1.1 + r() * 0.4);
-      this.scene.add(t2);
-    }
-    for (const sx of [-1, W]) for (let z = 3; z < 16; z += 1.3) {
-      const r = rng(z * 13 + sx);
-      const t = tree(r() < 0.5 ? '#e8312f' : null, Math.floor(z * 7 + sx));
-      t.position.set(sx + 0.5 + (sx < 0 ? -r() * 1.5 : r() * 1.5), 0, z + r() * 0.5);
-      this.scene.add(t);
-    }
+    this._forest();
     [[0, 5, 1], [2, 6, 2], [0, 7, 3], [2, 8, 4], [4, 6, 5], [1, 12, 6], [5, 15, 7], [7, 13, 8], [8, 6, 9], [13, 6, 10], [20, 10, 11], [17, 13, 12]].forEach(([x, z, s]) => {
       const f = flowerCluster(s); f.position.set(x + 0.5, 0, z + 0.5); this.scene.add(f);
     });
@@ -1657,7 +1806,7 @@ export class World {
     const spots = [];
     const tr = rng(99);
     const slotTiles = new Set(ITEMS.map((i) => i.slot.join(',')));
-    for (let z = 1; z < 16; z++) for (let x = 0; x < W; x++) {
+    for (let z = Z0; z < 17; z++) for (let x = X0; x < X1; x++) {
       const t = tileAt(x, z);
       if ((t !== '.' && t !== 'H') || this.occupied.has(`${x},${z}`) || slotTiles.has(`${x},${z}`) || tr() > 0.35) continue;
       const cx = x + 0.2 + tr() * 0.6, cz = z + 0.2 + tr() * 0.6;
@@ -1826,8 +1975,8 @@ export class World {
     if (this.leafLitter) { this.scene.remove(this.leafLitter); this.leafLitter = null; }
     if (season === 'autumn') {
       const r = rng(5), spots = [];
-      for (let i = 0; i < 260; i++) {
-        const x = r() * W, z = 1 + r() * (D - 4), t = tileAt(Math.floor(x), Math.floor(z));
+      for (let i = 0; i < 1400; i++) {
+        const x = X0 + r() * W, z = Z0 + r() * (D - 4), t = tileAt(Math.floor(x), Math.floor(z));
         if (t === '.' || t === 'H') spots.push([x, tileH(Math.floor(x), Math.floor(z)) + 0.012, z, r() * 6, ['#e0873a', '#f2b24a', '#c4572e', '#d9a03a'][Math.floor(r() * 4)]]);
       }
       const geo = new THREE.PlaneGeometry(0.09, 0.06);
@@ -2018,10 +2167,9 @@ export class World {
     for (const st of Object.values(STATIONS)) for (const [dx, dz] of [[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1]]) near.add(`${st.approach[0] + dx},${st.approach[1] + dz}`);
     for (const R of Object.values(ROUTINES)) for (const [x, z] of R.points) near.add(`${Math.floor(x)},${Math.floor(z)}`);
     const out = [];
-    for (let z = 1; z < D - 2; z++) for (let x = 0; x < W; x++) {
+    for (let z = Z0; z < Z1 - 2; z++) for (let x = X0; x < X1; x++) {
       const t = tileAt(x, z), k = `${x},${z}`;
       if ((t !== '.' && t !== 's' && t !== 'H') || this.occupied.has(k) || slots.has(k) || near.has(k) || DOCK.has(k)) continue;
-      if (t === 'H' && z < 1) continue;
       out.push([x, z]);
     }
     const r = rng(77);
@@ -2247,7 +2395,7 @@ export class World {
 
   // ── Movement ─────────────────────────────────────────────────────────
   _tileOf(p) { return [Math.floor(p.x), Math.floor(p.z)]; }
-  _walkable(x, z) { return (tileAt(x, z) !== 'w' || DOCK.has(`${x},${z}`)) && !this.occupied.has(`${x},${z}`); }
+  _walkable(x, z) { const t = tileAt(x, z); return ((t !== 'w' && t !== 'F') || DOCK.has(`${x},${z}`)) && !this.occupied.has(`${x},${z}`); }
   // Height of the ground under a point; stairs are a smooth ramp.
   _groundY(x, z) {
     const tx = Math.floor(x), tz = Math.floor(z);
@@ -2559,7 +2707,7 @@ export class World {
       if (!next) { this.state = 'idle'; const cb = this.onArrive; this.onArrive = null; cb && cb(); }
       else {
         const d = next.clone().sub(this.pos); d.y = 0;
-        const step = 2.4 * dt;
+        const step = (this.path.length > 8 ? 4.2 : 2.4) * dt;   // jog on long trips across the island
         this._faceToward(next);
         if (d.length() <= step) { this.pos.x = next.x; this.pos.z = next.z; this.path.shift(); }
         else { d.normalize().multiplyScalar(step); this.pos.add(d); }
@@ -2678,14 +2826,15 @@ export class World {
     }
 
     // camera — tilted top-down diorama
-    const follow = new THREE.Vector3(
-      Math.max(4.5, Math.min(W - 4.5, this.pos.x)), 0,
-      Math.max(5, Math.min(D - 2.5, this.pos.z - 1)));
-    if (this.lookAt && time < this.lookUntil) follow.set(Math.max(4.5, Math.min(W - 4.5, this.lookAt.x)), 0, Math.max(5, Math.min(D - 2.5, this.lookAt.z - 1)));
+    const cx = (x) => Math.max(X0 + 6, Math.min(X1 - 6, x)), cz = (z) => Math.max(Z0 + 5, Math.min(Z1 - 2.5, z - 1));
+    const follow = new THREE.Vector3(cx(this.pos.x), 0, cz(this.pos.z));
+    if (this.lookAt && time < this.lookUntil) follow.set(cx(this.lookAt.x), 0, cz(this.lookAt.z));
     this.target.lerp(follow, Math.min(1, dt * 3));
     const pitch = THREE.MathUtils.degToRad(42);
     this.camera.position.set(this.target.x, Math.sin(pitch) * this.dist, this.target.z + Math.cos(pitch) * this.dist);
     this.camera.lookAt(this.target.x, 0, this.target.z);
+    this._glowT = (this._glowT || 0) + dt;
+    if (this._glowT > 0.3) { this._glowT = 0; this._updateGlowLights(); }
     this.sun.position.set(this.target.x - 6, this.sunHeight || 14, this.target.z + 8);
     this.sun.target.position.set(this.target.x, 0, this.target.z);
 

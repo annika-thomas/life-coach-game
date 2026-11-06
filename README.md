@@ -56,10 +56,12 @@ Then open `http://localhost:8080`, or `http://<laptop-ip>:8080` from your phone 
 
 | District | Where | Topics |
 |---|---|---|
-| Town square | The cobbled plaza and main road | World news, Travel, History & words |
-| Arts corner | West, around the library | Art, Movies & TV, Fashion, Culture |
-| Market street | The south path to the beach | Food, Wine, Cheese |
-| Observatory hill | The raised ledge at the back | Science, Probability, Robotics, Philosophy |
+| Town square | The middle of the island: Pip's cottage, the plaza, the gym, the dock | World news, Travel, History & words |
+| Arts quarter | West along the main road, around Maple's library | Art, Movies & TV, Fashion, Culture |
+| Market | East along the main road: Pepper's stalls, a vineyard | Food, Wine, Cheese |
+| Sage's hill | Up either staircase behind town, around the observatory | Science, Probability, Robotics, Philosophy |
+
+The island is one continuous map (66 by 38 tiles) ringed by wooded cliffs, with the sea along the south. Each neighbourhood is about the size the whole island used to be, with room to fill. Pip jogs on long walks.
 
 Each topic has three items:
 
