@@ -413,7 +413,6 @@ function cardHtml(l) {
   const unlock = l.unlocks && ITEM_BY_ID[l.unlocks];
   return `<article class="card" data-id="${l.id}">
     <div class="card-tag" style="--c:${c.color}">${c.label}${prior ? ' · reread' : ''}</div>
-    <h3>${esc(l.title)}</h3>
     <div class="guess">
       <span class="guess-label">Quick guess</span>
       <p class="guess-q">${esc(QUIZ[l.id][0].q)}</p>
@@ -422,6 +421,7 @@ function cardHtml(l) {
       <button class="guess-skip">Skip the guess</button>
     </div>
     <div class="reading">
+    <h3>${esc(l.title)}</h3>
     ${l.body.map((p) => `<p>${esc(p)}</p>`).join('')}
     ${hasDemo(l.id) ? `<div class="demo" data-demo="${l.id}"></div>` : ''}
     ${unlock ? `<div class="card-unlock">Counts toward the ${esc(unlock.name.toLowerCase())}</div>` : ''}
@@ -1451,6 +1451,7 @@ function startToday(cats = null, teacher = null, plan = null) {
   };
   const next = () => { i += 1; if (i < steps.length) show(); else finish(); };
   const cont = (label = 'Continue') => {
+    $('#tstep .today-from')?.classList.add('show');   // the card's title, only once answered
     const b = document.createElement('button');
     b.className = 'btn primary wide'; b.textContent = label;
     b.onclick = next;
@@ -1463,12 +1464,11 @@ function startToday(cats = null, teacher = null, plan = null) {
     if (st.kind === 'new') {
       const l = st.card, g = QUIZ[l.id][0];
       frame(`New · ${CATEGORIES[l.cat].label}`, `<article class="card">
-        <h3>${esc(l.title)}</h3>
         <div class="guess"><span class="guess-label">Quick guess</span>
           <p class="guess-q">${esc(g.q)}</p>
           <div class="opts">${shuffle([g.a, ...g.w]).map((o) => `<button class="opt" data-right="${o === g.a ? 1 : 0}">${esc(o)}</button>`).join('')}</div>
           <p class="guess-result"></p><button class="guess-skip">Skip the guess</button></div>
-        <div class="reading">${l.body.map((p) => `<p>${esc(p)}</p>`).join('')}${hasDemo(l.id) ? `<div class="demo" data-demo="${l.id}"></div>` : ''}</div></article>`);
+        <div class="reading"><h3>${esc(l.title)}</h3>${l.body.map((p) => `<p>${esc(p)}</p>`).join('')}${hasDemo(l.id) ? `<div class="demo" data-demo="${l.id}"></div>` : ''}</div></article>`);
       const card = $('#tstep .card');
       const reveal = (txt) => { card.querySelectorAll('.opt').forEach((x) => { x.disabled = true; if (x.dataset.right === '1') x.classList.add('right'); }); card.querySelector('.guess-result').textContent = txt; card.classList.add('guessed'); const demo = card.querySelector('.demo'); if (demo) mountDemo(demo, demo.dataset.demo); };
       card.querySelectorAll('.opt').forEach((o) => o.onclick = () => { const r = o.dataset.right === '1'; if (!r) o.classList.add('wrong'); reveal(r ? 'Correct.' : 'Not quite.'); });

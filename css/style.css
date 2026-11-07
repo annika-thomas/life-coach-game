@@ -430,7 +430,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .today-bar { height: 10px; border: 2.5px solid var(--ink); border-radius: 999px; background: #fffdf4; overflow: hidden; margin: 2px 0 8px; }
 .today-bar i { display: block; height: 100%; background: linear-gradient(90deg, #a4e77f, #5bbf4a); transition: width .3s; }
 .today-kind { margin: 0 0 4px; font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: .5px; color: #8a5a35; }
-.today-from { font-size: 13px; font-weight: 700; opacity: .6; margin: 6px 2px 10px; }
+.today-from { display: none; font-size: 13px; font-weight: 700; opacity: .6; margin: 6px 2px 10px; }
 .today-sheet .card { margin-top: 2px; }
 .today-sheet .btn.wide { margin-top: 12px; }
 .today-done { text-align: center; }
@@ -489,3 +489,6 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .mus-cell.empty { border-style: dashed; border-color: #cfc6b0; background: transparent; }
 .topic-btn:not(.done) span small { color: #c2412f; opacity: 1; }
 .mus-left { margin: 6px 2px 0; font-size: 13px; font-weight: 700; opacity: .55; }
+
+.today-from.show { display: block; }
+.card .reading > h3 { margin-top: 4px; }
