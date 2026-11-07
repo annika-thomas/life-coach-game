@@ -10,7 +10,7 @@ export default [
     question: "Do you think home-made mayonnaise is worth the effort, or is the jar good enough?",
     quiz: [
       { q: "What is mayonnaise mostly made of?", a: "Oil", w: ["Egg white", "Cream", "Vinegar"], why: "It is mostly oil, held as droplets in a little water by egg yolk." },
-      { q: "What in egg yolk helps oil and water stay mixed?", a: "Emulsifiers such as lecithin", w: ["Salt crystals", "Starch granules", "Natural sugars"], why: "Lecithin has a water-loving end and a fat-loving end, so it coats oil droplets." },
+      { q: "What in egg yolk helps oil and water stay mixed?", a: "Lecithin", w: ["Gluten", "Pectin", "Collagen"], why: "Lecithin has a water-loving end and a fat-loving end, so it coats oil droplets." },
     ],
     timeline: null,
     estimate: null,
@@ -26,7 +26,7 @@ export default [
     question: "Which pasta dish of yours would most benefit from finishing it in the pan with its water?",
     quiz: [
       { q: "What makes pasta cooking water useful for sauces?", a: "The starch dissolved in it", w: ["The salt crystals in it", "Its high temperature", "Minerals from the pot"], why: "Starch helps fat and water bind into a glossy sauce." },
-      { q: "Which Roman dish relies on pasta water, pecorino and pepper?", a: "Cacio e pepe", w: ["Carbonara", "Puttanesca", "Pesto alla genovese"], why: "Cacio e pepe is just pecorino, black pepper and pasta water tossed until creamy." },
+      { q: "Cacio e pepe is pasta and pasta water tossed with what?", a: "Pecorino and black pepper", w: ["Parmesan and black pepper", "Pecorino and garlic", "Butter and parmesan"], why: "Cacio e pepe is just pecorino, black pepper and pasta water tossed until creamy." },
     ],
     timeline: null,
     estimate: null,
@@ -41,7 +41,7 @@ export default [
     ],
     question: "What is your favourite pairing of something rich with something sharp?",
     quiz: [
-      { q: "A stew tastes flat even with enough salt. What often fixes it?", a: "A splash of acid such as lemon or vinegar", w: ["A pinch of sugar", "More cooking time", "A spoonful of flour"], why: "Acid brightens flavours and cuts richness when salt alone does not help." },
+      { q: "A stew tastes flat even with enough salt. What often fixes it?", a: "A squeeze of lemon", w: ["A pinch of sugar", "A knob of butter", "A longer simmer"], why: "Acid brightens flavours and cuts richness when salt alone does not help." },
       { q: "Why does fish in ceviche turn firm and opaque?", a: "Citrus acid alters its proteins", w: ["The salt cooks it", "It is briefly boiled", "Chillies heat it up"], why: "Acid changes the fish proteins much as heat would, though it is not equivalent for safety." },
     ],
     timeline: null,
@@ -58,7 +58,7 @@ export default [
     question: "Would you plan a meal a day ahead to get better results, or is cooking more spontaneous for you?",
     quiz: [
       { q: "Why does a steak salted ten minutes before cooking look wet?", a: "Salt has drawn moisture to the surface", w: ["The salt has melted", "The fat is rendering", "Fridge condensation"], why: "Salt first pulls liquid out; only with more time is it reabsorbed." },
-      { q: "Why leave a dry-brined chicken uncovered in the fridge?", a: "So the skin dries and crisps when roasted", w: ["So the salt evaporates", "So it thaws faster", "So bacteria can tenderise it"], why: "Uncovered chilling dries the skin, which then crisps in the oven." },
+      { q: "Why leave a dry-brined chicken uncovered in the fridge?", a: "So the skin dries out", w: ["So the fat firms up", "So it chills faster", "So the salt stays dry"], why: "Uncovered chilling dries the skin, which then crisps in the oven." },
     ],
     timeline: null,
     estimate: null,
@@ -89,7 +89,7 @@ export default [
     ],
     question: "Would you ever keep a sourdough starter, or does feeding a jar every day sound like too much commitment?",
     quiz: [
-      { q: "What lives in a sourdough starter?", a: "Wild yeasts and lactic acid bacteria", w: ["Only baker's yeast", "Mould spores", "Vinegar and baking soda"], why: "Yeasts raise the dough and bacteria make it sour." },
+      { q: "What lives in a sourdough starter?", a: "Wild yeasts and bacteria", w: ["Baker's yeast and sugar", "Mould and wild yeasts", "Vinegar and baking soda"], why: "Yeasts raise the dough and bacteria make it sour." },
       { q: "In sourdough, what makes the dough rise?", a: "Carbon dioxide from yeasts", w: ["Acid from bacteria", "Steam from the flour", "Air from kneading alone"], why: "The yeasts give off carbon dioxide, which inflates the dough." },
     ],
     timeline: null,
@@ -105,8 +105,8 @@ export default [
     ],
     question: "Is champagne worth the premium over a good cava or English sparkling wine, in your view?",
     quiz: [
-      { q: "Where does champagne's fizz come from?", a: "A second fermentation in the bottle", w: ["Carbon dioxide pumped in", "Fermentation in open vats", "Natural spring water"], why: "Yeast and sugar added at bottling make gas that cannot escape." },
-      { q: "Which sparkling wine uses the same bottle method as champagne?", a: "Cava", w: ["Most prosecco", "Lambrusco tank wine", "Fizzy cider"], why: "Cava uses the traditional method; prosecco usually ferments in tanks." },
+      { q: "Where does champagne's fizz come from?", a: "A second fermentation in the bottle", w: ["Carbon dioxide pumped in", "A second fermentation in a tank", "Fermentation in open vats"], why: "Yeast and sugar added at bottling make gas that cannot escape." },
+      { q: "Which sparkling wine uses the same bottle method as champagne?", a: "Cava", w: ["Prosecco", "Lambrusco", "Asti Spumante"], why: "Cava uses the traditional method; prosecco usually ferments in tanks." },
     ],
     timeline: null,
     estimate: { q: "Roughly how many atmospheres of pressure are inside a bottle of champagne?", answer: 6, unit: 'atmospheres', min: 0, max: 20 },
@@ -138,7 +138,7 @@ export default [
     question: "How hot do you like your food, and do you think chilli tolerance can be trained?",
     quiz: [
       { q: "What is the best drink to calm a chilli burn?", a: "Milk", w: ["Iced water", "Fizzy water", "Hot tea"], why: "Capsaicin dissolves in fat, not water, so dairy helps more." },
-      { q: "How did Wilbur Scoville first measure chilli heat?", a: "Diluting extract until tasters couldn't detect it", w: ["Measuring the chilli's temperature", "Counting seeds per pepper", "Timing how fast it burnt paper"], why: "His test diluted extract in sugar water until the heat vanished." },
+      { q: "How did Wilbur Scoville first measure chilli heat?", a: "Diluting it until tasters felt nothing", w: ["Measuring its heat with a thermometer", "Weighing the oil in each pepper", "Counting the seeds in each pod"], why: "His test diluted extract in sugar water until the heat vanished." },
     ],
     timeline: { event: "Scoville devises his heat test", year: 1912 },
     estimate: { q: "Roughly how many Scoville units does pure capsaicin score?", answer: 16000000, unit: 'Scoville units', min: 0, max: 30000000 },
@@ -153,8 +153,8 @@ export default [
     ],
     question: "Do you cook by careful preparation or by improvising as you go?",
     quiz: [
-      { q: "In a tadka, what are whole spices fried in?", a: "Very hot ghee or oil", w: ["Boiling water", "Hot vinegar", "Dry sand"], why: "Hot fat draws out and carries the spices' fat-soluble aromas." },
-      { q: "What is the main risk when making a tadka?", a: "Burning the spices, which turns them bitter", w: ["The oil freezing", "Spices losing colour", "The dal becoming too thick"], why: "Spices are ready in seconds and burn quickly." },
+      { q: "In a tadka, what are whole spices fried in?", a: "Very hot ghee or oil", w: ["Boiling water", "Simmering stock", "Warm yoghurt"], why: "Hot fat draws out and carries the spices' fat-soluble aromas." },
+      { q: "What is the main risk when making a tadka?", a: "Burning the spices", w: ["The oil foaming over", "Spices losing colour", "The dal turning too thick"], why: "Spices are ready in seconds and burn quickly." },
     ],
     timeline: null,
     estimate: null,
@@ -169,7 +169,7 @@ export default [
     ],
     question: "Would you travel somewhere just to eat at one restaurant? Which one?",
     quiz: [
-      { q: "Why did a tyre company start a restaurant guide?", a: "To encourage people to drive more", w: ["To advertise rubber flooring", "As a tax write-off", "To sell maps to restaurants"], why: "More driving meant more worn tyres." },
+      { q: "Why did a tyre company start a restaurant guide?", a: "To encourage people to drive more", w: ["To promote French cooking", "As a tax write-off", "To sell maps to restaurants"], why: "More driving meant more worn tyres." },
       { q: "What does a three-star Michelin rating mean?", a: "Worth a special journey", w: ["Worth a stop", "Worth a detour", "Best value in town"], why: "One star is worth a stop, two a detour, three a special journey." },
     ],
     timeline: { event: "First Michelin Guide published", year: 1900 },
@@ -202,7 +202,7 @@ export default [
     question: "Can you taste the difference between real vanilla and vanilla flavouring, and does it matter to you?",
     quiz: [
       { q: "What kind of plant does vanilla come from?", a: "An orchid", w: ["A palm tree", "A lily", "A bean plant"], why: "Vanilla pods grow on a climbing orchid." },
-      { q: "Who worked out how to hand-pollinate vanilla?", a: "Edmond Albius, an enslaved boy on Réunion", w: ["A French chemist in Paris", "Aztec priests", "A Dutch botanist in Java"], why: "Twelve-year-old Edmond Albius devised the method in 1841." },
+      { q: "Who first worked out how to hand-pollinate vanilla?", a: "An enslaved boy on Réunion", w: ["A French botanist in Paris", "An Aztec priest in Mexico", "A Dutch planter in Java"], why: "Twelve-year-old Edmond Albius devised the method in 1841." },
     ],
     timeline: { event: "Hand-pollination of vanilla devised", year: 1841 },
     estimate: { q: "How old was Edmond Albius when he worked out how to pollinate vanilla?", answer: 12, unit: 'years old', min: 5, max: 60 },
@@ -218,7 +218,7 @@ export default [
     question: "Do you prefer food served as a quick, casual snack or as a slow, formal occasion?",
     quiz: [
       { q: "What does the word sushi actually refer to?", a: "The vinegared rice", w: ["Raw fish", "Seaweed wrapping", "Soy sauce"], why: "Sushi is about the rice; raw fish alone is sashimi." },
-      { q: "In which city did nigiri first become a street food?", a: "Edo, now Tokyo", w: ["Kyoto", "Osaka", "Seoul"], why: "Nigiri was sold from stalls in Edo in the early nineteenth century." },
+      { q: "In which city did nigiri first become a street food?", a: "Edo, now Tokyo", w: ["Kyoto", "Osaka", "Nagasaki"], why: "Nigiri was sold from stalls in Edo in the early nineteenth century." },
     ],
     timeline: null,
     estimate: null,
@@ -233,8 +233,8 @@ export default [
     ],
     question: "When it comes to food, do you care more about authenticity or about what simply tastes good?",
     quiz: [
-      { q: "What is the green paste served with sushi outside Japan usually made from?", a: "Horseradish, mustard and colouring", w: ["Green chillies", "Avocado and lime", "Seaweed and salt"], why: "Real wasabi is scarce, so imitations use horseradish and mustard." },
-      { q: "Why do good sushi bars grate wasabi to order?", a: "Its pungency fades soon after grating", w: ["It freezes if left", "It turns sweet in air", "It becomes toxic"], why: "Its volatile compounds lose much of their punch within about 15 minutes." },
+      { q: "What is the green paste served with sushi outside Japan usually made from?", a: "Horseradish and mustard", w: ["Pickled green chillies", "Avocado and lime", "Seaweed and green tea"], why: "Real wasabi is scarce, so imitations use horseradish and mustard." },
+      { q: "Why do good sushi bars grate wasabi to order?", a: "Its heat fades soon after grating", w: ["It turns bitter if left standing", "It dries into a hard crust", "It turns brown in the air"], why: "Its volatile compounds lose much of their punch within about 15 minutes." },
     ],
     timeline: null,
     estimate: null,
@@ -249,7 +249,7 @@ export default [
     ],
     question: "Are you a tea person or a coffee person, and what does your choice say about you?",
     quiz: [
-      { q: "What mainly makes black tea different from green tea?", a: "Black tea is allowed to oxidise", w: ["It comes from a different plant", "It is grown in darker soil", "It is roasted like coffee"], why: "Green tea is heated to stop oxidation; black tea oxidises fully." },
+      { q: "What mainly makes black tea different from green tea?", a: "It is allowed to oxidise", w: ["It comes from a different plant", "It is picked later in the year", "It is roasted like coffee"], why: "Green tea is heated to stop oxidation; black tea oxidises fully." },
       { q: "What do Chinese speakers call the tea English speakers call black?", a: "Red tea", w: ["Dark tea", "Brown tea", "Night tea"], why: "It is named after the reddish colour of the brew." },
     ],
     timeline: null,
@@ -297,8 +297,8 @@ export default [
     ],
     question: "What kitchen tool would you never give up, and which one is just clutter?",
     quiz: [
-      { q: "Why is a blunt knife more dangerous than a sharp one?", a: "It needs more force, so it slips more", w: ["It carries more germs", "It is heavier", "It rusts faster"], why: "Extra force makes a dull blade skid off the food." },
-      { q: "What does a honing steel mainly do?", a: "Straightens a rolled edge", w: ["Grinds a brand new edge", "Polishes away rust", "Makes the blade heavier"], why: "Honing realigns the edge; sharpening removes metal." },
+      { q: "Why is a blunt knife more dangerous than a sharp one?", a: "It needs more force, so it slips", w: ["It harbours more germs", "It is harder to grip", "It bends under pressure"], why: "Extra force makes a dull blade skid off the food." },
+      { q: "What does a honing steel mainly do?", a: "Straightens a rolled edge", w: ["Grinds a brand new edge", "Polishes away rust", "Removes chips from the edge"], why: "Honing realigns the edge; sharpening removes metal." },
     ],
     timeline: null,
     estimate: null,
@@ -314,7 +314,7 @@ export default [
     question: "Which do you trust more: a good origin story or the boring documented truth?",
     quiz: [
       { q: "The croissant descends from a crescent roll from which country?", a: "Austria", w: ["Turkey", "Italy", "Switzerland"], why: "Its ancestor is the Austrian kipferl." },
-      { q: "What puffs up the layers of a croissant in the oven?", a: "Steam from water in the dough and butter", w: ["Baking powder", "Whipped egg whites", "Air pumped into the dough"], why: "Steam pushes the laminated layers apart." },
+      { q: "What puffs up the layers of a croissant in the oven?", a: "Steam from the dough and butter", w: ["Baking powder in the dough", "Whisked egg whites folded in", "Air beaten into the butter"], why: "Steam pushes the laminated layers apart." },
     ],
     timeline: null,
     estimate: { q: "How many layers of butter do three letter-folds of croissant dough create?", answer: 27, unit: 'layers', min: 0, max: 200 },

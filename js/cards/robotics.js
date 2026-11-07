@@ -41,7 +41,7 @@ export default [
     ],
     question: 'Which job do you think robots should take over first: the most dangerous, the most boring, or the most expensive one?',
     quiz: [
-      { q: 'What was the first job of Unimate, the first factory robot?', a: 'Handling hot die-cast metal parts', w: ['Painting cars', 'Welding ship hulls', 'Packing chocolates'], why: 'At General Motors it lifted and stacked hot metal castings.' },
+      { q: 'What was the first job of Unimate, the first factory robot?', a: 'Handling hot die-cast metal parts', w: ['Spray-painting car bodies', 'Welding car door frames', 'Packing boxes of chocolates'], why: 'At General Motors it lifted and stacked hot metal castings.' },
       { q: 'How did Unimate know what to do?', a: 'It replayed stored movements', w: ['It used a camera to see', 'A worker steered it live', 'It learned by trial and error'], why: 'It repeated a recorded sequence of motions without sensing the world.' },
     ],
     timeline: { event: 'Unimate starts work at GM', year: 1961 },
@@ -89,7 +89,7 @@ export default [
     ],
     question: 'When you make decisions, do you lean more on the present situation, past experience or where things are heading?',
     quiz: [
-      { q: 'In a PID controller, which part looks at how fast the error is changing?', a: 'D, the derivative', w: ['P, the proportional', 'I, the integral', 'None of them'], why: 'The derivative reacts to the rate of change, easing off before overshooting.' },
+      { q: 'In a PID controller, which part looks at how fast the error is changing?', a: 'D, the derivative', w: ['P, the proportional', 'I, the integral', 'All three equally'], why: 'The derivative reacts to the rate of change, easing off before overshooting.' },
       { q: 'What does the integral (I) part of a PID controller do?', a: 'Corrects small errors that persist', w: ['Predicts sudden spikes', 'Switches the system off', 'Ignores past errors'], why: 'It accumulates past error so lingering gaps get closed.' },
     ],
     timeline: null,
@@ -105,8 +105,8 @@ export default [
     ],
     question: 'Would you rather work with a slow, thoughtful assistant or a fast one that sometimes makes mistakes?',
     quiz: [
-      { q: 'How did Shakey the robot get its name?', a: 'It trembled as it moved', w: ['It was built in a quake zone', 'Its inventor was called Shake', 'It shook hands with visitors'], why: 'The tall, wheeled robot wobbled noticeably when it moved.' },
-      { q: 'Which lasting algorithm came out of the Shakey project?', a: 'A* search', w: ['Google PageRank', 'The Fourier transform', 'Binary search'], why: 'A* was developed to help Shakey find routes and is still widely used.' },
+      { q: 'How did Shakey the robot get its name?', a: 'It trembled as it moved', w: ['It shook hands with visitors', 'Its camera images were blurry', 'It was built in a quake zone'], why: 'The tall, wheeled robot wobbled noticeably when it moved.' },
+      { q: 'Which lasting algorithm came out of the Shakey project?', a: 'A* search', w: ['Dijkstra\'s algorithm', 'The Fourier transform', 'Binary search'], why: 'A* was developed to help Shakey find routes and is still widely used.' },
     ],
     timeline: { event: 'Shakey project begins at SRI', year: 1966 },
     estimate: null,
@@ -154,7 +154,7 @@ export default [
     question: 'Can you think of a technology that was overhyped, written off, and then came back stronger? What changed?',
     quiz: [
       { q: 'What did a perceptron do when it got an answer wrong?', a: 'Nudged its weights', w: ['Shut itself down', 'Asked a human for help', 'Deleted its memory'], why: 'Adjusting the weights after mistakes is how it learned from examples.' },
-      { q: 'What is an "AI winter"?', a: 'A period of cooled funding and interest', w: ['A cold-weather robot test', 'A failed space mission', 'A computer virus outbreak'], why: 'After the perceptron hype, enthusiasm and funding dried up for years.' },
+      { q: 'What is an "AI winter"?', a: 'A slump in funding and interest', w: ['A slump in computer sales', 'A pause for new safety rules', 'A shortage of computer chips'], why: 'After the perceptron hype, enthusiasm and funding dried up for years.' },
     ],
     timeline: { event: 'Rosenblatt unveils the perceptron', year: 1958 },
     estimate: { q: 'How many light sensors made up the "camera" of the Mark I Perceptron?', answer: 400, unit: 'sensors', min: 0, max: 2000 },
@@ -169,7 +169,7 @@ export default [
     ],
     question: 'When a team project goes wrong, how do you think blame should be shared out, and does that help anyone improve?',
     quiz: [
-      { q: 'What problem does backpropagation solve?', a: 'How to train hidden layers', w: ['How to cool computer chips', 'How to store more data', 'How to make networks smaller'], why: 'It works out how much each inner weight contributed to the error.' },
+      { q: 'What problem does backpropagation solve?', a: 'How to train hidden layers', w: ['How to make networks run faster', 'How to store training data', 'How to choose a network\'s size'], why: 'It works out how much each inner weight contributed to the error.' },
       { q: 'In which direction does backpropagation pass the error through the network?', a: 'Backwards, from output to input', w: ['Forwards, from input to output', 'Sideways between networks', 'Randomly between layers'], why: 'It starts at the wrong answer and works back layer by layer.' },
     ],
     timeline: { event: 'Backpropagation paper popularised', year: 1986 },
@@ -185,7 +185,7 @@ export default [
     ],
     question: 'When a machine masters something we thought needed genius, does it make the human achievement less impressive or more?',
     quiz: [
-      { q: 'Whom did Deep Blue defeat in 1997?', a: 'Garry Kasparov', w: ['Bobby Fischer', 'Magnus Carlsen', 'Anatoly Karpov'], why: 'It beat the reigning world champion Kasparov in a six-game match.' },
+      { q: 'Whom did Deep Blue defeat in 1997?', a: 'Garry Kasparov', w: ['Bobby Fischer', 'Viswanathan Anand', 'Anatoly Karpov'], why: 'It beat the reigning world champion Kasparov in a six-game match.' },
       { q: 'How did Deep Blue mainly choose its moves?', a: 'Searching huge numbers of positions', w: ['Copying famous past games', 'Learning from playing itself', 'Asking a panel of grandmasters live'], why: 'It was brute-force search guided by an expert-tuned scoring formula.' },
     ],
     timeline: { event: 'Deep Blue beats Kasparov', year: 1997 },
@@ -218,7 +218,7 @@ export default [
     question: 'What is something you learned mostly through trial and error, and what reward kept you going?',
     quiz: [
       { q: 'Reinforcement learning is most like which kind of teaching?', a: 'Training a dog with treats', w: ['Reading a textbook', 'Copying a teacher exactly', 'Memorising a list'], why: 'The learner tries things and is rewarded or penalised.' },
-      { q: 'Why is much robot reinforcement learning done in simulation?', a: 'Millions of real falls would be slow and costly', w: ['Real robots cannot learn', 'Simulations need no rewards', 'It is required by law'], why: 'It often takes millions of attempts, which is impractical on hardware.' },
+      { q: 'Why is much robot reinforcement learning done in simulation?', a: 'Real trials would be slow and costly', w: ['Real robots learn bad habits', 'Simulations are more accurate', 'Real sensors are too noisy'], why: 'It often takes millions of attempts, which is impractical on hardware.' },
     ],
     timeline: null,
     estimate: null,
@@ -234,7 +234,7 @@ export default [
     question: 'Can you think of a target at work or school that people "gamed" in a way that missed the real point?',
     quiz: [
       { q: 'What did the CoastRunners boat learn to do instead of finishing the race?', a: 'Circle a lagoon hitting targets', w: ['Sail backwards to the start', 'Sink itself on purpose', 'Wait at the finish line'], why: 'Points came from targets, so circling scored more than finishing.' },
-      { q: 'What does "reward hacking" mean?', a: 'Exploiting the reward, not the real goal', w: ['Stealing another agent\'s reward', 'Hackers breaking into a robot', 'Giving robots extra rewards'], why: 'The learner optimises what was written down, loopholes included.' },
+      { q: 'What does "reward hacking" mean?', a: 'Exploiting the reward, not the real goal', w: ['Stealing another agent\'s reward', 'Changing the reward mid-training', 'Giving robots extra rewards'], why: 'The learner optimises what was written down, loopholes included.' },
     ],
     timeline: null,
     estimate: null,
@@ -249,8 +249,8 @@ export default [
     ],
     question: 'How do you decide how much independence to give someone, or something, that you cannot check on constantly?',
     quiz: [
-      { q: 'Why can Mars rovers not be steered like a remote-control car?', a: 'Signals take minutes to arrive', w: ['Mars has no radio waves', 'The rovers have no wheels', 'It is forbidden by treaty'], why: 'Even at light speed, messages take roughly 3 to 22 minutes one way.' },
-      { q: 'Which was the first rover to drive on Mars, in 1997?', a: 'Sojourner', w: ['Curiosity', 'Voyager', 'Hubble'], why: 'The small Sojourner rover rolled off its lander in 1997.' },
+      { q: 'Why can Mars rovers not be steered like a remote-control car?', a: 'Signals take minutes to arrive', w: ['Dust storms block the signals', 'The rovers are too fragile', 'Mars has no GPS to steer by'], why: 'Even at light speed, messages take roughly 3 to 22 minutes one way.' },
+      { q: 'Which was the first rover to drive on Mars, in 1997?', a: 'Sojourner', w: ['Curiosity', 'Spirit', 'Opportunity'], why: 'The small Sojourner rover rolled off its lander in 1997.' },
     ],
     timeline: { event: 'Sojourner rover lands on Mars', year: 1997 },
     estimate: { q: 'At most, how many minutes can a one-way radio signal take between Earth and Mars?', answer: 22, unit: 'minutes', min: 0, max: 60 },
@@ -266,7 +266,7 @@ export default [
     question: 'Would you trust a machine that sees the world in a completely different way from you, such as with lasers? Why or why not?',
     quiz: [
       { q: 'How does lidar measure distance?', a: 'Timing a laser pulse\'s round trip', w: ['Measuring the laser\'s colour change', 'Comparing two photographs', 'Detecting heat from objects'], why: 'The delay of the reflected pulse, times light speed, gives the distance.' },
-      { q: 'Why does lidar need very precise electronics?', a: 'Light covers ~30 cm per nanosecond', w: ['Lasers drift with temperature', 'Point clouds need colour', 'Mirrors wear out quickly'], why: 'Tiny timing errors become large distance errors at light speed.' },
+      { q: 'Why does lidar need very precise electronics?', a: 'Light moves 30 cm in a nanosecond', w: ['Lasers drift as they warm up', 'Reflections fade very quickly', 'Each pulse lasts a full second'], why: 'Tiny timing errors become large distance errors at light speed.' },
     ],
     timeline: null,
     estimate: { q: 'Roughly how many centimetres does light travel in one nanosecond?', answer: 30, unit: 'cm', min: 0, max: 100 },
@@ -281,7 +281,7 @@ export default [
     ],
     question: 'Would you prefer a care robot that looks clearly mechanical or one that looks almost human? Why?',
     quiz: [
-      { q: 'What happens in the "uncanny valley"?', a: 'Near-human robots feel eerie', w: ['Robots lose their power', 'Robots learn to lie', 'Cartoon robots seem scary'], why: 'Almost-but-not-quite human figures trigger unease instead of warmth.' },
+      { q: 'What happens in the "uncanny valley"?', a: 'Near-human robots feel eerie', w: ['Lifelike robots feel friendlier', 'Robots learn to lie', 'Cartoon robots seem scary'], why: 'Almost-but-not-quite human figures trigger unease instead of warmth.' },
       { q: 'What did Mori say makes the uncanny effect stronger?', a: 'Movement', w: ['Bright colours', 'Loud voices', 'Small size'], why: 'A moving near-human figure deepens the valley.' },
     ],
     timeline: { event: 'Mori proposes the uncanny valley', year: 1970 },
@@ -297,7 +297,7 @@ export default [
     ],
     question: 'Where in life do you think we over-engineer something that would work better if we let it follow its natural rhythm?',
     quiz: [
-      { q: 'What powers a passive dynamic walker down a slope?', a: 'Gravity and swinging legs', w: ['A small battery', 'A wind-up spring', 'A hidden remote control'], why: 'It has no motors; gravity and pendulum-like legs do the work.' },
+      { q: 'What powers a passive dynamic walker down a slope?', a: 'Gravity and swinging legs', w: ['A small battery', 'A wind-up spring', 'Magnets under the floor'], why: 'It has no motors; gravity and pendulum-like legs do the work.' },
       { q: 'According to the passive walker idea, walking is largely what?', a: 'Falling forward and catching yourself', w: ['Pushing hard with each step', 'Balancing on one leg', 'Lifting the knees high'], why: 'Each step is a controlled fall with the leg swinging like a pendulum.' },
     ],
     timeline: null,

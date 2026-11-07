@@ -9,8 +9,8 @@ export default [
     ],
     question: 'Which everyday thing do you take for granted that would change your life most if it worked the opposite way?',
     quiz: [
-      { q: 'Why does ice float on water?', a: 'Ice is less dense than liquid water', w: ['Ice traps air bubbles only', 'Ice is lighter because it is cold', 'Water pushes cold things up'], why: 'Freezing water forms an open lattice that takes up more space.' },
-      { q: 'At roughly what temperature is liquid water densest?', a: 'About 4°C', w: ['0°C', '-4°C', '100°C'], why: 'Water is densest near 4°C, which is why lakes freeze from the top.' },
+      { q: 'Why does ice float on water?', a: 'Ice is less dense than liquid water', w: ['Ice is full of tiny air bubbles', 'Ice is lighter because it is cold', 'Water pushes cold things up'], why: 'Freezing water forms an open lattice that takes up more space.' },
+      { q: 'At roughly what temperature is liquid water densest?', a: '4°C', w: ['0°C', '-4°C', '10°C'], why: 'Water is densest near 4°C, which is why lakes freeze from the top.' },
     ],
     timeline: null,
     estimate: { q: 'By roughly what percentage does water expand when it freezes?', answer: 9, unit: 'per cent', min: 0, max: 50 },
@@ -41,8 +41,8 @@ export default [
     ],
     question: 'What makes you trust an idea more: that it explains what we already know, or that it correctly predicts something new?',
     quiz: [
-      { q: 'What bold move did Mendeleev make in his periodic table?', a: 'Left gaps for undiscovered elements', w: ['Sorted elements alphabetically', 'Removed all metals', 'Named elements after planets'], why: 'He left gaps and predicted the missing elements\' properties.' },
-      { q: 'Which element filled Mendeleev\'s predicted "eka-silicon" gap?', a: 'Germanium', w: ['Gallium', 'Oxygen', 'Uranium'], why: 'Germanium, discovered in 1886, matched his eka-silicon prediction.' },
+      { q: 'What bold move did Mendeleev make in his periodic table?', a: 'Left gaps for undiscovered elements', w: ['Sorted elements by date of discovery', 'Arranged elements in a spiral', 'Split metals and gases into two tables'], why: 'He left gaps and predicted the missing elements\' properties.' },
+      { q: 'Which element filled Mendeleev\'s predicted "eka-silicon" gap?', a: 'Germanium', w: ['Gallium', 'Scandium', 'Tin'], why: 'Germanium, discovered in 1886, matched his eka-silicon prediction.' },
     ],
     timeline: { event: 'Mendeleev\'s periodic table', year: 1869 },
     estimate: null,
@@ -73,8 +73,8 @@ export default [
     ],
     question: 'Fleming\'s discovery came from a messy lab and a lucky accident. Do you think there is a skill to noticing lucky accidents?',
     quiz: [
-      { q: 'What did Fleming notice on his contaminated dish in 1928?', a: 'Bacteria dying around a mould', w: ['Mould dying around bacteria', 'Bacteria glowing in the dark', 'A virus killing the mould'], why: 'A clear ring formed where Penicillium had killed the bacteria.' },
-      { q: 'Who turned penicillin into a usable medicine around 1940?', a: 'Florey and Chain\'s Oxford team', w: ['Fleming working alone', 'Louis Pasteur', 'Marie Curie'], why: 'Fleming could not purify it; the Oxford team did.' },
+      { q: 'What did Fleming notice on his contaminated dish in 1928?', a: 'Bacteria dying around a mould', w: ['Mould dying around bacteria', 'Bacteria growing faster near a mould', 'A virus killing the mould'], why: 'A clear ring formed where Penicillium had killed the bacteria.' },
+      { q: 'Who turned penicillin into a usable medicine around 1940?', a: 'Florey and Chain at Oxford', w: ['Fleming alone in London', 'Watson and Crick at Cambridge', 'Salk and Sabin in America'], why: 'Fleming could not purify it; the Oxford team did.' },
     ],
     timeline: { event: 'Fleming discovers penicillin', year: 1928 },
     estimate: null,
@@ -90,7 +90,7 @@ export default [
     question: 'Should people be able to buy antibiotics freely, or is it right that doctors act as gatekeepers?',
     quiz: [
       { q: 'How do bacteria become resistant to antibiotics?', a: 'Survivors with useful genes multiply', w: ['They learn from the drug', 'The drug weakens over time', 'Patients become immune to it'], why: 'Natural selection leaves resistant survivors to multiply.' },
-      { q: 'Why can resistance evolve so quickly in bacteria?', a: 'They can divide very often', w: ['They live for centuries', 'They are very large', 'They breathe oxygen'], why: 'Rapid generations mean selection acts in months or years.' },
+      { q: 'Why can resistance evolve so quickly in bacteria?', a: 'They can divide very often', w: ['They can sense the drug coming', 'They live longer than we do', 'They hide inside our cells'], why: 'Rapid generations mean selection acts in months or years.' },
     ],
     timeline: null,
     estimate: null,
@@ -138,7 +138,7 @@ export default [
     question: 'Bones grow stronger with the stresses placed on them. Is that also true of people?',
     quiz: [
       { q: 'Does a newborn baby have more or fewer bones than an adult?', a: 'More, around 300', w: ['Fewer, around 100', 'Exactly the same, 206', 'Fewer, around 150'], why: 'Many of a baby\'s bony pieces fuse together during growth.' },
-      { q: 'Why do astronauts\' bones weaken on long missions?', a: 'Bones are not carrying weight', w: ['There is no calcium in space', 'Radiation dissolves them', 'They grow too fast'], why: 'Bone remodels in response to load, so less load means weaker bone.' },
+      { q: 'Why do astronauts\' bones weaken on long missions?', a: 'Bones are not carrying weight', w: ['Astronaut food lacks calcium', 'Space radiation damages them', 'Low air pressure thins them'], why: 'Bone remodels in response to load, so less load means weaker bone.' },
     ],
     timeline: null,
     estimate: { q: 'How many bones are in a typical adult human skeleton?', answer: 206, unit: 'bones', min: 100, max: 400 },
@@ -169,7 +169,7 @@ export default [
     ],
     question: 'Pain is your body\'s warning system. If you could switch pain off completely, would you? What might go wrong?',
     quiz: [
-      { q: 'Why does a stubbed toe often hurt in two waves?', a: 'Different nerves carry signals at different speeds', w: ['The toe swells up twice', 'The brain replays the pain', 'Blood rushes in then out'], why: 'Fast fibres carry the jolt; slow fibres bring the ache later.' },
+      { q: 'Why does a stubbed toe often hurt in two waves?', a: 'Fast and slow nerves carry the signal', w: ['The brain replays the signal later', 'Swelling sets off a second signal', 'Blood rushing in triggers more pain'], why: 'Fast fibres carry the jolt; slow fibres bring the ache later.' },
       { q: 'What does the fatty myelin sheath around a nerve fibre do?', a: 'Speeds up the signal', w: ['Stores energy for the nerve', 'Blocks all pain', 'Slows down the signal'], why: 'Myelinated fibres carry signals up to about 120 metres per second.' },
     ],
     timeline: null,
@@ -186,7 +186,7 @@ export default [
     question: 'If intelligence can be spread across a body rather than packed in a head, how might that change what we count as "smart"?',
     quiz: [
       { q: 'How many hearts does an octopus have?', a: 'Three', w: ['One', 'Two', 'Eight'], why: 'Two pump blood through the gills and one around the body.' },
-      { q: 'Why is octopus blood blue?', a: 'It uses copper to carry oxygen', w: ['It contains seawater', 'It has no oxygen in it', 'It uses extra iron'], why: 'Copper-based haemocyanin turns blue, unlike iron-based haemoglobin.' },
+      { q: 'Why is octopus blood blue?', a: 'It uses copper to carry oxygen', w: ['It uses a different form of iron', 'It is full of dissolved sea salt', 'It carries very little oxygen'], why: 'Copper-based haemocyanin turns blue, unlike iron-based haemoglobin.' },
     ],
     timeline: null,
     estimate: null,
@@ -201,8 +201,8 @@ export default [
     ],
     question: 'One creature\'s pollution became the foundation for everything after. Can you think of a "waste" in your own life that turned out to be valuable?',
     quiz: [
-      { q: 'Which organisms first filled Earth\'s atmosphere with oxygen?', a: 'Cyanobacteria', w: ['Early trees', 'Volcanoes', 'Dinosaurs'], why: 'Photosynthetic cyanobacteria released oxygen as a waste product.' },
-      { q: 'What are banded iron formations evidence of?', a: 'Oxygen reacting with iron in ancient oceans', w: ['Ancient meteorite strikes', 'Early human mining', 'Iron-eating animals'], why: 'Dissolved iron met oxygen and settled out as rusty layers.' },
+      { q: 'Which organisms first filled Earth\'s atmosphere with oxygen?', a: 'Cyanobacteria', w: ['Early land plants', 'Giant ferns', 'Early seaweeds'], why: 'Photosynthetic cyanobacteria released oxygen as a waste product.' },
+      { q: 'What are banded iron formations evidence of?', a: 'Oxygen rusting iron in the oceans', w: ['Iron-rich meteorite strikes', 'Undersea volcanic eruptions', 'Rivers washing iron from rocks'], why: 'Dissolved iron met oxygen and settled out as rusty layers.' },
     ],
     timeline: null,
     estimate: null,
@@ -233,8 +233,8 @@ export default [
     ],
     question: 'Tides are invisible forces with very visible effects. What invisible pressure shapes your daily routine the most?',
     quiz: [
-      { q: 'How many high tides do most coasts get in about a day?', a: 'Two', w: ['One', 'Four', 'None, only seasonal'], why: 'There are two tidal bulges, and Earth rotates through both.' },
-      { q: 'When do the extra-large "spring tides" happen?', a: 'When the Sun and Moon line up', w: ['Only in the springtime', 'When the Moon is farthest away', 'During solar eclipses only'], why: 'Their pulls combine at new and full moon.' },
+      { q: 'How many high tides do most coasts get in about a day?', a: 'Two', w: ['One', 'Three', 'Four'], why: 'There are two tidal bulges, and Earth rotates through both.' },
+      { q: 'When do the extra-large "spring tides" happen?', a: 'When the Sun and Moon line up', w: ['Only in the springtime', 'When the Moon is farthest away', 'When Earth is closest to the Sun'], why: 'Their pulls combine at new and full moon.' },
     ],
     timeline: null,
     estimate: null,
@@ -249,8 +249,8 @@ export default [
     ],
     question: 'Some changes are too slow for any one lifetime to notice. Which slow change do you think humanity is worst at paying attention to?',
     quiz: [
-      { q: 'What is happening to the distance between Earth and the Moon?', a: 'It is slowly increasing', w: ['It is slowly decreasing', 'It never changes', 'It swings wildly each year'], why: 'Tidal interactions push the Moon gradually outward.' },
-      { q: 'How do we measure the Moon\'s distance so precisely?', a: 'Lasers bounced off Apollo reflectors', w: ['Measuring its shadow', 'Radio signals from satellites', 'Counting craters'], why: 'Reflectors left from 1969 onwards return laser pulses for timing.' },
+      { q: 'What is happening to the distance between Earth and the Moon?', a: 'It is slowly increasing', w: ['It is slowly decreasing', 'It never changes', 'It grows and shrinks with the seasons'], why: 'Tidal interactions push the Moon gradually outward.' },
+      { q: 'How do we measure the Moon\'s distance so precisely?', a: 'Lasers bounced off Apollo reflectors', w: ['Measuring its shadow', 'Radio signals from satellites', 'Measuring its size in the sky'], why: 'Reflectors left from 1969 onwards return laser pulses for timing.' },
     ],
     timeline: { event: 'Apollo 11 leaves laser reflectors', year: 1969 },
     estimate: { q: 'By about how many centimetres does the Moon move away from Earth each year?', answer: 3.8, unit: 'cm', min: 0, max: 20 },
@@ -265,8 +265,8 @@ export default [
     ],
     question: 'Does picturing Earth as a single speck make your everyday worries feel smaller, or does it make them feel more precious?',
     quiz: [
-      { q: 'How big does Earth appear in the Pale Blue Dot photo?', a: 'Smaller than a single pixel', w: ['Filling half the frame', 'About the size of the Moon', 'Invisible behind the Sun'], why: 'From about 6 billion km, Earth is a tiny speck.' },
-      { q: 'Which spacecraft took the Pale Blue Dot photograph?', a: 'Voyager 1', w: ['Apollo 11', 'Hubble Space Telescope', 'Sputnik 1'], why: 'Voyager 1 turned its camera back toward home in 1990.' },
+      { q: 'How big does Earth appear in the Pale Blue Dot photo?', a: 'Smaller than a single pixel', w: ['Filling half the frame', 'About the size of the Moon', 'A small but clear blue disc'], why: 'From about 6 billion km, Earth is a tiny speck.' },
+      { q: 'Which spacecraft took the Pale Blue Dot photograph?', a: 'Voyager 1', w: ['Voyager 2', 'Pioneer 10', 'New Horizons'], why: 'Voyager 1 turned its camera back toward home in 1990.' },
     ],
     timeline: { event: 'Voyager 1 takes Pale Blue Dot', year: 1990 },
     estimate: null,
@@ -297,7 +297,7 @@ export default [
     ],
     question: 'Einstein doubted his prediction could ever be tested, yet it was, a century later. Is there an idea you hold that you expect will only be proven long after you?',
     quiz: [
-      { q: 'What did LIGO first detect in 2015?', a: 'Ripples from two merging black holes', w: ['A new planet', 'Light from the Big Bang', 'A supernova explosion visible by eye'], why: 'The gravitational wave came from two black holes merging.' },
+      { q: 'What did LIGO first detect in 2015?', a: 'Ripples from two merging black holes', w: ['Light left over from the Big Bang', 'Flashes from an exploding star', 'Signals from a distant pulsar'], why: 'The gravitational wave came from two black holes merging.' },
       { q: 'How much did the passing wave change LIGO\'s arm lengths?', a: 'Far less than a proton\'s width', w: ['About a centimetre', 'About a metre', 'About the width of a hair'], why: 'Gravitational waves are incredibly faint by the time they reach us.' },
     ],
     timeline: { event: 'LIGO detects gravitational waves', year: 2015 },

@@ -13,7 +13,7 @@ export const QUIZ = {
   ],
   'news-central-banks': [
     Q('Roughly what inflation rate do most big central banks aim for?', 'About 2%', ['0%', 'About 5%', 'About 10%'], 'Around 2% is the common target.'),
-    Q('What is "forward guidance"?', 'Hints about future policy', ['A surprise rate cut', 'A new currency design', 'A bond purchase'], 'Markets read the wording for what comes next.'),
+    Q("What is \"forward guidance\"?", "Hints about where rates are heading", ["Official forecasts of next year's growth", "Rules for how much banks may lend", "A promise to keep inflation at 2%"], "Markets read the wording for what comes next."),
   ],
   'news-thucydides': [
     Q('In Allison\'s 16 cases of a rising power challenging a ruling one, how many ended in war?', '12', ['4', '8', '16'], 'Twelve of sixteen, though critics question the case selection.'),
@@ -21,11 +21,11 @@ export const QUIZ = {
   ],
   'robo-dof': [
     Q('How many degrees of freedom does a human arm have, shoulder to wrist?', '7', ['3', '6', '10'], 'Three at the shoulder, one at the elbow, three at the wrist.'),
-    Q('Why do classic factory arms have six joints?', 'Six is enough to position and orient a hand in 3D', ['Six is cheaper than four', 'Seven joints are illegal', 'It copies the human hand'], 'Three for position, three for orientation.'),
+    Q('Why do classic factory arms have six joints?', 'Six can set any position and angle', ['Six is the cheapest to build', 'Six copies the human arm', 'Six keeps the arm stable'], 'Three for position, three for orientation.'),
   ],
   'robo-moravec': [
     Q('Moravec\'s paradox: which is relatively easy for computers?', 'Chess and test-taking', ['Walking on rough ground', 'Picking up a cup', 'Folding laundry'], 'Abstract reasoning is easy; perception and movement are hard.'),
-    Q('Moravec\'s explanation for the paradox was...', 'Evolution: perception and movement are ancient and complex', ['Computer chips are too slow', 'Programmers ignore movement', 'Sensors are too expensive'], 'Skills refined for millions of years only feel effortless.'),
+    Q('Moravec\'s explanation for the paradox was...', 'Evolution polished movement for ages', ['Computer chips were too slow', 'Programmers neglected movement', 'Sensors were too costly'], 'Perception and movement are ancient; skills refined for millions of years only feel effortless.'),
   ],
   'robo-slam': [
     Q('What does SLAM stand for?', 'Simultaneous Localisation And Mapping', ['Sensor Linked Autonomous Motion', 'Systematic Laser Area Measurement', 'Self Learning Adaptive Machine'], 'It estimates the map and the robot\'s position together.'),
@@ -36,8 +36,8 @@ export const QUIZ = {
     Q('Who wore Givenchy\'s black sheath in Breakfast at Tiffany\'s?', 'Audrey Hepburn', ['Grace Kelly', 'Marilyn Monroe', 'Coco Chanel'], '1961, and the little black dress was cemented.'),
   ],
   'fashion-couture': [
-    Q('In France, "haute couture" is...', 'A protected term with official criteria', ['A marketing phrase anyone can use', 'A type of silk', 'A street in Paris'], 'Houses must be approved by the Fédération.'),
-    Q('What mostly pays the bills for couture houses?', 'Perfume, handbags and ready-to-wear', ['Couture gowns', 'Fashion show tickets', 'Magazine deals'], 'Very few people buy couture itself.'),
+    Q('In France, "haute couture" is...', 'A legally protected label', ['A phrase any brand can use', 'A type of fine silk', 'A Paris fashion award'], 'Houses must be approved by the Fédération.'),
+    Q('What mostly pays the bills for couture houses?', 'Perfume, handbags and ready-to-wear', ['Couture gowns for private clients', 'Ticket sales for runway shows', 'Licensing deals with magazines'], 'Very few people buy couture itself.'),
   ],
   'fashion-newlook': [
     Q('In what year did Dior show the "New Look"?', '1947', ['1926', '1939', '1961'], 'February 1947, his first collection.'),
@@ -48,16 +48,16 @@ export const QUIZ = {
     Q('What sits at the top of the Burgundy hierarchy?', 'Grand cru', ['Premier cru', 'Village', 'Regional'], 'Grand cru is only a percent or two of production.'),
   ],
   'wine-structure': [
-    Q('What does tannin feel like?', 'Drying, like strong black tea', ['It makes your mouth water', 'Sweet', 'Fizzy'], 'Tannin comes from skins, seeds and oak.'),
+    Q('What does tannin feel like?', 'Drying, like strong black tea', ['Mouth-watering, like lemon', 'Sweet, like ripe fruit', 'Warming, like spirits'], 'Tannin comes from skins, seeds and oak.'),
     Q('A wine\'s body is mostly driven by...', 'Alcohol', ['Acidity', 'Colour', 'Bottle age'], 'Think skimmed milk versus whole milk.'),
   ],
   'wine-champagne': [
-    Q('Where do Champagne\'s bubbles come from?', 'A second fermentation in the bottle', ['Carbon dioxide pumped in', 'Shaking the barrels', 'Naturally fizzy grapes'], 'Yeast and sugar are sealed in, and the CO2 dissolves.'),
+    Q('Where do Champagne\'s bubbles come from?', 'A second fermentation in the bottle', ['Carbon dioxide pumped in', 'A second fermentation in a tank', 'Naturally fizzy grapes'], 'Yeast and sugar are sealed in, and the CO2 dissolves.'),
     Q('What is "non-vintage" Champagne?', 'A blend of several years', ['Wine under one year old', 'Bubbles made outside Champagne', 'Wine made without yeast'], 'Blending keeps a house style the same every year.'),
   ],
   'cheese-holes': [
-    Q('What makes the holes in Emmental?', 'Bacteria releasing carbon dioxide', ['Air pumped into the curd', 'Hand drilling', 'Escaping water'], 'Propionibacteria eat lactic acid and make CO2.'),
-    Q('Why were Swiss cheeses getting fewer holes?', 'Very clean milk had lost tiny hay particles', ['Cows ate less grass', 'Warmer cellars', 'A new kind of rennet'], 'The hay specks act as starting points for bubbles.'),
+    Q('What makes the holes in Emmental?', 'Bacteria releasing carbon dioxide', ['Air pumped into the curd', 'Steam from heating the curd', 'Escaping water'], 'Propionibacteria eat lactic acid and make CO2.'),
+    Q('Why were Swiss cheeses getting fewer holes?', 'Milk had become too clean', ['Cows were eating less grass', 'Cellars had become warmer', 'Dairies used a new rennet'], 'The hay specks act as starting points for bubbles.'),
   ],
   'cheese-washed': [
     Q('Washed-rind cheeses are washed with...', 'Brine, beer or spirits', ['Fresh milk', 'Olive oil', 'Plain water only'], 'The washing encourages the orange, sticky rind.'),
@@ -69,11 +69,11 @@ export const QUIZ = {
   ],
   'film-kuleshov': [
     Q('In the Kuleshov experiment, the actor\'s face...', 'Never changed', ['Changed in every shot', 'Was hidden by a mask', 'Was played by different actors'], 'Viewers read emotion from what it was cut next to.'),
-    Q('The Kuleshov effect shows that meaning in film comes from...', 'The cut, what a shot sits next to', ['The soundtrack', 'The lighting', 'The script'], 'Editors use it constantly.'),
+    Q('The Kuleshov effect shows that meaning in film comes from...', 'The editing', ['The soundtrack', 'The lighting', 'The script'], 'What a shot is cut next to changes what it means. Editors use it constantly.'),
   ],
   'film-bomb': [
-    Q('For Hitchcock, suspense comes from...', 'The audience knowing something the characters don\'t', ['Loud surprises', 'Very fast editing', 'Dark lighting'], 'Show the bomb first.'),
-    Q('Showing the bomb first turns fifteen seconds of surprise into...', 'Fifteen minutes of suspense', ['A comedy', 'Boredom', 'A plot twist'], 'The dull chat becomes agony.'),
+    Q('For Hitchcock, suspense comes from...', 'Letting the audience know more', ['Loud, sudden surprises', 'Very fast editing', 'Dark, moody lighting'], 'Show the bomb first.'),
+    Q('Showing the bomb first turns fifteen seconds of surprise into...', 'Fifteen minutes of suspense', ['Fifteen minutes of boredom', 'Fifteen seconds of shock', 'A clever plot twist'], 'The dull chat becomes agony.'),
   ],
   'film-rashomon': [
     Q('Who directed Rashomon (1950)?', 'Akira Kurosawa', ['Yasujirō Ozu', 'Hayao Miyazaki', 'Kenji Mizoguchi'], 'It won the Golden Lion at Venice.'),
@@ -81,7 +81,7 @@ export const QUIZ = {
   ],
   'food-maillard': [
     Q('The Maillard reaction happens between...', 'Amino acids and sugars', ['Fat and salt', 'Water and starch', 'Sugar on its own'], 'Sugar alone breaking down is caramelisation.'),
-    Q('Why won\'t wet meat brown?', 'Surface water keeps it near 100°C', ['Water washes the flavour off', 'The salt dissolves', 'The pan stops heating'], 'Pat it dry and don\'t crowd the pan.'),
+    Q('Why won\'t wet meat brown?', 'Surface water keeps it near 100°C', ['Water washes the flavour off', 'Water blocks the salt', 'Wet fat cannot render'], 'Pat it dry and don\'t crowd the pan.'),
   ],
   'food-umami': [
     Q('Kikunae Ikeda discovered umami while studying...', 'Kombu seaweed broth', ['Soy sauce', 'Parmesan', 'Green tea'], 'He isolated glutamate in 1908.'),
@@ -97,11 +97,11 @@ export const QUIZ = {
   ],
   'travel-silkroad': [
     Q('Who coined the term "Silk Road"?', 'Ferdinand von Richthofen', ['Marco Polo', 'Genghis Khan', 'Alexander von Humboldt'], 'A German geographer, in 1877.'),
-    Q('The Silk Road was really...', 'A shifting web of routes', ['One long paved road', 'A sea route only', 'A single yearly caravan'], 'Goods passed hand to hand through oasis cities.'),
+    Q("The Silk Road was really...", "A shifting web of routes", ["One road from China to Rome", "Mainly a sea route", "A road built by Chinese emperors"], "Goods passed hand to hand through oasis cities."),
   ],
   'travel-shinkansen': [
     Q('When did the Tōkaidō Shinkansen open?', '1964', ['1945', '1980', '1998'], 'Just before the Tokyo Olympics.'),
-    Q('Japanese rail staff "point and call" because it...', 'Reduces errors', ['Sells more tickets', 'Greets passengers', 'Makes trains faster'], 'Saying the signal aloud keeps attention on it.'),
+    Q("Japanese rail staff \"point and call\" because it...", "Reduces errors", ["Reassures passengers", "Creates a log for managers", "Warns people on the platform"], "Saying the signal aloud keeps attention on it."),
   ],
   'art-rothko': [
     Q('Rothko\'s mature paintings are mostly...', 'Soft-edged rectangles of colour', ['Paint drips and splatters', 'Portraits', 'Hard geometric grids'], 'Built up in thin, glowing layers.'),
@@ -129,7 +129,7 @@ export const QUIZ = {
   ],
   'phil-trolley': [
     Q('Who introduced the trolley problem in 1967?', 'Philippa Foot', ['Judith Jarvis Thomson', 'Peter Singer', 'John Rawls'], 'Thomson later added the footbridge version.'),
-    Q('In the footbridge version, most people...', 'Refuse to push, though the numbers are the same', ['Push without hesitating', 'Split evenly', 'Say it\'s identical to the lever'], 'Why the difference is the puzzle.'),
+    Q('In the footbridge version, most people...', 'Refuse to push', ['Push the man', 'Split evenly', 'Say it\'s the same as the lever'], 'The numbers are the same as with the lever. Why the difference is the puzzle.'),
   ],
   'phil-theseus': [
     Q('Who added the twist of rebuilding the ship from its old planks?', 'Thomas Hobbes', ['Plutarch', 'Plato', 'René Descartes'], 'Now which one is the real ship?'),
@@ -137,10 +137,10 @@ export const QUIZ = {
   ],
   'phil-rawls': [
     Q('The "veil of ignorance" comes from which book?', 'A Theory of Justice', ['The Republic', 'Leviathan', 'Being and Time'], 'John Rawls, 1971.'),
-    Q('Rawls argued inequalities are acceptable only if they...', 'Benefit the least advantaged', ['Are voted for', 'Are earned', 'Are temporary'], 'Chosen without knowing who you\'ll be.'),
+    Q('Rawls argued inequalities are acceptable only if they...', 'Benefit the least advantaged', ['Are approved by a majority', 'Reward the hardest workers', 'Shrink over time'], 'Chosen without knowing who you\'ll be.'),
   ],
   'stats-clt': [
-    Q('Add up many small, independent random effects and the total tends toward...', 'A bell curve', ['A flat line', 'Zero', 'Exponential growth'], 'The central limit theorem.'),
+    Q('Add up many small, independent random effects and the total tends toward...', 'A bell curve', ['A flat, even spread', 'A lopsided curve', 'A random scatter'], 'The central limit theorem.'),
     Q('Which device shows the central limit theorem with falling beads?', 'A Galton board', ['An abacus', 'A slide rule', 'A pendulum'], 'Most beads land near the middle.'),
   ],
   'stats-birthday': [
@@ -152,27 +152,27 @@ export const QUIZ = {
     Q('Why is a positive result so unreliable when a condition is rare?', 'False positives swamp the true ones', ['The test is broken', 'People misreport symptoms', 'Labs mix up samples'], 'The base rate matters.'),
   ],
   'sci-skyblue': [
-    Q('Why is the sky blue?', 'Air scatters short wavelengths more (Rayleigh scattering)', ['It reflects the ocean', 'Ozone is blue', 'The sun is mostly blue'], 'Blue reaches you from every direction.'),
-    Q('Why isn\'t the sky violet, if violet scatters even more?', 'Less violet sunlight, some absorbed, and our eyes are less sensitive to it', ['Violet doesn\'t scatter', 'Clouds filter it out', 'Violet light is too long'], 'All three together.'),
+    Q('Why is the sky blue?', 'Air scatters blue light most', ['It reflects the blue oceans', 'Ozone in the air is blue', 'Sunlight is mostly blue'], 'Rayleigh scattering: blue reaches you from every direction.'),
+    Q('Why isn\'t the sky violet, if violet scatters even more?', 'Less violet sunlight, and weak eye response', ['Violet light barely scatters at all', 'Clouds and dust filter it out', 'Violet waves are too long to scatter'], 'Sunlight has less violet, some is absorbed high up, and our eyes are less sensitive to it.'),
   ],
   'sci-tardigrade': [
     Q('What is a dried-out tardigrade\'s survival state called?', 'A tun', ['A cyst', 'A pupa', 'A spore'], 'Metabolism almost stops.'),
     Q('In 2007, tardigrades survived...', 'Exposure to space in low Earth orbit', ['Being dropped into lava', 'A year at the bottom of the sea', 'Being frozen for 1,000 years'], 'Vacuum and radiation included.'),
   ],
   'sci-lightpast': [
-    Q('How long does sunlight take to reach Earth?', 'About 8 minutes 20 seconds', ['No time at all', 'About 1 second', 'About 4 years'], 'You see the Sun as it was eight minutes ago.'),
+    Q('How long does sunlight take to reach Earth?', 'About 8 minutes', ['About 8 seconds', 'About 1 hour', 'About 1 day'], 'You see the Sun as it was eight minutes ago.'),
     Q('Light from the nearest star system, Alpha Centauri, takes...', 'Over four years', ['About 8 minutes', 'About a month', 'About 100 years'], 'Every star is a photo of the past.'),
   ],
   'hist-ok': [
     Q('"OK" started as a joke abbreviation for...', '"oll korrect"', ['"only kidding"', '"old kitchen"', '"on key"'], 'An 1830s Boston fad for misspelled abbreviations.'),
-    Q('Which campaign helped "OK" spread?', 'Martin Van Buren\'s, "Old Kinderhook"', ['Abraham Lincoln\'s', 'Andrew Jackson\'s', 'George Washington\'s'], 'His supporters formed OK Clubs in 1840.'),
+    Q("Which presidential campaign helped \"OK\" spread?", "Martin Van Buren's", ["Andrew Jackson's", "Abraham Lincoln's", "John Quincy Adams's"], "Van Buren was \"Old Kinderhook\", and his supporters formed OK Clubs in 1840."),
   ],
   'hist-cleopatra': [
-    Q('Cleopatra lived closer in time to which event?', 'The Moon landing', ['The building of the Great Pyramid'], 'The pyramid is about 2560 BC; she died in 30 BC.'),
+    Q("Cleopatra lived closer in time to the Moon landing than to the...", "Building of the Great Pyramid", ["Founding of Rome", "Building of the Parthenon", "Fall of the Western Roman Empire"], "The pyramid is about 2560 BC; she died in 30 BC, about 2,000 years before 1969."),
     Q('Roughly when was the Great Pyramid of Giza built?', 'Around 2560 BC', ['Around 1200 BC', 'Around 30 BC', 'Around AD 100'], 'Even the Romans visited it as tourists.'),
   ],
   'hist-week': [
-    Q('The names of the weekdays come from...', 'The seven visible "planets" of antiquity', ['Seven Roman emperors', 'The seven hills of Rome', 'The phases of the Moon'], 'Sun, Moon, Mars, Mercury, Jupiter, Venus, Saturn.'),
+    Q("The names of the weekdays come from...", "The seven ancient \"planets\"", ["Seven Roman emperors", "The seven hills of Rome", "The phases of the Moon"], "Sun, Moon, Mars, Mercury, Jupiter, Venus, Saturn."),
     Q('Thursday is named after which god?', 'Thor', ['Tiw', 'Woden', 'Frigg'], 'French kept Jupiter instead: jeudi.'),
   ],
 };

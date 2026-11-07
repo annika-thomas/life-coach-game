@@ -138,7 +138,7 @@ export default [
     question: 'Do you like a strong flavour of oak in wine, or does it feel like a disguise?',
     quiz: [
       { q: 'Which flavour does new oak commonly give wine?', a: 'Vanilla', w: ['Lemon', 'Blackcurrant', 'Pepper'], why: 'Toasted new oak adds vanilla, toast and spice notes.' },
-      { q: 'Compared with French oak, American oak tends to give more of what?', a: 'Vanilla and coconut', w: ['Acidity', 'Tannin from grape seeds', 'Citrus aromas'], why: 'American oak is typically bolder, with vanilla and coconut.' },
+      { q: 'Compared with French oak, American oak tends to give more of what?', a: 'Vanilla and coconut', w: ['Lemon and green apple', 'Pepper and herbs', 'Cherry and plum'], why: 'American oak is typically bolder, with vanilla and coconut.' },
     ],
     timeline: null,
     estimate: { q: 'How many litres does a classic Bordeaux barrique hold?', answer: 225, unit: 'litres', min: 0, max: 1000 },
@@ -154,7 +154,7 @@ export default [
     question: 'Would you rather pay extra for age, or buy a younger wine and age it yourself?',
     quiz: [
       { q: 'Which Rioja label means the longest minimum ageing?', a: 'Gran Reserva', w: ['Crianza', 'Reserva', 'Joven'], why: 'Gran Reserva needs at least five years of ageing.' },
-      { q: 'Which grape is the backbone of red Rioja?', a: 'Tempranillo', w: ['Garnacha Blanca', 'Malbec', 'Nebbiolo'], why: 'Red Rioja is based mainly on Tempranillo.' },
+      { q: 'Which grape is the backbone of red Rioja?', a: 'Tempranillo', w: ['Sangiovese', 'Malbec', 'Nebbiolo'], why: 'Red Rioja is based mainly on Tempranillo.' },
     ],
     timeline: null,
     estimate: { q: 'How many years of ageing, at minimum, does a red Rioja Gran Reserva need?', answer: 5, unit: 'years', min: 0, max: 15 },
@@ -186,7 +186,7 @@ export default [
     question: 'Restrained and mineral, or loud and fruity: which do you reach for, and does your choice say anything about you?',
     quiz: [
       { q: 'Sancerre is made from which grape?', a: 'Sauvignon Blanc', w: ['Chardonnay', 'Chenin Blanc', 'Pinot Grigio'], why: 'Sancerre and Pouilly-Fumé are Loire Sauvignon Blancs.' },
-      { q: 'Which New Zealand region made Sauvignon Blanc famous?', a: 'Marlborough', w: ['Hawke\'s Bay', 'Barossa Valley', 'Napa Valley'], why: 'Marlborough on the South Island is New Zealand\'s Sauvignon heartland.' },
+      { q: 'Which New Zealand region made Sauvignon Blanc famous?', a: 'Marlborough', w: ['Hawke\'s Bay', 'Central Otago', 'Gisborne'], why: 'Marlborough on the South Island is New Zealand\'s Sauvignon heartland.' },
     ],
     timeline: null,
     estimate: null,
@@ -201,7 +201,7 @@ export default [
     ],
     question: 'Barolo teaches that looks can deceive. Have you ever misjudged something by appearance alone?',
     quiz: [
-      { q: 'Barolo looks pale in the glass. How does it taste?', a: 'Very tannic and high in acid', w: ['Light and sweet', 'Soft and low in tannin', 'Fizzy and fruity'], why: 'Nebbiolo is pale in colour but powerful in tannin and acidity.' },
+      { q: 'Barolo looks pale in the glass. How does it taste?', a: 'Very tannic and high in acid', w: ['Light and sweet', 'Soft and low in tannin', 'Light and fruity'], why: 'Nebbiolo is pale in colour but powerful in tannin and acidity.' },
       { q: 'Which grape is Barolo made from?', a: 'Nebbiolo', w: ['Sangiovese', 'Barbera', 'Montepulciano'], why: 'Barolo and Barbaresco are both made from Nebbiolo.' },
     ],
     timeline: null,
@@ -234,7 +234,7 @@ export default [
     question: 'Port was shaped by trade and politics as much as taste. What else on your table owes its existence to history?',
     quiz: [
       { q: 'How does port stay sweet?', a: 'Spirit is added to stop fermentation', w: ['Sugar is added after bottling', 'Grapes are frozen before pressing', 'Honey is blended in'], why: 'Adding spirit kills the yeast before all the sugar is used up.' },
-      { q: 'What style is port aged in wood until it turns nutty and amber?', a: 'Tawny', w: ['Ruby', 'Vintage', 'White'], why: 'Tawny port gains its colour and nutty flavour from time in wood.' },
+      { q: 'Which style of port spends years in wood and tastes nutty?', a: 'Tawny', w: ['Ruby', 'Vintage', 'White'], why: 'Tawny port gains its colour and nutty flavour from time in wood.' },
     ],
     timeline: { event: 'Methuen Treaty boosts port', year: 1703 },
     estimate: null,
@@ -282,7 +282,7 @@ export default [
     question: 'Is decanting a genuinely useful step or a bit of theatre? Does the theatre matter?',
     quiz: [
       { q: 'Before decanting an old red with sediment, what should you do?', a: 'Stand the bottle upright for a day', w: ['Shake it gently', 'Chill it in the freezer', 'Leave it lying on its side'], why: 'Standing it upright lets the sediment settle at the bottom.' },
-      { q: 'Why might you decant a young, tannic red?', a: 'To expose it to air and soften it', w: ['To remove sediment', 'To make it colder', 'To add bubbles'], why: 'Air helps young, tight reds open up.' },
+      { q: 'Why might you decant a young, tannic red?', a: 'To expose it to air and soften it', w: ['To remove sediment', 'To make it colder', 'To warm it up a little'], why: 'Air helps young, tight reds open up.' },
     ],
     timeline: null,
     estimate: null,
@@ -297,7 +297,7 @@ export default [
     ],
     question: 'What is the best food and drink combination you have ever had, and why do you think it worked?',
     quiz: [
-      { q: 'With a sweet dessert, how sweet should the wine be?', a: 'At least as sweet as the dessert', w: ['Completely dry', 'Less sweet than the dessert', 'It makes no difference'], why: 'A less sweet wine tastes thin and sour next to dessert.' },
+      { q: 'With a sweet dessert, how sweet should the wine be?', a: 'At least as sweet as the dessert', w: ['Completely dry', 'Less sweet than the dessert', 'Dry but high in acid'], why: 'A less sweet wine tastes thin and sour next to dessert.' },
       { q: 'What does tannic red wine pair well with?', a: 'Steak and other fatty protein', w: ['Very spicy curry', 'Lemon sorbet', 'Delicate white fish'], why: 'Protein and fat soften the drying feel of tannin.' },
     ],
     timeline: null,
@@ -314,7 +314,7 @@ export default [
     question: 'Which food rule do you happily break, and which do you think is actually worth keeping?',
     quiz: [
       { q: 'Which red is a classic match for salmon?', a: 'Pinot Noir', w: ['Cabernet Sauvignon', 'Barolo', 'Vintage port'], why: 'Pinot Noir is light and low in tannin, so it suits oily fish.' },
-      { q: 'What can heavy tannin do when paired with fish?', a: 'Create a metallic taste', w: ['Make the fish taste sweeter', 'Remove all fishy smell', 'Make the wine taste fizzy'], why: 'Tannin and fish oils can clash and taste metallic.' },
+      { q: 'What can heavy tannin do when paired with fish?', a: 'Create a metallic taste', w: ['Make the fish taste sweeter', 'Remove the fishy smell', 'Make the fish taste saltier'], why: 'Tannin and fish oils can clash and taste metallic.' },
     ],
     timeline: null,
     estimate: null,

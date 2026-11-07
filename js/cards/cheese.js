@@ -105,8 +105,8 @@ export default [
     ],
     question: 'Goat\'s cheese is often loved or hated. Is there a flavour you think people should give a second chance?',
     quiz: [
-      { q: 'Why is goat\'s cheese whiter than cow\'s milk cheese?', a: 'Goats convert beta-carotene to vitamin A', w: ['It is bleached after making', 'Goats eat only white plants', 'It is made with added cream'], why: 'Goats turn the yellow pigment into colourless vitamin A.' },
-      { q: 'Which Loire goat\'s cheese has a straw through its middle?', a: 'Sainte-Maure de Touraine', w: ['Crottin de Chavignol', 'Valençay', 'Brie de Meaux'], why: 'Sainte-Maure is a log held together by a straw.' },
+      { q: 'Why is goat\'s cheese whiter than cow\'s milk cheese?', a: 'Goats turn the yellow pigment into vitamin A', w: ['The curd is bleached after making', 'Goat\'s milk has much less fat', 'Goats eat mainly pale plants'], why: 'Goats turn the yellow pigment into colourless vitamin A.' },
+      { q: 'Which Loire goat\'s cheese has a straw through its middle?', a: 'Sainte-Maure de Touraine', w: ['Crottin de Chavignol', 'Valençay', 'Selles-sur-Cher'], why: 'Sainte-Maure is a log held together by a straw.' },
     ],
     timeline: null,
     estimate: null,
@@ -154,7 +154,7 @@ export default [
     question: 'Grilled halloumi or melting raclette: are you a team that keeps its shape, or a team that oozes?',
     quiz: [
       { q: 'Which cheese is famous for grilling without melting?', a: 'Halloumi', w: ['Brie', 'Mozzarella', 'Raclette'], why: 'Halloumi\'s curds are poached in whey, so it holds its shape.' },
-      { q: 'What is used to set paneer instead of rennet?', a: 'An acid such as lemon juice', w: ['Salt water', 'Blue mould', 'Yeast'], why: 'Paneer is an acid-set cheese made without rennet.' },
+      { q: 'What is used to set paneer instead of rennet?', a: 'Lemon juice or vinegar', w: ['Salt and heat alone', 'Baking soda', 'Gelatin'], why: 'Paneer is an acid-set cheese made without rennet.' },
     ],
     timeline: null,
     estimate: null,
@@ -169,7 +169,7 @@ export default [
     ],
     question: 'Sweet paste with salty cheese is a Spanish tradition. What unexpected combination do you swear by?',
     quiz: [
-      { q: 'Manchego is made from which milk?', a: 'Manchega sheep\'s milk', w: ['Cow\'s milk', 'Goat\'s milk', 'Buffalo milk'], why: 'By law, Manchego uses only milk from Manchega sheep.' },
+      { q: 'Manchego is made from which milk?', a: 'Sheep\'s milk', w: ['Cow\'s milk', 'Goat\'s milk', 'Buffalo milk'], why: 'By law, Manchego uses only milk from Manchega sheep.' },
       { q: 'What is membrillo, served with Manchego?', a: 'Quince paste', w: ['Fig jam', 'Spanish honey', 'Pickled peppers'], why: 'Membrillo is a firm, sweet quince paste.' },
     ],
     timeline: null,
@@ -186,7 +186,7 @@ export default [
     question: 'Gouda changes completely with age. Have you changed more or less than you expected over the years?',
     quiz: [
       { q: 'What does aged Gouda famously taste of?', a: 'Butterscotch and toasted nuts', w: ['Mushrooms and earth', 'Lemon and grass', 'Smoke and bacon'], why: 'Long ageing gives Gouda caramel and nutty flavours.' },
-      { q: 'Why does washing the curd make Gouda sweeter?', a: 'It removes some milk sugar', w: ['It adds sugar to the curd', 'It kills all the bacteria', 'It adds cream'], why: 'Less milk sugar means less acid forms in the cheese.' },
+      { q: 'Why does washing the curd make Gouda sweeter?', a: 'It removes some milk sugar', w: ['It adds sugar to the curd', 'It kills all the bacteria', 'It rinses out the salt'], why: 'Less milk sugar means less acid forms in the cheese.' },
     ],
     timeline: null,
     estimate: null,
@@ -201,7 +201,7 @@ export default [
     ],
     question: 'Crystals in cheese are a sign of patience paying off. What in your life has improved only with time?',
     quiz: [
-      { q: 'The crunchy crystals in aged Gouda are mostly made of what?', a: 'Tyrosine, an amino acid', w: ['Salt', 'Sugar', 'Mould spores'], why: 'Tyrosine crystallises as proteins break down during ageing.' },
+      { q: 'The crunchy crystals in aged Gouda are mostly made of what?', a: 'An amino acid called tyrosine', w: ['Undissolved salt crystals', 'Crystallised milk sugar', 'Clusters of mould spores'], why: 'Tyrosine crystallises as proteins break down during ageing.' },
       { q: 'What are the white speckles on the surface of aged cheddar often made of?', a: 'Calcium lactate', w: ['Blue mould', 'Wax', 'Sea salt'], why: 'Calcium lactate forms harmless crystals on aged cheddar.' },
     ],
     timeline: null,
@@ -217,7 +217,7 @@ export default [
     ],
     question: 'Was the EU right to stop Danish cow\'s milk cheese being called feta?',
     quiz: [
-      { q: 'What is feta traditionally made from?', a: 'Sheep\'s milk, perhaps with some goat\'s', w: ['Cow\'s milk only', 'Buffalo milk', 'Goat\'s milk only'], why: 'Protected feta is sheep\'s milk with up to 30 per cent goat\'s.' },
+      { q: 'What is feta traditionally made from?', a: 'Mostly sheep\'s milk', w: ['Mostly cow\'s milk', 'Mostly buffalo milk', 'Mostly goat\'s milk'], why: 'Protected feta is sheep\'s milk with up to 30 per cent goat\'s.' },
       { q: 'How should you store leftover feta?', a: 'Submerged in its brine', w: ['Wrapped tightly in cling film', 'Uncovered in the fridge', 'In the freezer'], why: 'The brine keeps feta moist and seasoned.' },
     ],
     timeline: { event: 'Feta name protected in the EU', year: 2002 },
@@ -281,8 +281,8 @@ export default [
     ],
     question: 'Is cheese etiquette, like not cutting the nose off the Brie, charming tradition or fussy snobbery?',
     quiz: [
-      { q: 'How long before serving should you take cheese out of the fridge?', a: 'About an hour', w: ['Just before serving', 'A full day', 'About five minutes'], why: 'An hour lets the cheese warm up so its flavour comes through.' },
-      { q: 'What is the best way to wrap leftover cheese?', a: 'Waxed or cheese paper', w: ['Tight cling film', 'Aluminium foil only', 'Nothing at all'], why: 'Paper lets cheese breathe; cling film can make it sweaty.' },
+      { q: 'How long before serving should you take cheese out of the fridge?', a: 'About an hour', w: ['Just before serving', 'A full day', 'Three or four hours'], why: 'An hour lets the cheese warm up so its flavour comes through.' },
+      { q: 'What is the best way to wrap leftover cheese?', a: 'Waxed or cheese paper', w: ['Tight cling film', 'Aluminium foil', 'A sealed plastic tub'], why: 'Paper lets cheese breathe; cling film can make it sweaty.' },
     ],
     timeline: null,
     estimate: null,
@@ -297,7 +297,7 @@ export default [
     ],
     question: 'If you could put only three cheeses on your ideal board, which would they be?',
     quiz: [
-      { q: 'In what order should you taste a cheeseboard?', a: 'Mildest to strongest', w: ['Strongest to mildest', 'Hardest to softest', 'Any order at all'], why: 'Strong cheeses like blues would overwhelm delicate ones.' },
+      { q: 'In what order should you taste a cheeseboard?', a: 'Mildest to strongest', w: ['Strongest to mildest', 'Hardest to softest', 'Softest to hardest'], why: 'Strong cheeses like blues would overwhelm delicate ones.' },
       { q: 'How many cheeses does the card recommend for a board?', a: 'Three to five', w: ['One or two', 'Eight to ten', 'At least twelve'], why: 'More than about five becomes a blur.' },
     ],
     timeline: null,
@@ -313,7 +313,7 @@ export default [
     ],
     question: 'Red wine and cheese is a cliché. Which clichés about food do you think are actually right?',
     quiz: [
-      { q: 'Why does red wine often clash with soft cheese?', a: 'Its tannin can taste harsh with it', w: ['It is too sweet', 'It is too cold', 'It has too little alcohol'], why: 'Tannin and creamy cheese can clash, tasting harsh or metallic.' },
+      { q: 'Why does red wine often clash with soft cheese?', a: 'Its tannin tastes harsh', w: ['It is too sweet', 'It is too cold', 'It has too little alcohol'], why: 'Tannin and creamy cheese can clash, tasting harsh or metallic.' },
       { q: 'Which type of cheese best stands up to a red wine?', a: 'An aged hard cheese', w: ['A fresh goat\'s cheese', 'A ripe Brie', 'A fresh mozzarella'], why: 'Firm, aged cheeses like Parmigiano can handle tannin.' },
     ],
     timeline: null,

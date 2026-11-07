@@ -10,7 +10,7 @@ export default [
     question: 'Is watching a film in a crowded cinema a better experience than watching it alone at home? What does the crowd add, or take away?',
     quiz: [
       { q: 'Which city hosted the Lumière brothers\' first paid film screening?', a: 'Paris', w: ['London', 'New York', 'Berlin'], why: 'It took place at the Grand Café in Paris in December 1895.' },
-      { q: 'What did the Lumières\' Cinématographe combine in one box?', a: 'Camera, printer and projector', w: ['Camera and microphone', 'Projector and record player', 'Camera and colour filter'], why: 'The single device could shoot, print and project films.' },
+      { q: 'What did the Lumières\' Cinématographe combine in one box?', a: 'Camera, printer and projector', w: ['Camera, microphone and speaker', 'Projector, record player and screen', 'Camera, flash and colour filter'], why: 'The single device could shoot, print and project films.' },
     ],
     timeline: { event: 'Lumière brothers\' first paid screening', year: 1895 },
     estimate: { q: 'How many short films were in the Lumières\' first paid programme?', answer: 10, unit: 'films', min: 1, max: 40 },
@@ -41,7 +41,7 @@ export default [
     ],
     question: 'Is there a modern technology that is changing an art form as suddenly as sound changed cinema? Who wins and who loses?',
     quiz: [
-      { q: 'Was most of The Jazz Singer actually silent?', a: 'Yes, it used title cards for most dialogue', w: ['No, it had full dialogue throughout', 'No, it was a musical with no speech', 'No, it was entirely in colour and sound'], why: 'Only a handful of scenes used synchronised songs and speech.' },
+      { q: 'How much of The Jazz Singer had synchronised talking or singing?', a: 'Only a handful of scenes', w: ['Almost all of it', 'About half of it', 'None, it had a live orchestra'], why: 'It is mostly silent, with title cards for dialogue. Only a few scenes have synchronised sound.' },
       { q: 'How did the Vitaphone system play sound?', a: 'From a disc running alongside the projector', w: ['From a tape hidden behind the screen', 'From live actors behind the screen', 'From a radio broadcast'], why: 'Vitaphone synchronised a large audio disc with the film.' },
     ],
     timeline: { event: 'The Jazz Singer brings film sound', year: 1927 },
@@ -74,7 +74,7 @@ export default [
     question: 'Next time you watch something, could you spot the cuts? Is "invisible" editing a virtue, or would you rather feel the filmmaker\'s hand?',
     quiz: [
       { q: 'What does continuity editing try to make you do?', a: 'Not notice the cuts', w: ['Count every cut', 'Notice the camera', 'Feel deliberately confused'], why: 'Its conventions hide the joins between shots.' },
-      { q: 'What happens if a director crosses the 180-degree line?', a: 'Characters seem to swap sides of the screen', w: ['The film switches to slow motion', 'The sound goes out of sync', 'The image turns upside down'], why: 'Crossing the line flips who faces left and right.' },
+      { q: 'What happens if a director crosses the 180-degree line?', a: 'Characters seem to swap sides of the screen', w: ['The film switches to slow motion', 'The sound goes out of sync', 'The lighting seems to change'], why: 'Crossing the line flips who faces left and right.' },
     ],
     timeline: null,
     estimate: null,
@@ -121,7 +121,7 @@ export default [
     ],
     question: 'Can a story about a small, ordinary problem be as gripping as one about saving the world? Which have moved you more?',
     quiz: [
-      { q: 'Who played the lead in Bicycle Thieves?', a: 'A factory worker, not an actor', w: ['A famous opera singer', 'The director himself', 'A Hollywood star'], why: 'Neorealism often cast non-professionals; Maggiorani was a factory worker.' },
+      { q: 'Who played the lead in Bicycle Thieves?', a: 'A factory worker', w: ['A famous stage actor', 'The director himself', 'A Hollywood star'], why: 'Neorealism often cast non-professionals; Maggiorani was a factory worker.' },
       { q: 'Which Indian director was inspired by Bicycle Thieves?', a: 'Satyajit Ray', w: ['Raj Kapoor', 'Mani Ratnam', 'Guru Dutt'], why: 'Ray credited the film with inspiring Pather Panchali.' },
     ],
     timeline: { event: 'Bicycle Thieves released', year: 1948 },
@@ -138,7 +138,7 @@ export default [
     question: 'Musical numbers in the middle of a drama: do they pull you out of a story or pull you deeper in?',
     quiz: [
       { q: 'Which country makes the most feature films each year?', a: 'India', w: ['United States', 'China', 'France'], why: 'India regularly produces well over 1,500 films a year.' },
-      { q: 'What does "Bollywood" strictly refer to?', a: 'The Hindi-language film industry in Mumbai', w: ['All Indian cinema', 'Tamil-language cinema', 'Indian television dramas'], why: 'Other languages have their own large industries.' },
+      { q: 'What does "Bollywood" strictly refer to?', a: 'Hindi cinema made in Mumbai', w: ['All cinema made in India', 'Tamil cinema made in Chennai', 'Indian television dramas'], why: 'Other languages have their own large industries.' },
     ],
     timeline: { event: 'First Indian feature film', year: 1913 },
     estimate: null,
@@ -153,7 +153,7 @@ export default [
     ],
     question: 'Ozu\'s films are slow on purpose. Do you have patience for slow films, and has one ever rewarded it?',
     quiz: [
-      { q: 'Where did Ozu typically place his camera?', a: 'Low, near the height of someone kneeling', w: ['High above, looking down', 'On a moving crane', 'Handheld, close to the actors'], why: 'His camera sat roughly at tatami-mat eye level.' },
+      { q: 'Where did Ozu typically place his camera?', a: 'Low, at kneeling height', w: ['High, looking down', 'On a moving crane', 'Handheld, up close'], why: 'His camera sat roughly at tatami-mat eye level.' },
       { q: 'What are Ozu\'s "pillow shots"?', a: 'Still images of places between scenes', w: ['Close-ups of sleeping characters', 'Soft-focus romantic shots', 'Dream sequences'], why: 'He cut to empty rooms, landscapes or passing trains between scenes.' },
     ],
     timeline: { event: 'Ozu\'s Tokyo Story released', year: 1953 },
@@ -169,7 +169,7 @@ export default [
     ],
     question: 'Think of a favourite film or series. What is its MacGuffin, and would the story change if it were something else entirely?',
     quiz: [
-      { q: 'What is a MacGuffin?', a: 'An object that drives the plot but barely matters', w: ['A surprise twist ending', 'A comic sidekick', 'A scene after the credits'], why: 'Characters chase it; the audience cares about the chase.' },
+      { q: 'What is a MacGuffin?', a: 'An object that drives the plot but barely matters', w: ['A twist that reframes everything before it', 'A side character who exists for comic relief', 'A short scene hidden after the credits'], why: 'Characters chase it; the audience cares about the chase.' },
       { q: 'Which film features a briefcase whose contents are never revealed?', a: 'Pulp Fiction', w: ['The Godfather', 'Casablanca', 'Jaws'], why: 'The glowing briefcase in Pulp Fiction is a famous MacGuffin.' },
     ],
     timeline: null,
@@ -186,7 +186,7 @@ export default [
     question: 'Is what you imagine scarier than what you see? Think of a film that frightened you most by holding back.',
     quiz: [
       { q: 'Why does the shark appear so rarely in Jaws?', a: 'The mechanical shark kept breaking', w: ['The budget ran out before filming', 'Real sharks were too dangerous', 'Censors cut most shark scenes'], why: 'Malfunctions forced Spielberg to suggest the shark instead.' },
-      { q: 'Which film overtook Jaws as the highest-grossing film?', a: 'Star Wars', w: ['Titanic', 'E.T.', 'The Godfather'], why: 'Star Wars took the record two years later.' },
+      { q: 'Which film overtook Jaws as the highest-grossing film?', a: 'Star Wars', w: ['Superman', 'E.T.', 'The Godfather'], why: 'Star Wars took the record two years later.' },
     ],
     timeline: { event: 'Jaws invents the summer blockbuster', year: 1975 },
     estimate: null,
@@ -201,7 +201,7 @@ export default [
     ],
     question: 'Visual tricks like the dolly zoom tell you how a character feels. Which do you remember more from films: the dialogue or the images?',
     quiz: [
-      { q: 'In a dolly zoom, what happens to the background?', a: 'It seems to stretch or rush while the subject stays still', w: ['It fades to black', 'It freezes in place', 'It turns black and white'], why: 'Moving the camera while zooming the opposite way warps perspective.' },
+      { q: 'In a dolly zoom, what happens to the background?', a: 'It seems to stretch or rush', w: ['It slowly fades out', 'It freezes in place', 'It spins around'], why: 'Moving the camera while zooming the opposite way warps perspective.' },
       { q: 'Which Hitchcock film made the dolly zoom famous?', a: 'Vertigo', w: ['Psycho', 'Rear Window', 'The Birds'], why: 'It is often called the "Vertigo effect".' },
     ],
     timeline: { event: 'Vertigo popularises the dolly zoom', year: 1958 },
@@ -298,7 +298,7 @@ export default [
     question: 'Are simple tests like the Bechdel test useful, or do they flatten what makes a story good? Try it on the last film you watched.',
     quiz: [
       { q: 'Where did the Bechdel test first appear?', a: 'In a comic strip', w: ['In a university study', 'In a Hollywood union rulebook', 'In a newspaper film review'], why: 'It came from Alison Bechdel\'s comic in 1985.' },
-      { q: 'What does passing the Bechdel test tell you about a film?', a: 'Nothing about its overall quality', w: ['That it is a feminist film', 'That it was directed by a woman', 'That it won awards'], why: 'It measures patterns across films, not the merit of one.' },
+      { q: 'What does passing the Bechdel test tell you about a film?', a: 'Nothing about its quality', w: ['That it is a feminist film', 'That women have big roles', 'That it treats women fairly'], why: 'It measures patterns across films, not the merit of one.' },
     ],
     timeline: { event: 'Bechdel test appears in a comic', year: 1985 },
     estimate: null,

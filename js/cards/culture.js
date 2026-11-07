@@ -9,7 +9,7 @@ export default [
     ],
     question: 'Shoes on or off at home: which camp are you in, and do you ask guests to follow your rule?',
     quiz: [
-      { q: 'In a Japanese home, what is the genkan?', a: 'The entrance area where shoes come off', w: ['The main living room', 'A garden shrine', 'The kitchen'], why: 'The genkan is the lowered entrance where outdoor shoes are left.' },
+      { q: 'In a Japanese home, what is the genkan?', a: 'The entrance area where shoes come off', w: ['The main room where guests are received', 'A small shrine for family ancestors', 'The sunken table area for meals'], why: 'The genkan is the lowered entrance where outdoor shoes are left.' },
       { q: 'What should you do before stepping onto tatami mats?', a: 'Take off your slippers too', w: ['Put your shoes back on', 'Wash your hands', 'Bow to the room'], why: 'Slippers are removed before walking on tatami.' },
     ],
     timeline: null,
@@ -57,7 +57,7 @@ export default [
     ],
     question: 'Which of your own traditions is all about getting home to family? What would you never skip?',
     quiz: [
-      { q: 'Why do many families avoid sweeping on Lunar New Year\'s Day?', a: 'So they don\'t sweep away good luck', w: ['Because brooms are given as gifts', 'Because it wakes the ancestors', 'Because the floor must stay red'], why: 'Cleaning is done beforehand so luck is not swept out.' },
+      { q: 'Why do many families avoid sweeping on Lunar New Year\'s Day?', a: 'It would sweep away good luck', w: ['Brooms are saved as gifts that day', 'It would wake the ancestors', 'It insults the kitchen god'], why: 'Cleaning is done beforehand so luck is not swept out.' },
       { q: 'What do elders traditionally give children at Lunar New Year?', a: 'Red envelopes of money', w: ['White candles', 'Green tea leaves', 'Paper lanterns shaped like animals'], why: 'Red envelopes of money are a classic New Year gift.' },
     ],
     timeline: null,
@@ -73,7 +73,7 @@ export default [
     ],
     question: 'Do you believe any numbers or objects are lucky or unlucky, even a little? Where did that belief come from?',
     quiz: [
-      { q: 'Why is a clock an awkward gift in China?', a: 'Giving a clock sounds like a phrase about death', w: ['Clocks are reserved for weddings', 'It implies the guest is late', 'Clocks are considered too expensive'], why: '"Sòng zhōng" sounds like attending someone\'s death or funeral.' },
+      { q: 'Why is a clock an awkward gift in China?', a: 'It sounds like a phrase about death', w: ['It is kept for wedding gifts', 'It hints the guest is always late', 'It is seen as far too costly'], why: '"Sòng zhōng" sounds like attending someone\'s death or funeral.' },
       { q: 'Why is the number eight considered lucky?', a: 'It sounds like a word for prosperity', w: ['It is the number of zodiac animals', 'It looks like a lantern', 'It is the emperor\'s number'], why: '"Bā" sounds close to a word for prosperity.' },
     ],
     timeline: null,
@@ -154,7 +154,7 @@ export default [
     question: 'When someone makes a mistake, do you prefer to be told directly in front of others or quietly in private? Why?',
     quiz: [
       { q: 'Which language did English borrow "lose face" from?', a: 'Chinese', w: ['Japanese', 'French', 'Arabic'], why: 'The idiom was borrowed from Chinese in the nineteenth century.' },
-      { q: 'In face-conscious settings, how is criticism often given?', a: 'Privately or indirectly', w: ['Loudly, to show honesty', 'Only in writing to the whole team', 'Never at all'], why: 'Avoiding public embarrassment protects everyone\'s face.' },
+      { q: 'In face-conscious settings, how is criticism often given?', a: 'Privately or indirectly', w: ['Loudly, to show honesty', 'Only in writing to the whole team', 'In front of the group, to be fair'], why: 'Avoiding public embarrassment protects everyone\'s face.' },
     ],
     timeline: null,
     estimate: null,
@@ -169,7 +169,7 @@ export default [
     ],
     question: 'Which small rituals at work or with friends help you show respect without words? Are any of them dying out?',
     quiz: [
-      { q: 'How should you offer your business card in Japan?', a: 'With both hands, turned so they can read it', w: ['Slid across the table face down', 'Tucked into their jacket pocket', 'With your left hand only'], why: 'Two hands and readable text show respect for the exchange.' },
+      { q: 'How should you offer your business card in Japan?', a: 'With both hands, facing them', w: ['Face down across the table', 'Tucked into their pocket', 'With your left hand only'], why: 'Two hands and readable text show respect for the exchange.' },
       { q: 'What should you do with cards during a meeting?', a: 'Lay them on the table in front of you', w: ['Write notes on the back', 'Put them straight in your back pocket', 'Hand them back immediately'], why: 'Keeping them on the table treats them as the people themselves.' },
     ],
     timeline: null,
@@ -185,8 +185,8 @@ export default [
     ],
     question: 'Should tips be scrapped in favour of higher wages, or do they reward good service? Where do you stand?',
     quiz: [
-      { q: 'In Japan, is tipping in restaurants customary?', a: 'No, good service is simply expected', w: ['Yes, 20 per cent is standard', 'Yes, but only in cash coins', 'Only on public holidays'], why: 'Tipping is not customary in Japan and money may be returned.' },
-      { q: 'What is the usual restaurant tip for table service in the US?', a: '15 to 20 per cent', w: ['Nothing at all', '1 to 2 per cent', 'Exactly 50 per cent'], why: 'Tips form part of many US servers\' pay.' },
+      { q: 'In Japan, is tipping in restaurants customary?', a: 'No, it is not expected', w: ['Yes, about 10 per cent', 'Yes, but only in cash', 'Only at expensive places'], why: 'Tipping is not customary in Japan and money may be returned.' },
+      { q: 'What is the usual restaurant tip for table service in the US?', a: '15 to 20 per cent', w: ['5 to 10 per cent', '1 to 2 per cent', '25 to 30 per cent'], why: 'Tips form part of many US servers\' pay.' },
     ],
     timeline: null,
     estimate: null,
@@ -201,7 +201,7 @@ export default [
     ],
     question: 'Hugs, handshakes, kisses, a nod: what greeting feels natural to you, and which one makes you awkward?',
     quiz: [
-      { q: 'How many kisses is common for la bise in Paris?', a: 'Two', w: ['One', 'Five', 'None'], why: 'Two is common in Paris, though regions differ.' },
+      { q: 'How many kisses is common for la bise in Paris?', a: 'Two', w: ['One', 'Three', 'Four'], why: 'Two is common in Paris, though regions differ.' },
       { q: 'In a French business meeting, what is the safer default greeting?', a: 'A handshake', w: ['Three kisses', 'A deep bow', 'A hug'], why: 'La bise is mainly for social settings.' },
     ],
     timeline: null,
@@ -218,7 +218,7 @@ export default [
     question: 'Is a touch-free greeting warmer or colder than a handshake to you? Has your view changed in recent years?',
     quiz: [
       { q: 'In the Thai wai, what do higher hands show?', a: 'More respect', w: ['Less formality', 'Disagreement', 'That you are leaving'], why: 'The higher the hands and lower the head, the more respect shown.' },
-      { q: 'In Japan, what does a deeper, longer bow usually express?', a: 'Gratitude, apology or deference', w: ['Casual friendliness', 'Impatience', 'A wish to leave'], why: 'Small nods suit colleagues; deeper bows carry more weight.' },
+      { q: 'In Japan, what does a deeper, longer bow usually express?', a: 'Deeper respect', w: ['Casual friendliness', 'Mild impatience', 'A wish to leave'], why: 'In Japan, a deeper, longer bow shows more gratitude, apology or deference.' },
     ],
     timeline: null,
     estimate: null,
@@ -233,8 +233,8 @@ export default [
     ],
     question: 'Do you have a New Year ritual, serious or silly? What would you invent if you could start one?',
     quiz: [
-      { q: 'What do people in Spain eat at midnight on New Year\'s Eve?', a: 'Twelve grapes, one per chime', w: ['Twelve olives', 'A slice of almond cake', 'Seven figs'], why: 'One grape for each chime brings luck for each month.' },
-      { q: 'In Scottish first-footing, what matters most?', a: 'Who first crosses the threshold after midnight', w: ['Who sings the loudest', 'Who drinks the first whisky', 'Who opens the windows'], why: 'The first visitor is said to set the luck for the year.' },
+      { q: 'What do people in Spain eat at midnight on New Year\'s Eve?', a: 'Twelve grapes', w: ['Twelve olives', 'Twelve almonds', 'A slice of turrón'], why: 'One grape for each chime of the clock at midnight.' },
+      { q: 'In Scottish first-footing, what matters most?', a: 'Who first crosses the doorstep', w: ['Who sings Auld Lang Syne first', 'Who pours the first dram', 'Who opens the windows first'], why: 'The first visitor is said to set the luck for the year.' },
     ],
     timeline: null,
     estimate: { q: 'How many grapes do people in Spain eat at midnight on New Year\'s Eve?', answer: 12, unit: 'grapes', min: 1, max: 30 },
@@ -250,7 +250,7 @@ export default [
     question: 'Is generosity a better measure of status than wealth? Who do you admire most for what they give rather than what they have?',
     quiz: [
       { q: 'At a potlatch, how does a host gain status?', a: 'By giving gifts to the guests', w: ['By collecting tribute from guests', 'By winning a canoe race', 'By refusing all gifts'], why: 'Status comes from what the host gives away.' },
-      { q: 'Which government banned the potlatch from 1884?', a: 'Canada', w: ['Mexico', 'Britain\'s parliament directly', 'The state of Alaska'], why: 'Canadian authorities banned it until 1951.' },
+      { q: 'Which government banned the potlatch from 1884?', a: 'Canada', w: ['The United States', 'Britain', 'Mexico'], why: 'Canadian authorities banned it until 1951.' },
     ],
     timeline: { event: 'Canada lifts the potlatch ban', year: 1951 },
     estimate: null,
@@ -266,7 +266,7 @@ export default [
     question: 'Is a ritual greeting more meaningful than a casual hello, or does formality get in the way of warmth?',
     quiz: [
       { q: 'What do two people press together in a hongi?', a: 'Noses and foreheads', w: ['Palms and wrists', 'Cheeks only', 'Shoulders'], why: 'The hongi presses noses and foreheads, sharing breath.' },
-      { q: 'Besides war, why might a haka be performed?', a: 'To welcome guests or mourn at funerals', w: ['Only before rugby matches', 'To start a cooking contest', 'To ask for rain'], why: 'Haka are performed for many reasons, including welcomes and funerals.' },
+      { q: 'Besides war, why might a haka be performed?', a: 'To welcome guests or mourn the dead', w: ['Mainly to open sports matches', 'To ask the gods for rain', 'To bless the season\'s crops'], why: 'Haka are performed for many reasons, including welcomes and funerals.' },
     ],
     timeline: null,
     estimate: null,

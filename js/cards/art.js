@@ -10,7 +10,7 @@ export default [
     question: 'Why do you think people painted animals deep inside caves, where few could see them?',
     quiz: [
       { q: 'Who found the Lascaux cave paintings in 1940?', a: 'Four teenagers', w: ['A team of archaeologists', 'A farmer ploughing', 'Soldiers digging trenches'], why: 'Four teenagers squeezed into the cave in September 1940.' },
-      { q: 'Why was Lascaux closed to the public in 1963?', a: 'Crowds were causing mould and damage', w: ['The roof collapsed', 'The paintings were stolen', 'It flooded permanently'], why: 'Breath, heat and lighting from visitors harmed the paintings.' },
+      { q: 'Why was Lascaux closed to the public in 1963?', a: 'Visitors caused mould and damage', w: ['A rockfall blocked the passage', 'Thieves chipped off paintings', 'Floodwater kept seeping in'], why: 'Breath, heat and lighting from visitors harmed the paintings.' },
     ],
     timeline: { event: 'Lascaux cave discovered', year: 1940 },
     estimate: { q: 'Roughly how many years old are the Lascaux cave paintings?', answer: 17000, unit: 'years', min: 1000, max: 50000 },
@@ -26,7 +26,7 @@ export default [
     question: 'Think of a painting or photograph you love. What did you notice only after looking at it for a long time?',
     quiz: [
       { q: 'In one Met study, roughly how long did visitors look at each artwork?', a: 'About half a minute', w: ['About five minutes', 'About two seconds', 'About ten minutes'], why: 'The average was about 27 seconds, including reading the label.' },
-      { q: 'In the slow-looking routine, when should you read the label?', a: 'After looking for a while', w: ['Before looking at all', 'Never', 'Only if you dislike the work'], why: 'Look first, then read the label and look again.' },
+      { q: 'In the slow-looking routine, when should you read the label?', a: 'After a minute of just looking', w: ['First, so you know what to look for', 'Halfway, to check your first ideas', 'Only at the very end of your visit'], why: 'Look first, then read the label and look again.' },
     ],
     timeline: null,
     estimate: { q: 'In one well-known Met study, how many seconds on average did visitors spend looking at each artwork?', answer: 27, unit: 'seconds', min: 0, max: 180 },
@@ -42,7 +42,7 @@ export default [
     question: 'Should art about real disasters aim to be beautiful? Where is the line between moving and exploiting?',
     quiz: [
       { q: 'What real event does The Raft of the Medusa depict?', a: 'Survivors of a shipwreck', w: ['A naval battle', 'A royal coronation', 'A volcanic eruption'], why: 'It shows survivors of the wrecked French ship Méduse.' },
-      { q: 'What shape guides your eye upward in the painting?', a: 'A pyramid or triangle', w: ['A circle', 'A spiral', 'A straight horizontal line'], why: 'Bodies rise in a triangle to the man waving at the distant ship.' },
+      { q: 'What shape guides your eye upward in the painting?', a: 'A triangle', w: ['A circle', 'A spiral', 'A grid of squares'], why: 'Bodies rise in a triangle to the man waving at the distant ship.' },
     ],
     timeline: null,
     estimate: null,
@@ -74,7 +74,7 @@ export default [
     question: 'Perspective is a convention, not the only "true" way to show space. Do you prefer realistic depth or flatter, more patterned pictures?',
     quiz: [
       { q: 'In linear perspective, where do parallel lines meet?', a: 'At a vanishing point', w: ['At the picture frame', 'At the brightest colour', 'Nowhere, they stay parallel'], why: 'Receding parallel lines converge on a vanishing point.' },
-      { q: 'Which painting is an early masterpiece of linear perspective?', a: "Masaccio's Holy Trinity", w: ["Hokusai's Great Wave", "Picasso's Guernica", 'The Lascaux bulls'], why: 'Masaccio painted it in about 1427 in Santa Maria Novella, Florence.' },
+      { q: 'Which painting is an early masterpiece of linear perspective?', a: 'Masaccio\'s Holy Trinity', w: ['Hokusai\'s Great Wave', 'Picasso\'s Guernica', 'Monet\'s Water Lilies'], why: 'Masaccio painted it in about 1427 in Santa Maria Novella, Florence.' },
     ],
     timeline: null,
     estimate: null,
@@ -90,7 +90,7 @@ export default [
     question: "Leonardo traded durability for the freedom to take his time. Was it worth it? Would you have made the same choice?",
     quiz: [
       { q: "Where is the vanishing point in Leonardo's Last Supper?", a: "At Christ's head", w: ["At Judas's hand", 'Outside the window', 'At the bottom of the table'], why: 'All the lines of the room converge on Christ.' },
-      { q: 'Why did the Last Supper start flaking so soon?', a: 'It was painted on a dry wall, not true fresco', w: ['Leonardo used watercolour on paper', 'It was left outdoors', 'The wall was made of wood'], why: 'Painting on dry plaster let Leonardo work slowly but the paint did not bond.' },
+      { q: 'Why did the Last Supper start flaking so soon?', a: 'It was painted on dry plaster', w: ['Its pigments were mixed with water only', 'The monastery roof leaked onto it', 'It was varnished far too thickly'], why: 'Leonardo skipped true fresco and painted on the dry wall, so the paint soon flaked.' },
     ],
     timeline: null,
     estimate: { q: 'How many years did the most recent restoration of the Last Supper take?', answer: 21, unit: 'years', min: 1, max: 60 },
@@ -105,8 +105,8 @@ export default [
     ],
     question: "Van Eyck signed himself into the picture like graffiti. If you could leave a note in something you made, what would it say?",
     quiz: [
-      { q: 'What did Van Eyck write above the mirror in the Arnolfini Portrait?', a: 'Jan van Eyck was here, 1434', w: ['The couple\'s wedding vows', 'A price for the painting', 'A prayer for good harvest'], why: 'The Latin inscription reads "Jan van Eyck was here, 1434".' },
-      { q: 'What technique gives Van Eyck\'s oil paintings their glow?', a: 'Thin translucent layers called glazes', w: ['Thick paint applied with a knife', 'Gold leaf on every surface', 'Painting on wet plaster'], why: 'Layered glazes let light pass into the paint and reflect back.' },
+      { q: 'What did Van Eyck write above the mirror in the Arnolfini Portrait?', a: 'A note saying he was there', w: ['A note of the couple\'s vows', 'A note of the price paid', 'A short prayer for the couple'], why: 'It reads "Jan van Eyck was here, 1434", like a witness signing.' },
+      { q: 'What technique gives Van Eyck\'s oil paintings their glow?', a: 'Thin see-through glazes', w: ['Thick paint laid on with a knife', 'Gold leaf under the paint', 'Paint pressed into wet plaster'], why: 'Layered glazes let light pass into the paint and reflect back.' },
     ],
     timeline: { event: 'Arnolfini Portrait painted', year: 1434 },
     estimate: null,
@@ -153,7 +153,7 @@ export default [
     ],
     question: 'Why do you think a painting of an unknown girl became one of the most loved images in the world?',
     quiz: [
-      { q: 'Who was the model for Girl with a Pearl Earring?', a: 'Nobody knows', w: ["Vermeer's wife", 'A Dutch princess', 'A famous actress'], why: 'It is a tronie, a study of a face, and the model is unknown.' },
+      { q: 'Who was the model for Girl with a Pearl Earring?', a: 'Nobody knows', w: ['Vermeer\'s wife', 'A Dutch princess', 'A local maidservant'], why: 'It is a tronie, a study of a face, and the model is unknown.' },
       { q: 'How is the famous pearl actually painted?', a: 'With just a couple of strokes', w: ['With real crushed pearl', 'With gold leaf', 'With hundreds of tiny dots'], why: 'A bright highlight and a soft reflection are enough to suggest the pearl.' },
     ],
     timeline: null,
@@ -170,7 +170,7 @@ export default [
     question: 'Does knowing a material was rare and costly change how you see a painting? Should it?',
     quiz: [
       { q: 'What stone was natural ultramarine made from?', a: 'Lapis lazuli', w: ['Turquoise', 'Sapphire', 'Blue glass'], why: 'Ultramarine was ground from lapis lazuli, mostly from Afghanistan.' },
-      { q: 'Which figure was ultramarine often reserved for in Renaissance art?', a: 'The Virgin Mary', w: ['The devil', 'The painter himself', 'Roman emperors'], why: 'Its cost made it a mark of honour for the Virgin\'s robe.' },
+      { q: 'Which figure was ultramarine often reserved for in Renaissance art?', a: 'The Virgin Mary', w: ['Saint Peter', 'Wealthy donors', 'Roman emperors'], why: 'Its cost made it a mark of honour for the Virgin\'s robe.' },
     ],
     timeline: null,
     estimate: null,
@@ -186,7 +186,7 @@ export default [
     question: 'Does a work of art lose something if thousands of copies exist? Or does it gain something?',
     quiz: [
       { q: 'What kind of artwork is The Great Wave?', a: 'A woodblock print', w: ['An oil painting', 'A silk tapestry', 'A fresco'], why: 'It is an ukiyo-e print, made with a separate carved block for each colour.' },
-      { q: 'Which mountain appears small in the background of The Great Wave?', a: 'Mount Fuji', w: ['Mount Everest', 'Mount Kailash', 'Mount Kilimanjaro'], why: 'It belongs to the series Thirty-six Views of Mount Fuji.' },
+      { q: 'Which mountain appears small in the background of The Great Wave?', a: 'Mount Fuji', w: ['Mount Aso', 'Mount Asama', 'Mount Ontake'], why: 'It belongs to the series Thirty-six Views of Mount Fuji.' },
     ],
     timeline: { event: "Hokusai's Great Wave", year: 1831 },
     estimate: { q: 'Roughly how old was Hokusai when he made The Great Wave?', answer: 70, unit: 'years old', min: 20, max: 100 },
@@ -201,7 +201,7 @@ export default [
     ],
     question: 'Copying was how Van Gogh learned. Is copying a good way to learn a craft, or does it hold you back?',
     quiz: [
-      { q: 'Whose prints did Van Gogh copy in paint in 1887?', a: 'Hiroshige', w: ['Rembrandt', 'Monet', 'Caravaggio'], why: 'He copied two prints from Hiroshige\'s One Hundred Famous Views of Edo.' },
+      { q: 'Whose prints did Van Gogh copy in paint in 1887?', a: 'Hiroshige', w: ['Hokusai', 'Utamaro', 'Rembrandt'], why: 'He copied two prints from Hiroshige\'s One Hundred Famous Views of Edo.' },
       { q: 'What was the European craze for Japanese art called?', a: 'Japonisme', w: ['Orientalism', 'Ukiyo-e', 'Art Nouveau'], why: 'Japonisme swept European art in the late 19th century.' },
     ],
     timeline: null,
@@ -233,7 +233,7 @@ export default [
     ],
     question: 'Should museums return objects taken by force long ago, even if they have cared for them well? What should decide it?',
     quiz: [
-      { q: 'How were the Benin Bronzes cast?', a: 'By the lost-wax method', w: ['By hammering cold sheets', 'By carving solid metal', 'By pouring into sand moulds only'], why: 'A wax model is melted out and replaced by molten metal.' },
+      { q: 'How were the Benin Bronzes cast?', a: 'By the lost-wax method', w: ['By hammering cold sheets', 'By carving solid metal', 'By beating over wooden forms'], why: 'A wax model is melted out and replaced by molten metal.' },
       { q: 'What happened to many Benin Bronzes in 1897?', a: 'British forces looted them', w: ['They were buried for safety', 'They were melted down for coins', 'They were sold by the Oba'], why: 'A British expedition sacked Benin City and took thousands of objects.' },
     ],
     timeline: { event: 'British loot Benin City', year: 1897 },
@@ -249,8 +249,8 @@ export default [
     ],
     question: 'If you painted a self-portrait that showed how you feel rather than how you look, what would be in it?',
     quiz: [
-      { q: 'How did Frida Kahlo begin painting?', a: 'In bed, recovering from a bus accident', w: ['As a student in Paris', 'Painting murals with her father', 'Copying old masters in a museum'], why: 'She began painting during her recovery, with a mirror above her bed.' },
-      { q: 'What did The Two Fridas show?', a: 'Two versions of Kahlo joined by an artery', w: ['Kahlo and her sister at a market', 'Kahlo and Rivera dancing', 'Two parrots in a jungle'], why: 'Two Fridas sit hand in hand, their exposed hearts connected.' },
+      { q: 'How did Frida Kahlo begin painting?', a: 'In bed, after a bus accident', w: ['At art school in Paris', 'Helping her father paint murals', 'Copying paintings in a museum'], why: 'She began painting during her recovery, with a mirror above her bed.' },
+      { q: 'What did The Two Fridas show?', a: 'Two Kahlos, hearts joined by an artery', w: ['Kahlo as a girl and as a woman', 'Kahlo before and after her accident', 'Kahlo and her sister at a market'], why: 'Two Fridas sit hand in hand, their exposed hearts connected.' },
     ],
     timeline: { event: 'Kahlo paints The Two Fridas', year: 1939 },
     estimate: { q: 'Roughly how many of Frida Kahlo\'s paintings are self-portraits?', answer: 55, unit: 'paintings', min: 0, max: 200 },
@@ -298,7 +298,7 @@ export default [
     question: 'Is something art just because an artist says it is? Where would you draw the line?',
     quiz: [
       { q: 'What object did Duchamp present as Fountain in 1917?', a: 'A urinal', w: ['A bathtub', 'A garden hose', 'A teacup'], why: 'He signed an ordinary urinal "R. Mutt 1917".' },
-      { q: 'What did Duchamp call everyday objects declared art?', a: 'Readymades', w: ['Found frescoes', 'Still lifes', 'Assemblages'], why: 'Readymades put the idea and choice above handcraft.' },
+      { q: 'What did Duchamp call everyday objects declared art?', a: 'Readymades', w: ['Collages', 'Still lifes', 'Assemblages'], why: 'Readymades put the idea and choice above handcraft.' },
     ],
     timeline: { event: "Duchamp's Fountain", year: 1917 },
     estimate: null,
@@ -314,7 +314,7 @@ export default [
     question: 'Which everyday object from today would you put in a gallery to sum up our time? Why?',
     quiz: [
       { q: 'How many soup can paintings did Warhol show in 1962?', a: '32', w: ['12', '50', '100'], why: 'There was one canvas for each of the 32 varieties then sold.' },
-      { q: 'What did Pop Art treat as worthy subjects for art?', a: 'Advertising and consumer goods', w: ['Only religious scenes', 'Classical myths', 'Untouched wilderness'], why: 'Pop Art drew on mass-produced images everyone shared.' },
+      { q: 'What did Pop Art treat as worthy subjects for art?', a: 'Advertising and consumer goods', w: ['Religious scenes', 'Classical myths', 'Untouched wilderness'], why: 'Pop Art drew on mass-produced images everyone shared.' },
     ],
     timeline: { event: "Warhol's Soup Cans shown", year: 1962 },
     estimate: null,

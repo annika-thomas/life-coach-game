@@ -10,8 +10,8 @@ export default [
     ],
     question: 'If a food were named after you, what would it be, and what habit of yours would it celebrate?',
     quiz: [
-      { q: 'Who is the sandwich named after?', a: 'The 4th Earl of Sandwich', w: ['A Kentish baker', 'Captain James Cook', 'Queen Victoria'], why: 'John Montagu, 4th Earl of Sandwich, gave the snack its name.' },
-      { q: 'Which islands did Captain Cook name after the Earl?', a: 'The islands now called Hawaii', w: ['The Falkland Islands', 'The Channel Islands', 'The Canary Islands'], why: 'Cook named them the Sandwich Islands.' },
+      { q: "The sandwich takes its name from a...", a: "British nobleman's title", w: ["Kentish baker's surname", "naval captain's nickname", "royal cook's recipe book"], why: "John Montagu, 4th Earl of Sandwich, gave the snack its name." },
+      { q: "Which islands did Captain Cook call the Sandwich Islands?", a: "Hawaii", w: ["Fiji", "Tonga", "The Falklands"], why: "Cook named today's Hawaii after the Earl, who backed his voyages." },
     ],
     timeline: null,
     estimate: null,
@@ -43,7 +43,7 @@ export default [
     question: 'If your country announced it was skipping eleven days next month, what would you worry about first?',
     quiz: [
       { q: 'In 1582, which date came right after Thursday 4 October?', a: 'Friday 15 October', w: ['Friday 5 October', 'Monday 1 November', 'Friday 14 October'], why: 'Ten days were dropped to realign the calendar.' },
-      { q: 'Why did the Julian calendar drift?', a: 'Its year was about 11 minutes too long', w: ['It had no leap years', 'It used the Moon only', 'It had 13 months'], why: 'The small error added up over centuries.' },
+      { q: "Why did the Julian calendar drift?", a: "Its year ran 11 minutes long", w: ["Its year ran 11 minutes short", "It skipped leap years", "It followed the Moon"], why: "The small error added up over centuries." },
     ],
     timeline: { event: 'Gregorian calendar introduced', year: 1582 },
     estimate: { q: 'How many days did Britain drop from its calendar in 1752?', answer: 11, unit: 'days', min: 1, max: 30 },
@@ -59,7 +59,7 @@ export default [
     question: 'What other everyday rules do you follow that might secretly be fossils of some long-forgotten decision?',
     quiz: [
       { q: 'On what date does the UK tax year begin?', a: '6 April', w: ['1 January', '25 March', '1 April'], why: 'The calendar change and an 1800 adjustment pushed it to 6 April.' },
-      { q: 'Before 1752, when did the English legal year begin?', a: '25 March, Lady Day', w: ['1 January', '25 December', '1 September'], why: 'Lady Day was the traditional start of the year.' },
+      { q: "Before 1752, when did the English legal year begin?", a: "25 March", w: ["1 January", "25 December", "1 September"], why: "Lady Day, 25 March, was the traditional start of the year." },
     ],
     timeline: { event: 'Britain switches calendars', year: 1752 },
     estimate: null,
@@ -75,7 +75,7 @@ export default [
     question: 'Would you spend decades on a single problem, knowing the reward might never fully come?',
     quiz: [
       { q: 'How many degrees does the Earth turn each hour?', a: '15 degrees', w: ['1 degree', '24 degrees', '60 degrees'], why: '360 degrees divided by 24 hours is 15.' },
-      { q: 'What was John Harrison\'s original trade?', a: 'Carpenter and clockmaker', w: ['Admiral', 'Astronomer Royal', 'Mapmaker'], why: 'Harrison was a Yorkshire carpenter turned clockmaker.' },
+      { q: "What was John Harrison's original trade?", a: "Carpenter", w: ["Naval officer", "Astronomer", "Mapmaker"], why: "Harrison was a Yorkshire carpenter turned clockmaker." },
     ],
     timeline: { event: 'Longitude Act passed', year: 1714 },
     estimate: { q: 'What was the maximum Longitude Act prize, in pounds?', answer: 20000, unit: 'pounds', min: 1000, max: 100000 },
@@ -107,7 +107,7 @@ export default [
     question: 'Which modern invention do you think will turn out to be as big a shift as the printing press, and why?',
     quiz: [
       { q: 'In which city did Gutenberg print his Bible?', a: 'Mainz', w: ['Venice', 'Paris', 'London'], why: 'Gutenberg worked in Mainz, in Germany.' },
-      { q: 'Where had movable type been used before Gutenberg?', a: 'China and Korea', w: ['Egypt and Persia', 'Rome and Greece', 'Nowhere at all'], why: 'Movable type existed in China, and metal type in Korea, earlier.' },
+      { q: "Where had movable type been used before Gutenberg?", a: "China and Korea", w: ["Egypt and Persia", "Greece and Rome", "India and Arabia"], why: "Movable type existed in China, and metal type in Korea, earlier." },
     ],
     timeline: { event: 'Gutenberg Bible printed', year: 1455 },
     estimate: { q: 'Roughly how many copies of his Bible did Gutenberg print?', answer: 180, unit: 'copies', min: 10, max: 1000 },
@@ -155,7 +155,7 @@ export default [
     question: 'Why do you think dark explanations of innocent things are so appealing and spread so easily?',
     quiz: [
       { q: 'When does "Ring a ring o\' roses" first appear in print?', a: '1881', w: ['1348', '1665', '1952'], why: 'It was first printed in 1881, long after the great plagues.' },
-      { q: 'When did the plague interpretation first appear?', a: 'The mid-twentieth century', w: ['During the Black Death', 'In the 1600s', 'In Roman times'], why: 'The plague reading is a modern invention.' },
+      { q: "When did the plague interpretation first appear?", a: "The mid-twentieth century", w: ["During the Black Death", "During the 1665 plague", "In Victorian times"], why: "The plague reading is a modern invention." },
     ],
     timeline: null,
     estimate: null,
@@ -187,7 +187,7 @@ export default [
     question: 'What is something people commonly believe about you that is not really true? Where do you think it came from?',
     quiz: [
       { q: 'Roughly how tall was Napoleon?', a: 'About 5 feet 7 inches', w: ['About 4 feet 11 inches', 'About 5 feet 2 inches', 'About 6 feet 2 inches'], why: 'He was about 1.69 metres, average or slightly above.' },
-      { q: 'Why did "5 feet 2 inches" mislead people?', a: 'French inches were longer than English ones', w: ['It was measured lying down', 'It was a typing error', 'It was his height as a child'], why: 'The French figure was converted as if it were English.' },
+      { q: "Why did \"5 feet 2 inches\" mislead people?", a: "French inches were longer", w: ["It was measured in old age", "It was a clerk's copying error", "It was his height as a cadet"], why: "The French figure was converted as if it were in English inches." },
     ],
     timeline: null,
     estimate: { q: 'Roughly how tall was Napoleon, in centimetres?', answer: 169, unit: 'cm', min: 140, max: 200 },
@@ -202,8 +202,8 @@ export default [
     ],
     question: 'Should we correct friends who repeat a charming but false word story, or let it go?',
     quiz: [
-      { q: 'What does "sincere" really come from?', a: 'Latin "sincerus", clean or pure', w: ['Latin "sine cera", without wax', 'Greek "syn kera", with horns', 'French "sans cire"'], why: 'The "without wax" story is a folk etymology.' },
-      { q: 'Why are acronym origins for old words usually false?', a: 'Acronyms only became common in the 1900s', w: ['Old English had no letters', 'Acronyms were illegal', 'Printers banned capitals'], why: 'Making words from initials is a largely twentieth-century habit.' },
+      { q: "What does \"sincere\" really come from?", a: "Latin \"sincerus\", pure", w: ["Latin \"sine cera\", without wax", "Latin \"sine cura\", without care", "French \"sans cire\", without wax"], why: "The \"without wax\" story is a folk etymology." },
+      { q: "Why are acronym origins for old words usually false?", a: "Acronyms were rare before the 1900s", w: ["Old English had no capital letters", "Dictionaries refuse to list acronyms", "Acronyms come only from Latin"], why: "Making words from initials is a largely twentieth-century habit." },
     ],
     timeline: null,
     estimate: null,
@@ -219,7 +219,7 @@ export default [
     question: 'If you had to invent a word for an emergency that everyone in the world would understand, what would you choose?',
     quiz: [
       { q: 'Which language does "mayday" come from?', a: 'French', w: ['German', 'Latin', 'Old English'], why: 'It imitates the French "m\'aider", help me.' },
-      { q: 'What is "pan-pan" used for?', a: 'An urgent but not life-threatening problem', w: ['A celebration message', 'A weather report', 'A false alarm'], why: 'It comes from the French "panne", breakdown.' },
+      { q: "What is \"pan-pan\" used for?", a: "An urgent but not deadly problem", w: ["Grave and imminent danger", "Cancelling a false alarm", "A routine weather report"], why: "It comes from the French \"panne\", breakdown; mayday is for grave danger." },
     ],
     timeline: { event: 'Mayday chosen as distress call', year: 1923 },
     estimate: null,
@@ -234,8 +234,8 @@ export default [
     ],
     question: 'What do you think makes a signal or symbol truly universal: simplicity, history or something else?',
     quiz: [
-      { q: 'What does SOS originally stand for?', a: 'Nothing, it was chosen for its Morse pattern', w: ['Save our souls', 'Save our ship', 'Send out support'], why: 'The phrases were added later to fit the letters.' },
-      { q: 'Which older distress signal did the Titanic also send?', a: 'CQD', w: ['XYZ', 'HELP', 'MAYDAY'], why: 'Its operators sent both CQD and SOS in 1912.' },
+      { q: "Why was SOS chosen as the distress signal?", a: "For its simple Morse pattern", w: ["As short for \"save our souls\"", "As short for \"save our ship\"", "After a famous ship's call sign"], why: "The phrases were added later to fit the letters." },
+      { q: "Which older distress signal did the Titanic also send?", a: "CQD", w: ["MAYDAY", "SOE", "QRX"], why: "Its operators sent both CQD and SOS in 1912." },
     ],
     timeline: { event: 'SOS agreed in Berlin', year: 1906 },
     estimate: null,
@@ -267,7 +267,7 @@ export default [
     question: 'Is there something you keep doing a certain way only because switching would be a hassle?',
     quiz: [
       { q: 'Which company sold the early QWERTY typewriter in 1874?', a: 'Remington', w: ['IBM', 'Olivetti', 'Singer'], why: 'The gun maker Remington put Sholes\'s typewriter on sale.' },
-      { q: 'What do economists call it when a standard sticks because switching is costly?', a: 'Lock-in', w: ['Inflation', 'Arbitrage', 'Comparative advantage'], why: 'QWERTY is the classic example of lock-in.' },
+      { q: "What do economists call it when a standard sticks because switching is costly?", a: "Lock-in", w: ["Moral hazard", "Arbitrage", "Comparative advantage"], why: "QWERTY is the classic example of lock-in." },
     ],
     timeline: { event: 'QWERTY typewriter on sale', year: 1874 },
     estimate: null,
@@ -282,7 +282,7 @@ export default [
     ],
     question: 'Which everyday habit of yours do you think has the most surprising history behind it?',
     quiz: [
-      { q: 'Which queen helped make tea fashionable at the English court?', a: 'Catherine of Braganza', w: ['Elizabeth I', 'Queen Victoria', 'Mary Queen of Scots'], why: 'The Portuguese princess brought her tea habit when she married Charles II.' },
+      { q: "Which queen helped make tea fashionable at the English court?", a: "Catherine of Braganza", w: ["Henrietta Maria", "Elizabeth I", "Mary of Modena"], why: "The Portuguese princess brought her tea habit when she married Charles II." },
       { q: 'Where did Britain\'s tea originally come from?', a: 'China', w: ['India', 'Portugal', 'Kenya'], why: 'Tea arrived from China; Indian plantations came much later.' },
     ],
     timeline: { event: 'Charles II marries Catherine of Braganza', year: 1662 },

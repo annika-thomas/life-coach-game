@@ -11,7 +11,7 @@ export default [
     question: 'Does the official inflation figure match how prices feel in your own life? What would you put in your personal basket?',
     quiz: [
       { q: 'Roughly what yearly inflation rate do many central banks aim for?', a: 'About 2 per cent', w: ['Exactly 0 per cent', 'About 10 per cent', 'About 5 per cent'], why: 'A small positive rate gives a cushion against falling prices.' },
-      { q: 'How is each item in the CPI basket weighted?', a: 'By how much households spend on it', w: ['Equally, item by item', 'By how often its price changes', 'By the weight of the product'], why: 'Bigger spending items, like rent, count for more in the index.' },
+      { q: "How is each item in the CPI basket weighted?", a: "By how much households spend on it", w: ["Equally, item by item", "By how often its price changes", "By how essential it is"], why: "Bigger spending items, like rent, count for more in the index." },
     ],
     timeline: null,
     estimate: null,
@@ -27,7 +27,7 @@ export default [
     question: 'Knowing that even 2 per cent inflation halves the value of cash in about 35 years, would you change how you save?',
     quiz: [
       { q: 'At 7 per cent growth a year, roughly how long does something take to double?', a: 'About 10 years', w: ['About 7 years', 'About 20 years', 'About 50 years'], why: '70 divided by 7 gives 10.' },
-      { q: 'What do you divide 70 by to estimate doubling time?', a: 'The yearly growth rate', w: ['The number of years', 'The starting amount', 'The inflation target squared'], why: 'Doubling time is roughly 70 over the percentage growth rate.' },
+      { q: "What do you divide 70 by to estimate doubling time?", a: "The yearly growth rate", w: ["The number of years", "The starting amount", "The current interest rate"], why: "Doubling time is roughly 70 over the percentage growth rate." },
     ],
     timeline: null,
     estimate: { q: 'At 2 per cent inflation a year, roughly how many years until prices double?', answer: 35, unit: 'years', min: 5, max: 100 },
@@ -59,7 +59,7 @@ export default [
     question: 'If you were comparing the cost of living between two cities, which single item would you use instead of a burger?',
     quiz: [
       { q: 'Which magazine launched the Big Mac Index?', a: 'The Economist', w: ['Time', 'Forbes', 'National Geographic'], why: 'The Economist created it in 1986 as a light-hearted guide.' },
-      { q: 'What does purchasing power parity adjust for?', a: 'What money actually buys in each country', w: ['Population size', 'Interest rates', 'Hours worked per week'], why: 'PPP corrects for price differences between countries.' },
+      { q: "What does purchasing power parity adjust for?", a: "Differences in prices", w: ["Differences in population", "Differences in interest rates", "Differences in working hours"], why: "PPP corrects for price differences between countries, so money is compared by what it actually buys." },
     ],
     timeline: { event: 'Big Mac Index launched', year: 1986 },
     estimate: null,
@@ -75,7 +75,7 @@ export default [
     question: 'When, if ever, do you think outside countries are justified in intervening inside another country\'s borders?',
     quiz: [
       { q: 'Which war did the Peace of Westphalia end?', a: 'The Thirty Years\' War', w: ['The Hundred Years\' War', 'The Napoleonic Wars', 'The Seven Years\' War'], why: 'The 1648 treaties ended the Thirty Years\' War.' },
-      { q: 'Which principle is most associated with Westphalia?', a: 'State sovereignty and non-interference', w: ['Free trade between empires', 'Universal voting rights', 'A single European currency'], why: 'Each state controls its own territory and internal affairs.' },
+      { q: "Which principle is most associated with Westphalia?", a: "State sovereignty and non-interference", w: ["Religious unity under the Pope", "Free trade between empires", "Rule by elected assemblies"], why: "Each state controls its own territory and internal affairs." },
     ],
     timeline: { event: 'Peace of Westphalia', year: 1648 },
     estimate: null,
@@ -91,7 +91,7 @@ export default [
     question: 'Do you think a promise of mutual defence makes war less likely, or risks dragging more countries into one?',
     quiz: [
       { q: 'How many times has NATO\'s Article 5 been invoked?', a: 'Once', w: ['Never', 'Four times', 'More than ten times'], why: 'It was invoked once, after the 11 September 2001 attacks.' },
-      { q: 'What does Article 5 commit each ally to do?', a: 'Take such action as it deems necessary', w: ['Automatically send troops', 'Impose trade sanctions only', 'Hold a referendum'], why: 'The wording leaves each ally to decide the form of its response.' },
+      { q: "What does Article 5 commit each ally to do?", a: "Take whatever action it deems necessary", w: ["Send troops within 48 hours", "Declare war on the attacker", "Impose trade sanctions only"], why: "The wording leaves each ally to decide the form of its response." },
     ],
     timeline: { event: 'NATO founded', year: 1949 },
     estimate: { q: 'How many countries founded NATO in 1949?', answer: 12, unit: 'countries', min: 2, max: 40 },
@@ -107,7 +107,7 @@ export default [
     question: 'Should a country protect an industry that cannot compete with imports, if a whole town depends on it?',
     quiz: [
       { q: 'In Ricardo\'s example, which two goods did England and Portugal trade?', a: 'Wine and cloth', w: ['Tea and silk', 'Coal and wool', 'Gold and spices'], why: 'Ricardo used wine and cloth to show the gains from specialising.' },
-      { q: 'What does comparative advantage depend on?', a: 'What you are relatively best at', w: ['What you are absolutely best at', 'Having the largest army', 'Having the most people'], why: 'Even a country better at everything gains by specialising relatively.' },
+      { q: "What does comparative advantage depend on?", a: "What you are relatively best at", w: ["What you are absolutely best at", "Having the cheapest labour", "Having the most natural resources"], why: "Even a country better at everything gains by specialising relatively." },
     ],
     timeline: { event: 'Ricardo explains comparative advantage', year: 1817 },
     estimate: null,
@@ -122,7 +122,7 @@ export default [
     ],
     question: 'Would you rather lend money to a government or to a big company? What would make you trust one more than the other?',
     quiz: [
-      { q: 'If a bond\'s price falls, what happens to its yield?', a: 'It rises', w: ['It falls', 'It stays the same', 'It becomes zero'], why: 'The same fixed payment is now earned on a smaller price.' },
+      { q: "If a bond's price falls, what happens to its yield?", a: "It rises", w: ["It falls", "It stays the same", "It moves with inflation only"], why: "The same fixed payment is now earned on a smaller price." },
       { q: 'A bond pays £5 a year and now costs £50. What is its yield?', a: '10 per cent', w: ['5 per cent', '50 per cent', '2.5 per cent'], why: '£5 divided by £50 is 10 per cent.' },
     ],
     timeline: null,
@@ -138,8 +138,8 @@ export default [
     ],
     question: 'How much weight would you give a warning sign that is often right but sometimes wrong, if acting on it was costly?',
     quiz: [
-      { q: 'What is an inverted yield curve?', a: 'Short-term yields above long-term ones', w: ['Long-term yields above short-term ones', 'All yields at zero', 'Bond prices rising every day'], why: 'Normally longer loans pay more; inversion flips that.' },
-      { q: 'What has an inverted yield curve often come before in the US?', a: 'A recession', w: ['A stock market boom', 'A new currency', 'An election'], why: 'It has preceded most US recessions of the past half-century.' },
+      { q: "What is an inverted yield curve?", a: "Short-term yields above long-term ones", w: ["Long-term yields above short-term ones", "Yields falling across the board", "Bond prices and yields rising together"], why: "Normally longer loans pay more; inversion flips that." },
+      { q: "What has an inverted yield curve often come before in the US?", a: "A recession", w: ["A stock market boom", "A housing boom", "A surge in inflation"], why: "It has preceded most US recessions of the past half-century." },
     ],
     timeline: null,
     estimate: null,
@@ -186,7 +186,7 @@ export default [
     ],
     question: 'Would you rather have a voting system that gives clear winners, or one where seats closely match votes?',
     quiz: [
-      { q: 'What do you need to win a seat under first past the post?', a: 'More votes than anyone else', w: ['Over half the votes', 'Two-thirds of the votes', 'The support of a party leader'], why: 'A plurality is enough; a majority is not required.' },
+      { q: "What do you need to win a seat under first past the post?", a: "More votes than anyone else", w: ["Over half the votes", "Two-thirds of the votes", "A set quota of votes"], why: "A plurality is enough; a majority is not required." },
       { q: 'What is the tendency of such systems towards two big parties called?', a: 'Duverger\'s law', w: ['Gresham\'s law', 'Moore\'s law', 'Parkinson\'s law'], why: 'Duverger\'s law describes the squeeze towards two parties.' },
     ],
     timeline: null,
@@ -203,7 +203,7 @@ export default [
     question: 'Would you prefer one party with a clear plan, or a coalition that has to compromise? Why?',
     quiz: [
       { q: 'Which country went 541 days without a newly formed government after 2010?', a: 'Belgium', w: ['Italy', 'Germany', 'Spain'], why: 'Belgium holds the famous record for coalition talks.' },
-      { q: 'Why does proportional representation often lead to coalitions?', a: 'One party rarely wins a majority', w: ['It bans large parties', 'It requires two leaders', 'It only counts rural votes'], why: 'Seats follow vote share, so majorities are rare.' },
+      { q: "Why does proportional representation often lead to coalitions?", a: "One party rarely wins a majority", w: ["Parties must share power by law", "Small parties get bonus seats", "Voters must pick two parties"], why: "Seats follow vote share, so majorities are rare." },
     ],
     timeline: null,
     estimate: { q: 'After its 2010 election, how many days did Belgium go without a newly formed government?', answer: 541, unit: 'days', min: 50, max: 1000 },
@@ -266,7 +266,7 @@ export default [
     ],
     question: 'Should the world rely on a few narrow routes for trade, or pay more to build alternatives?',
     quiz: [
-      { q: 'Which ship blocked the Suez Canal for six days in 2021?', a: 'The Ever Given', w: ['The Titanic', 'The Exxon Valdez', 'The Queen Mary 2'], why: 'The container ship Ever Given wedged across the canal.' },
+      { q: "Which ship blocked the Suez Canal for six days in 2021?", a: "The Ever Given", w: ["The Maersk Alabama", "The MSC Gülsün", "The Exxon Valdez"], why: "The container ship Ever Given wedged across the canal." },
       { q: 'Which two countries border the Strait of Hormuz?', a: 'Iran and Oman', w: ['Egypt and Sudan', 'Malaysia and Indonesia', 'Turkey and Greece'], why: 'The strait lies between Iran and Oman.' },
     ],
     timeline: { event: 'Ever Given blocks Suez Canal', year: 2021 },
@@ -283,7 +283,7 @@ export default [
     question: 'Should governments borrow to invest in the future, or aim to balance the books every year like a household?',
     quiz: [
       { q: 'In the bathtub analogy, what is the deficit?', a: 'The tap running', w: ['The water in the tub', 'The plug', 'The size of the bath'], why: 'The deficit is the yearly flow; the debt is the accumulated stock.' },
-      { q: 'Can debt rise while the deficit falls?', a: 'Yes, if there is still a deficit', w: ['No, never', 'Only during a war', 'Only if taxes rise'], why: 'Any deficit still adds to the total debt, just more slowly.' },
+      { q: "If the deficit shrinks but stays above zero, what happens to the debt?", a: "It still rises, more slowly", w: ["It starts to fall", "It stays the same", "It rises faster"], why: "Any deficit still adds to the total debt, just more slowly." },
     ],
     timeline: null,
     estimate: null,
@@ -299,7 +299,7 @@ export default [
     question: 'Think of a shared space you use, like a kitchen or a park. What rules actually keep it from being ruined?',
     quiz: [
       { q: 'Who wrote the 1968 essay "The Tragedy of the Commons"?', a: 'Garrett Hardin', w: ['Elinor Ostrom', 'Adam Smith', 'Rachel Carson'], why: 'Hardin, an ecologist, published it in 1968.' },
-      { q: 'What did Elinor Ostrom show about shared resources?', a: 'Communities often manage them with their own rules', w: ['They must always be privatised', 'Only governments can protect them', 'They are always ruined'], why: 'Her field studies found many successful local arrangements.' },
+      { q: "What did Elinor Ostrom show about shared resources?", a: "Communities often manage them well", w: ["They must be privatised", "Only governments can protect them", "They are always overused"], why: "Her field studies found many communities managing them with their own rules." },
     ],
     timeline: { event: 'Hardin\'s commons essay', year: 1968 },
     estimate: null,
@@ -315,7 +315,7 @@ export default [
     question: 'What lessons from the ozone success do you think could, or could not, apply to climate change?',
     quiz: [
       { q: 'Which chemicals did the Montreal Protocol phase out?', a: 'CFCs', w: ['Carbon dioxide', 'Lead in petrol', 'Plastic microbeads'], why: 'CFCs from fridges and sprays were destroying the ozone layer.' },
-      { q: 'What was special about the Montreal Protocol\'s ratification?', a: 'Every UN member state ratified it', w: ['Only Europe signed it', 'It was never ratified', 'It was signed by companies, not states'], why: 'It became the first UN treaty with universal ratification.' },
+      { q: "What was special about the Montreal Protocol's ratification?", a: "Every UN member ratified it", w: ["Only rich countries ratified it", "The US refused to ratify it", "It needed no ratification"], why: "It became the first UN treaty with universal ratification." },
     ],
     timeline: { event: 'Montreal Protocol agreed', year: 1987 },
     estimate: null,

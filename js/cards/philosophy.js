@@ -10,7 +10,7 @@ export default [
     question: "Is the unexamined life really not worth living, or is there something to be said for not overthinking it?",
     quiz: [
       { q: "How was Socrates executed?", a: "By drinking hemlock", w: ["By beheading", "By being thrown from a cliff", "By crucifixion"], why: "Condemned in 399 BC, he died by drinking hemlock." },
-      { q: "What did Socrates take the Delphic oracle's verdict to mean?", a: "He alone knew the limits of his knowledge", w: ["He was destined to rule Athens", "He knew more facts than anyone", "The gods wanted him to write books"], why: "He did not think he knew what he did not know." },
+      { q: "What did Socrates take the Delphic oracle's verdict to mean?", a: "He alone knew how little he knew", w: ["He alone was fit to rule Athens", "He alone knew more facts than anyone", "He alone was chosen to write laws"], why: "He did not think he knew what he did not know." },
     ],
     timeline: { event: "Trial and death of Socrates", year: -399 },
     estimate: { q: "Roughly how old was Socrates when he was executed?", answer: 70, unit: "years", min: 20, max: 100 },
@@ -26,7 +26,7 @@ export default [
     question: "What is a 'shadow on the wall' in modern life that you think most people mistake for the real thing?",
     quiz: [
       { q: "In Plato's cave, what do the chained prisoners take for reality?", a: "Shadows cast on the wall", w: ["Their own reflections in water", "Voices in the dark", "Paintings made by their guards"], why: "Shadows from the fire are all they have ever seen." },
-      { q: "What happens when the freed prisoner returns to the cave?", a: "He seems a fool and the others resist him", w: ["He is crowned king", "He frees everyone at once", "He forgets the sun entirely"], why: "Blinded by the dark, he stumbles, and the others want to stay put." },
+      { q: "What happens when the freed prisoner returns to the cave?", a: "They mock and resist him", w: ["They beg him to lead them out", "They make him their leader", "They ignore him completely"], why: "Blinded by the dark, he stumbles, and the others want to stay put." },
     ],
     timeline: null,
     estimate: null,
@@ -43,7 +43,7 @@ export default [
     question: "Which virtue do you think you overshoot, and which do you fall short of?",
     quiz: [
       { q: "For Aristotle, courage is the mean between cowardice and what?", a: "Rashness", w: ["Patience", "Pride", "Generosity"], why: "Too much daring is rashness; too little is cowardice." },
-      { q: "How do we acquire virtues, according to Aristotle?", a: "By practice, until they become habits", w: ["They are fixed at birth", "By reading philosophy", "By divine gift alone"], why: "We become brave by doing brave things." },
+      { q: "How do we acquire virtues, according to Aristotle?", a: "By practice, as habits", w: ["By birth, as fixed traits", "By studying philosophy", "By the gift of the gods"], why: "We become brave by doing brave things." },
     ],
     timeline: null,
     estimate: null,
@@ -91,7 +91,7 @@ export default [
     question: "Does the idea that there is no fixed 'you' feel freeing or frightening?",
     quiz: [
       { q: "What everyday object does Nagasena use to explain no-self?", a: "A chariot", w: ["A candle", "A clay pot", "A river"], why: "He shows 'chariot' is just a name for parts arranged together." },
-      { q: "What does the Buddhist term anatta mean?", a: "No permanent, unchanging self", w: ["Eternal soul", "Perfect enlightenment", "Rebirth as an animal"], why: "Anatta is the teaching of no-self." },
+      { q: "What does the Buddhist term anatta mean?", a: "No permanent self", w: ["An eternal soul", "Perfect enlightenment", "Rebirth as an animal"], why: "Anatta is the teaching of no-self." },
     ],
     timeline: null,
     estimate: null,
@@ -107,7 +107,7 @@ export default [
     question: "What is one thing you worry about that is genuinely not up to you?",
     quiz: [
       { q: "Which Stoic teacher was born a slave?", a: "Epictetus", w: ["Marcus Aurelius", "Seneca", "Zeno of Citium"], why: "Epictetus was born a slave; Marcus Aurelius was an emperor." },
-      { q: "Where does the name 'Stoic' come from?", a: "The painted porch (stoa) in Athens", w: ["A Greek word for calm", "A city in Sicily", "Zeno's family name"], why: "Zeno taught at the Stoa Poikile, the painted porch." },
+      { q: "Where does the name 'Stoic' come from?", a: "A painted porch in Athens", w: ["A Greek word for calm", "A city in Sicily", "Zeno's family name"], why: "Zeno taught at the Stoa Poikile, the painted porch." },
     ],
     timeline: null,
     estimate: { q: "How many books make up Marcus Aurelius's Meditations?", answer: 12, unit: "books", min: 1, max: 50 },
@@ -122,7 +122,7 @@ export default [
     ],
     question: "If you had to doubt everything, what would be the last thing you would let go of?",
     quiz: [
-      { q: "What imaginary figure did Descartes invent to test his doubt?", a: "An evil demon who deceives him", w: ["A wise oracle", "A talking machine", "A cave of prisoners"], why: "He imagined a demon deceiving him about everything." },
+      { q: "What imaginary figure did Descartes invent to test his doubt?", a: "A deceiving demon", w: ["A wise oracle", "A talking machine", "A sleeping giant"], why: "He imagined a demon deceiving him about everything." },
       { q: "Why can Descartes not doubt his own existence?", a: "To be deceived or to doubt, he must exist", w: ["God told him he existed", "His senses confirm it", "Mathematics proves it"], why: "Doubting is thinking, and a thinker exists." },
     ],
     timeline: { event: "Descartes's Discourse on the Method", year: 1637 },
@@ -139,7 +139,7 @@ export default [
     question: "If a perfect simulation felt exactly like real life, would it matter to you whether you were in one?",
     quiz: [
       { q: "Which philosopher argued 'I am a brain in a vat' undermines itself?", a: "Hilary Putnam", w: ["René Descartes", "David Hume", "John Searle"], why: "Putnam made the argument in Reason, Truth and History (1981)." },
-      { q: "Putnam's argument rests on the idea that word meaning depends on what?", a: "Causal contact with the things named", w: ["The dictionary", "Majority vote", "The speaker's mood"], why: "A vat brain never touched real vats, so its words could not mean them." },
+      { q: "Putnam's argument rests on the idea that word meaning depends on what?", a: "Contact with the things named", w: ["Definitions in a dictionary", "Agreement among speakers", "Pictures in the speaker's mind"], why: "A vat brain never touched real vats, so its words could not mean them." },
     ],
     timeline: { event: "Putnam's Reason, Truth and History", year: 1981 },
     estimate: null,
@@ -155,7 +155,7 @@ export default [
     question: "Which of your firm expectations about the future rests mostly on 'it has always been this way'?",
     quiz: [
       { q: "In Russell's example, what animal trusts the daily pattern too far?", a: "A chicken", w: ["A turkey", "A cat", "A horse"], why: "Russell's chicken is fed daily, until its neck is wrung." },
-      { q: "According to Hume, what grounds our expectation that the future resembles the past?", a: "Custom or habit, not reason", w: ["Strict logical proof", "Divine revelation", "Mathematics"], why: "Hume said we are built to expect patterns to continue." },
+      { q: "According to Hume, what grounds our expectation that the future resembles the past?", a: "Custom or habit", w: ["Logical proof", "Divine revelation", "Mathematics"], why: "Not reason: Hume said we are built to expect patterns to continue." },
     ],
     timeline: { event: "Hume's Treatise of Human Nature", year: 1739 },
     estimate: null,
@@ -170,7 +170,7 @@ export default [
     ],
     question: "Is there a belief you hold that no possible evidence could change? Is that a strength or a warning sign?",
     quiz: [
-      { q: "According to Popper, what can a single black swan do?", a: "Refute 'all swans are white'", w: ["Prove 'all swans are white'", "Nothing, one case never counts", "Prove swans evolved"], why: "One counterexample can falsify a general law." },
+      { q: "According to Popper, what can a single black swan do?", a: "Refute 'all swans are white'", w: ["Prove 'all swans are white'", "Nothing, one case never counts", "Only weaken it a little"], why: "One counterexample can falsify a general law." },
       { q: "What did Popper say makes a theory scientific?", a: "It is falsifiable", w: ["It explains everything", "Experts agree with it", "It is mathematically elegant"], why: "A scientific theory makes predictions that could fail." },
     ],
     timeline: { event: "Popper's Logic of Scientific Discovery", year: 1934 },
@@ -187,7 +187,7 @@ export default [
     question: "Should a good decision always be the one that makes the most people happiest? Where would you draw the line?",
     quiz: [
       { q: "Where can you still see Jeremy Bentham's preserved skeleton?", a: "University College London", w: ["Westminster Abbey", "The British Museum", "Oxford's Bodleian Library"], why: "Dressed in his clothes, it sits in a cabinet at UCL." },
-      { q: "How did Mill change Bentham's theory?", a: "He said some pleasures are higher than others", w: ["He rejected happiness entirely", "He counted only humans of high rank", "He replaced happiness with duty"], why: "Better Socrates dissatisfied than a fool satisfied." },
+      { q: "How did Mill change Bentham's theory?", a: "He said some pleasures are higher than others", w: ["He said all pleasures are exactly equal", "He said duty matters more than happiness", "He said only human pleasures count"], why: "Better Socrates dissatisfied than a fool satisfied." },
     ],
     timeline: { event: "Mill's Utilitarianism published", year: 1863 },
     estimate: null,
@@ -202,7 +202,7 @@ export default [
     ],
     question: "Would you plug in? What would you miss, if you would never know you were missing it?",
     quiz: [
-      { q: "What does the experience machine give you?", a: "Any experiences you choose, felt as real", w: ["Eternal youth", "Perfect knowledge of the future", "A body made of metal"], why: "It stimulates your brain so chosen experiences feel real." },
+      { q: "What does the experience machine give you?", a: "Any experience you choose", w: ["A glimpse of your future", "Memories of past lives", "Another person's thoughts"], why: "It stimulates your brain so chosen experiences feel real." },
       { q: "What did Nozick conclude from most people refusing to plug in?", a: "Pleasant experience is not all that matters", w: ["People are irrational about technology", "Happiness is all that matters", "Machines can never feel"], why: "We want to actually do things and be in contact with reality." },
     ],
     timeline: { event: "Nozick's Anarchy, State, and Utopia", year: 1974 },
@@ -219,7 +219,7 @@ export default [
     question: "Is it ever right to lie? Where do you draw your own line?",
     quiz: [
       { q: "Kant's test asks whether your principle could become what?", a: "A universal law", w: ["A popular custom", "A source of profit", "A royal decree"], why: "Act only on a principle you could will as a universal law." },
-      { q: "What did Kant say about lying to a murderer at the door?", a: "You still should not lie", w: ["Lying is then a duty", "It depends on the outcome", "Only priests may lie"], why: "He argued the duty not to lie holds even then." },
+      { q: "What did Kant say about lying to a murderer at the door?", a: "You still should not lie", w: ["Lying is then a duty", "It depends on the outcome", "Lie only to save a life"], why: "He argued the duty not to lie holds even then." },
     ],
     timeline: { event: "Kant's Groundwork published", year: 1785 },
     estimate: null,
@@ -251,7 +251,7 @@ export default [
     question: "When Mary first sees red, does she learn a new fact, or just get a new experience of something she already knew?",
     quiz: [
       { q: "What colour is Mary's world before she leaves the room?", a: "Black and white", w: ["Entirely red", "Shades of blue", "Completely dark"], why: "She has only ever seen black-and-white rooms and screens." },
-      { q: "What did Frank Jackson later do about his own argument?", a: "Changed his mind and defended physicalism", w: ["Turned it into a novel", "Never mentioned it again", "Proved it with a brain scan"], why: "He later came to defend physicalism." },
+      { q: "What did Frank Jackson later do about his own argument?", a: "Changed his mind about it", w: ["Expanded it into a book", "Never revisited it", "Tested it on a real person"], why: "He later came to defend physicalism." },
     ],
     timeline: { event: "Jackson's Mary's room paper", year: 1982 },
     estimate: null,
@@ -299,7 +299,7 @@ export default [
     question: "Is there a part of your life where you tell yourself 'I have no choice' when, really, you do?",
     quiz: [
       { q: "What is Sartre's three-word summary of existentialism?", a: "Existence precedes essence", w: ["Think, therefore exist", "Nothing is permanent", "God is dead"], why: "We exist first, then define ourselves by our choices." },
-      { q: "What did Sartre call pretending we have no choice?", a: "Bad faith", w: ["Good sense", "Original sin", "False modesty"], why: "Denying our freedom is bad faith." },
+      { q: "What did Sartre call pretending we have no choice?", a: "Bad faith", w: ["Good sense", "Original sin", "Learned helplessness"], why: "Denying our freedom is bad faith." },
     ],
     timeline: { event: "Sartre's 'Existentialism is a Humanism'", year: 1945 },
     estimate: null,

@@ -9,7 +9,7 @@ export default [
     ],
     question: "Why do you think our gut so stubbornly says the two remaining doors are fifty-fifty?",
     quiz: [
-      { q: "In the Monty Hall problem, should you stick with your first door or switch?", a: "Switch", w: ["Stick", "It makes no difference", "Pick the door the host opened"], why: "Switching wins two times in three." },
+      { q: "In the Monty Hall problem, should you stick with your first door or switch?", a: "Switch", w: ["Stick", "It makes no difference", "Toss a coin to decide"], why: "Switching wins two times in three." },
       { q: "What is the chance your first pick is right, out of three doors?", a: "1 in 3", w: ["1 in 2", "2 in 3", "1 in 4"], why: "The host's reveal does not change your original 1 in 3." },
     ],
     timeline: { event: "Monty Hall row in Parade magazine", year: 1990 },
@@ -25,8 +25,8 @@ export default [
     ],
     question: "Where in your own life have you caught yourself thinking something was 'due'?",
     quiz: [
-      { q: "After a fair coin lands heads five times in a row, what is the chance of heads next?", a: "Fifty-fifty, as always", w: ["Much less than half", "Much more than half", "Zero"], why: "The coin has no memory; each flip is independent." },
-      { q: "In the 1913 Monte Carlo streak, what did gamblers bet on?", a: "Red, believing it was due", w: ["Black, following the streak", "Zero", "Nothing, they stopped playing"], why: "They piled onto red and lost a fortune." },
+      { q: "After a fair coin lands heads five times in a row, what is the chance of heads next?", a: "Fifty-fifty", w: ["A bit less than half", "A bit more than half", "Much less than half"], why: "The coin has no memory; each flip is independent." },
+      { q: "In the 1913 Monte Carlo streak, what did gamblers bet on?", a: "Red, as it seemed due", w: ["Black, as it was hot", "Zero, as it was overdue", "Odd numbers, to hedge"], why: "They piled onto red and lost a fortune." },
     ],
     timeline: { event: "Black comes up 26 times at Monte Carlo", year: 1913 },
     estimate: { q: "How many times in a row did black come up at Monte Carlo in 1913?", answer: 26, unit: "spins", min: 5, max: 60 },
@@ -41,7 +41,7 @@ export default [
     ],
     question: "Should courts require statistical evidence to be checked by statisticians before juries hear it?",
     quiz: [
-      { q: "What faulty assumption produced the '1 in 73 million' figure?", a: "That the two deaths were independent", w: ["That cot deaths never happen", "That the jury could not count", "That babies are all identical"], why: "Shared genetic or environmental factors make a second death more likely." },
+      { q: "What faulty assumption produced the '1 in 73 million' figure?", a: "That the two deaths were independent", w: ["That cot deaths run in families", "That both babies had the same illness", "That the post-mortems were accurate"], why: "Shared genetic or environmental factors make a second death more likely." },
       { q: "What happened to Sally Clark's conviction?", a: "It was overturned on appeal", w: ["It was upheld", "It was never challenged", "It was reduced to a fine"], why: "Her conviction was overturned in 2003." },
     ],
     timeline: { event: "Sally Clark convicted", year: 1999 },
@@ -57,7 +57,7 @@ export default [
     ],
     question: "Can you think of a time you credited (or blamed) something for a change that was probably just regression to the mean?",
     quiz: [
-      { q: "After an unusually brilliant performance, what usually happens next time?", a: "It is closer to average", w: ["It is even better", "It is exactly the same", "It is a total disaster"], why: "Extreme results involve luck, which rarely repeats." },
+      { q: "After an unusually brilliant performance, what usually happens next time?", a: "It is closer to average", w: ["It is even better", "It is exactly the same", "It is well below average"], why: "Extreme results involve luck, which rarely repeats." },
       { q: "Who first noticed regression in the heights of parents and children?", a: "Francis Galton", w: ["Daniel Kahneman", "Isaac Newton", "Florence Nightingale"], why: "Galton saw that tall parents have tall, but less extreme, children." },
     ],
     timeline: null,
@@ -74,7 +74,7 @@ export default [
     question: "Can you think of a league table (schools, hospitals, cities) that might be fooled by Simpson's paradox?",
     quiz: [
       { q: "In the kidney stone study, which treatment did better for both small and large stones?", a: "Treatment A", w: ["Treatment B", "Neither, they were equal", "A for small, B for large"], why: "A won in each group despite losing overall." },
-      { q: "Why did treatment B look better overall?", a: "It was given mostly to easier, small stones", w: ["It was a newer drug", "Its patients were younger", "The data were faked"], why: "A got the harder large-stone cases." },
+      { q: "Why did treatment B look better overall?", a: "It was given mostly to easier, small stones", w: ["It was a newer, better drug", "Its patients were mostly younger", "It had far fewer side effects"], why: "A got the harder large-stone cases." },
     ],
     timeline: null,
     estimate: null,
@@ -89,7 +89,7 @@ export default [
     ],
     question: "What is a popular health or money claim you have heard that might be correlation dressed up as causation?",
     quiz: [
-      { q: "What links ice cream sales and drownings?", a: "Hot weather drives both", w: ["Ice cream causes cramps", "Lifeguards sell ice cream", "Nothing, the link is invented"], why: "A confounder, hot weather, raises both." },
+      { q: "What links ice cream sales and drownings?", a: "Hot weather drives both", w: ["Ice cream causes cramps", "Sugar makes swimmers reckless", "Nothing, the link is invented"], why: "A confounder, hot weather, raises both." },
       { q: "What is the gold standard for showing causation?", a: "A randomised controlled trial", w: ["A very large survey", "A strong correlation", "Expert opinion"], why: "Random assignment spreads confounders evenly." },
     ],
     timeline: null,
@@ -137,8 +137,8 @@ export default [
     ],
     question: "When you see a 'best' or 'worst' ranking, do you check how big the groups were?",
     quiz: [
-      { q: "Hospital A has 45 births a day, hospital B 15. Which has more days with over 60% boys?", a: "The smaller hospital", w: ["The larger hospital", "About the same", "Neither ever does"], why: "Small samples stray from the average more easily." },
-      { q: "In the US kidney cancer data, where were the highest rates found?", a: "Also in small, rural counties", w: ["In big cities", "In coastal suburbs", "In the largest states"], why: "Small populations give extreme results both ways." },
+      { q: "Hospital A has 45 births a day, hospital B 15. Which has more days with over 60% boys?", a: "The smaller hospital", w: ["The larger hospital", "About the same", "It depends on the season"], why: "Small samples stray from the average more easily." },
+      { q: "In the US kidney cancer data, where were the highest rates found?", a: "Small, rural counties", w: ["Big cities", "Coastal suburbs", "Industrial towns"], why: "Small populations give extreme results both ways, so the lowest rates were there too." },
     ],
     timeline: null,
     estimate: null,
@@ -170,7 +170,7 @@ export default [
     question: "How much would you actually pay to play this game? What stops you paying more?",
     quiz: [
       { q: "What is the expected value of the St Petersburg game?", a: "Infinite", w: ["£2", "£4", "Zero"], why: "Every possible outcome adds £1 to the average, forever." },
-      { q: "How did Daniel Bernoulli explain why people pay little?", a: "Extra money matters less the more you have", w: ["People cannot do sums", "Coins are rarely fair", "Gambling is immoral"], why: "Money has diminishing value to its owner." },
+      { q: "How did Daniel Bernoulli explain why people pay little?", a: "Extra money matters less the more you have", w: ["People fear the casino will cheat", "The game takes too long to play", "Coins are rarely fair"], why: "Money has diminishing value to its owner." },
     ],
     timeline: { event: "Bernoulli on the St Petersburg game", year: 1738 },
     estimate: null,
@@ -202,7 +202,7 @@ export default [
     question: "When a politician or advert quotes an 'average', which kind do you suspect they chose, and why?",
     quiz: [
       { q: "When a billionaire enters a room, which average barely changes?", a: "The median", w: ["The mean", "Both change equally", "Neither changes"], why: "The middle person's wealth stays the same." },
-      { q: "Why do most people earn less than the mean income?", a: "A few huge incomes pull the mean up", w: ["The mean is always lower than the median", "Low earners are counted twice", "Taxes are subtracted first"], why: "Extreme values drag the mean upwards." },
+      { q: "Why do most people earn less than the mean income?", a: "A few huge incomes pull the mean up", w: ["The mean is always lower than the median", "Part-time workers drag the median down", "Taxes are subtracted first"], why: "Extreme values drag the mean upwards." },
     ],
     timeline: null,
     estimate: null,
@@ -250,7 +250,7 @@ export default [
     question: "If a study found that one food out of dozens tested affects your health, how much would you trust it?",
     quiz: [
       { q: "If you run 20 tests on effects that do not exist, how likely is at least one false 'hit' at the 5% level?", a: "About 64%", w: ["Exactly 5%", "About 20%", "100%"], why: "1 minus 0.95 to the power 20 is about 0.64." },
-      { q: "What is p-hacking?", a: "Trying analyses until something looks significant", w: ["Hacking into study databases", "Rounding p-values up", "Using very large samples"], why: "Run enough analyses and chance will hand you a 'result'." },
+      { q: "What is p-hacking?", a: "Trying analyses until something looks significant", w: ["Faking the data in a study", "Rounding p-values up", "Using very large samples"], why: "Run enough analyses and chance will hand you a 'result'." },
     ],
     timeline: null,
     estimate: { q: "Testing 20 effects that do not exist, what is the chance at least one looks significant at the 5% level?", answer: 64, unit: "%", min: 0, max: 100 },
@@ -266,7 +266,7 @@ export default [
     question: "Does it surprise you that something as random-seeming as the first digit of a number follows a rule?",
     quiz: [
       { q: "What did Simon Newcomb notice in books of logarithm tables?", a: "Early pages were far more worn", w: ["Many misprints on page 9", "Missing pages at the end", "All pages equally worn"], why: "People looked up numbers starting with 1 most often." },
-      { q: "Why do auditors use Benford's law?", a: "Invented figures often break the pattern", w: ["It predicts share prices", "It sets tax rates", "It speeds up arithmetic"], why: "Fakers tend to spread first digits too evenly." },
+      { q: "Why do auditors use Benford's law?", a: "Invented figures often break the pattern", w: ["It predicts share prices", "It flags rounding errors", "It speeds up arithmetic"], why: "Fakers tend to spread first digits too evenly." },
     ],
     timeline: { event: "Benford tests the first-digit law", year: 1938 },
     estimate: { q: "Under Benford's law, how often is 1 the leading digit?", answer: 30, unit: "%", min: 0, max: 100 },
@@ -281,7 +281,7 @@ export default [
     ],
     question: "Which online poll, review score or 'everyone is saying' trend might be a modern Literary Digest?",
     quiz: [
-      { q: "In 1936, how did the Literary Digest's huge poll fare?", a: "It wrongly predicted Roosevelt would lose", w: ["It called the result exactly", "It was cancelled before the vote", "It predicted a tie"], why: "Roosevelt won in a landslide despite the poll." },
+      { q: "In 1936, how did the Literary Digest's huge poll fare?", a: "It wrongly tipped Roosevelt to lose", w: ["It rightly tipped Roosevelt to win", "It called the exact vote share", "It was scrapped before the vote"], why: "Roosevelt won in a landslide despite the poll." },
       { q: "What was the main flaw in the Literary Digest poll?", a: "Its sample was unrepresentative", w: ["Its sample was too small", "Its sums were wrong", "It was run too early"], why: "Phone and car owners skewed wealthy; size could not fix that." },
     ],
     timeline: { event: "Literary Digest poll fiasco", year: 1936 },

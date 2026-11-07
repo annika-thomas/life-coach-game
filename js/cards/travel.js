@@ -9,7 +9,7 @@ export default [
     ],
     question: "Would the world be better off with one single time for everyone, ignoring the sun?",
     quiz: [
-      { q: "Which place became the world's prime meridian in 1884?", a: "Greenwich, London", w: ["Paris", "Washington, D.C.", "Rome"], why: "The 1884 conference chose the line through the Royal Observatory, Greenwich." },
+      { q: "Which place became the world's prime meridian in 1884?", a: "Greenwich", w: ["Paris", "Washington, D.C.", "Rome"], why: "The 1884 conference chose the line through the Royal Observatory, Greenwich." },
       { q: "Which country abstained and kept its own capital's time for years?", a: "France", w: ["Spain", "Germany", "Italy"], why: "France abstained and kept using Paris time." },
     ],
     timeline: { event: "Greenwich chosen as prime meridian", year: 1884 },
@@ -26,7 +26,7 @@ export default [
     question: "Would you rather your country shared one time for unity, or followed the sun for daylight?",
     quiz: [
       { q: "How many official time zones does China use?", a: "One", w: ["Three", "Five", "Seven"], why: "The whole country runs on Beijing time." },
-      { q: "What should a traveller in Xinjiang double-check?", a: "Whether a time means Beijing or local time", w: ["Which currency is used", "Which side of the road to drive on", "Whether tipping is expected"], why: "Many locals use an unofficial time two hours behind Beijing." },
+      { q: "What should a traveller in Xinjiang double-check?", a: "Whether a time means Beijing or local time", w: ["Whether daylight saving is in force", "Whether clocks use 12 or 24 hours", "Whether a date uses the lunar calendar"], why: "Many locals use an unofficial time two hours behind Beijing." },
     ],
     timeline: null,
     estimate: { q: "Roughly how many geographic time zones does China span?", answer: 5, unit: 'time zones', min: 1, max: 12 },
@@ -41,7 +41,7 @@ export default [
     ],
     question: "Would you enjoy living on a late timetable like Spain's, or are you a firm early-dinner person?",
     quiz: [
-      { q: "Whose time zone did Spain adopt in 1940?", a: "Germany's (Central European Time)", w: ["Britain's", "Portugal's", "Morocco's"], why: "Franco moved Spain onto Central European Time in line with Germany." },
+      { q: "Whose time zone did Spain adopt in 1940?", a: "Germany's", w: ["Britain's", "Portugal's", "Morocco's"], why: "Franco moved Spain onto Central European Time in line with Germany." },
       { q: "A Madrid restaurant is empty at 7.30pm. What does that probably mean?", a: "You have arrived very early", w: ["It is closing down", "It is a tourist trap", "It is a public holiday"], why: "Dinner in Spain is commonly at 9pm or 10pm." },
     ],
     timeline: { event: "Spain moves to Central European Time", year: 1940 },
@@ -73,8 +73,8 @@ export default [
     ],
     question: "Would you rather visit a natural wonder now, while it is changing, or wait and risk missing it?",
     quiz: [
-      { q: "Why do swimmers float so easily in the Dead Sea?", a: "The water is extremely salty and dense", w: ["It is very warm", "It is very shallow", "Underwater springs push you up"], why: "It is around ten times saltier than the ocean." },
-      { q: "Why is the Dead Sea's level falling?", a: "River water feeding it is used for farms and towns", w: ["Earthquakes are draining it", "Rising sea levels pull it out", "Tourists remove the salt"], why: "Less inflow and constant evaporation mean the level drops." },
+      { q: "Why do swimmers float so easily in the Dead Sea?", a: "It is extremely salty", w: ["It is very warm", "It is very shallow", "Springs push water upward"], why: "It is around ten times saltier than the ocean, which makes it dense." },
+      { q: "Why is the Dead Sea's level falling?", a: "Its river water is taken for use", w: ["Underground faults are draining it", "A canal now drains it to the sea", "Its hot springs have dried up"], why: "Water from the River Jordan goes to farms and towns, and evaporation continues." },
     ],
     timeline: null,
     estimate: { q: "Roughly how many metres below sea level is the Dead Sea's shore?", answer: 430, unit: 'm below sea level', min: 0, max: 1000 },
@@ -89,7 +89,7 @@ export default [
     ],
     question: "Is climbing Everest still a great achievement now that so many people do it?",
     quiz: [
-      { q: "Who made the first confirmed ascent of Everest?", a: "Edmund Hillary and Tenzing Norgay", w: ["George Everest and a guide", "Reinhold Messner alone", "A Chinese army team"], why: "Hillary and Tenzing reached the summit in 1953." },
+      { q: "Who made the first confirmed ascent of Everest?", a: "Edmund Hillary and Tenzing Norgay", w: ["George Mallory and Andrew Irvine", "Reinhold Messner and Peter Habeler", "Tenzing Norgay and Raymond Lambert"], why: "Hillary and Tenzing reached the summit in 1953." },
       { q: "Why is Everest still growing slowly?", a: "The Indian plate is pushing into Asia", w: ["Snow keeps piling up", "A volcano lies beneath it", "Sea levels are falling"], why: "The collision of tectonic plates keeps lifting the Himalaya." },
     ],
     timeline: { event: "First ascent of Everest", year: 1953 },
@@ -105,8 +105,8 @@ export default [
     ],
     question: "Would you rather adapt slowly to a place or dive straight in and cope with the consequences?",
     quiz: [
-      { q: "Does being very fit protect you from altitude sickness?", a: "No, fit people get it too", w: ["Yes, completely", "Only if you are a runner", "Only below 5,000 metres"], why: "Fitness is not protection; gradual ascent is." },
-      { q: "What should you do if altitude symptoms get worse?", a: "Go down to a lower height", w: ["Climb higher to adapt faster", "Drink more alcohol", "Do vigorous exercise"], why: "Worsening symptoms mean descending is the key treatment." },
+      { q: "What protects you best from altitude sickness?", a: "Going up gradually", w: ["Being very fit", "Drinking plenty of coffee", "Running before the trip"], why: "Fitness is not protection, marathon runners get it too; gradual ascent is." },
+      { q: "What should you do if altitude symptoms get worse?", a: "Go down to a lower height", w: ["Push on to adapt faster", "Drink a strong coffee", "Take a painkiller and carry on"], why: "Worsening symptoms mean descending is the key treatment." },
     ],
     timeline: null,
     estimate: null,
@@ -121,7 +121,7 @@ export default [
     ],
     question: "Should famous sites limit visitor numbers even if it means some people never get to go?",
     quiz: [
-      { q: "Who probably built Machu Picchu as a royal estate?", a: "The Inca ruler Pachacuti", w: ["Spanish missionaries", "The Aztec emperor", "Hiram Bingham's team"], why: "It was built in the fifteenth century, probably for Pachacuti." },
+      { q: "Who probably built Machu Picchu as a royal estate?", a: "Inca ruler Pachacuti", w: ["Spanish missionaries", "Aztec emperor Moctezuma", "Explorer Hiram Bingham"], why: "It was built in the fifteenth century, probably for Pachacuti." },
       { q: "Which is higher: Machu Picchu or Cusco?", a: "Cusco", w: ["Machu Picchu", "They are the same height", "Neither is above 2,000 m"], why: "Cusco is about 3,400 m; Machu Picchu about 2,400 m." },
     ],
     timeline: { event: "Bingham publicises Machu Picchu", year: 1911 },
@@ -137,8 +137,8 @@ export default [
     ],
     question: "Which engineering marvel would you most like to see in person?",
     quiz: [
-      { q: "How do ships cross the Panama Canal?", a: "Locks lift them up to a lake and down again", w: ["They sail at sea level throughout", "They are carried on rail cars", "They pass through a tunnel"], why: "Locks raise ships to Gatún Lake and lower them on the other side." },
-      { q: "Why can drought limit traffic on the Panama Canal?", a: "The locks are filled with lake fresh water", w: ["Ships need rain to cool engines", "Sea water evaporates", "Workers stop in dry seasons"], why: "Each passage uses fresh water from Gatún Lake, which depends on rain." },
+      { q: "How do ships cross the Panama Canal?", a: "Locks lift them over a lake", w: ["They sail at sea level", "They ride on rail cars", "They pass through a tunnel"], why: "Locks raise ships to Gatún Lake and lower them on the other side." },
+      { q: "Why can drought limit traffic on the Panama Canal?", a: "Its locks use rain-fed lake water", w: ["Low tides strand ships at each end", "Dust storms close the channel", "Heat warps the steel lock gates"], why: "Each passage uses fresh water from Gatún Lake, which depends on rain." },
     ],
     timeline: { event: "Panama Canal opens", year: 1914 },
     estimate: { q: "How many metres do the locks lift ships up to Gatún Lake?", answer: 26, unit: 'm', min: 0, max: 100 },
@@ -218,7 +218,7 @@ export default [
     question: "Would you enjoy a slow journey by boat, or would days on the water drive you mad?",
     quiz: [
       { q: "How many bridges cross the main stem of the Amazon?", a: "None", w: ["One", "Twelve", "Over a hundred"], why: "Few roads, soft shifting banks and seasonal floods mean none." },
-      { q: "In what way is the Amazon clearly the world's biggest river?", a: "By volume of water", w: ["By length, undisputed", "By number of dams", "By depth of its source"], why: "Its length is debated, but its flow is unmatched." },
+      { q: "In what way is the Amazon clearly the world's biggest river?", a: "By volume of water", w: ["By length", "By depth of its channel", "By number of countries crossed"], why: "Its length is debated, but its flow is unmatched." },
     ],
     timeline: null,
     estimate: { q: "Roughly what percentage of all river water reaching the oceans comes from the Amazon?", answer: 20, unit: '%', min: 0, max: 60 },
@@ -265,7 +265,7 @@ export default [
     ],
     question: "Could you live with weeks of midnight sun, or weeks of winter darkness? Which would be harder?",
     quiz: [
-      { q: "What happens north of the Arctic Circle around the June solstice?", a: "The sun does not set for at least a day", w: ["The sun does not rise", "There is no twilight", "Northern lights appear at noon"], why: "That is the definition of the Arctic Circle." },
+      { q: "What happens north of the Arctic Circle around the June solstice?", a: "The sun stays up all night", w: ["The sun never rises", "Northern lights shine all night", "Day and night are equal"], why: "At least one day of midnight sun is the definition of the Arctic Circle." },
       { q: "What sets the latitude of the Arctic Circle?", a: "The tilt of the Earth's axis", w: ["The edge of the sea ice", "The northern tree line", "An international treaty"], why: "It sits about 23.4 degrees from the pole, matching Earth's tilt." },
     ],
     timeline: null,
@@ -282,7 +282,7 @@ export default [
     question: "Should the whole world agree on one side of the road? Would it be worth the cost of switching?",
     quiz: [
       { q: "Which of these countries drives on the left?", a: "Japan", w: ["France", "Brazil", "Sweden"], why: "Japan drives on the left despite never being a British colony." },
-      { q: "What was Dagen H in Sweden?", a: "The day it switched to driving on the right", w: ["A national holiday for hikers", "The first motorway opening", "The end of horse-drawn carts"], why: "On 3 September 1967 Sweden moved from left to right." },
+      { q: "What was Dagen H in Sweden?", a: "The switch to driving on the right", w: ["A national hiking holiday", "The first motorway opening", "The ban on horse-drawn carts"], why: "On 3 September 1967 Sweden moved from left to right." },
     ],
     timeline: { event: "Sweden switches to driving on the right", year: 1967 },
     estimate: null,
@@ -298,7 +298,7 @@ export default [
     question: "Do you think tipping is a good system, or should service just be included in the price?",
     quiz: [
       { q: "In which country might staff chase you to return a tip?", a: "Japan", w: ["The United States", "Canada", "Mexico"], why: "Tipping is not customary in Japan." },
-      { q: "In much of Europe, what should you check before tipping?", a: "Whether service is already on the bill", w: ["The waiter's nationality", "The day of the week", "The restaurant's star rating"], why: "A service charge is often already included." },
+      { q: "In much of Europe, what should you check before tipping?", a: "Whether service is on the bill", w: ["Whether you paid by card", "Whether the owner served you", "Whether you sat outside"], why: "A service charge is often already included." },
     ],
     timeline: null,
     estimate: null,
@@ -313,7 +313,7 @@ export default [
     ],
     question: "What is the best thing you have ever eaten from a street stall or market?",
     quiz: [
-      { q: "Which street food stall is usually the safest choice?", a: "The busy one crowded with locals", w: ["The quietest one", "The one with the most signs", "The one with pre-cooked trays"], why: "High turnover means fresher food." },
+      { q: "Which street food stall is usually the safest choice?", a: "The busy one full of locals", w: ["The quiet one with no queue", "The one with pre-cooked trays", "The one by the big hotels"], why: "High turnover means fresher food." },
       { q: "Complete the travellers' rule: boil it, cook it, peel it, or...", a: "Forget it", w: ["Freeze it", "Salt it", "Share it"], why: "If you cannot boil, cook or peel it, skip it." },
     ],
     timeline: null,

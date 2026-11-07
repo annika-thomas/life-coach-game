@@ -41,7 +41,7 @@ export default [
     ],
     question: 'Do you prefer clothes that hold their own shape, or ones that follow the body? What does that say about your style?',
     quiz: [
-      { q: 'What happens when woven fabric is cut on the diagonal?', a: 'It stretches and drapes', w: ['It becomes stiff', 'It changes colour', 'It cannot be sewn'], why: 'Cutting at 45 degrees to the grain gives cloth stretch and fluid drape.' },
+      { q: 'What happens when woven fabric is cut on the diagonal?', a: 'It stretches and drapes', w: ['It becomes stiff', 'It stops fraying', 'It shrinks when washed'], why: 'Cutting at 45 degrees to the grain gives cloth stretch and fluid drape.' },
       { q: 'Which designer was the great master of the bias cut?', a: 'Madeleine Vionnet', w: ['Mary Quant', 'Coco Chanel', 'Rei Kawakubo'], why: 'Vionnet perfected the bias cut in the 1920s and 1930s.' },
     ],
     timeline: null,
@@ -74,7 +74,7 @@ export default [
     question: 'What piece of "men\'s" or "women\'s" clothing do you think should simply belong to everyone now?',
     quiz: [
       { q: 'What was Yves Saint Laurent\'s "Le Smoking"?', a: 'A tuxedo suit for women', w: ['A cigarette case', 'A perfume', 'A velvet slipper'], why: 'Le Smoking, from 1966, was a women\'s evening tuxedo with trousers.' },
-      { q: 'In the famous story, what did Nan Kempner do when refused entry?', a: 'Removed her trousers and wore the jacket as a dress', w: ['Changed into a ballgown', 'Bought the restaurant', 'Borrowed a waiter\'s apron'], why: 'She reportedly turned the long jacket into a mini dress.' },
+      { q: 'In the famous story, what did Nan Kempner do when refused entry?', a: 'Took off the trousers, wore it as a dress', w: ['Went home and changed into a gown', 'Asked to be seated at the bar', 'Borrowed a skirt from a waitress'], why: 'She reportedly turned the long jacket into a mini dress.' },
     ],
     timeline: { event: 'Saint Laurent shows Le Smoking', year: 1966 },
     estimate: null,
@@ -106,7 +106,7 @@ export default [
     question: 'Would you rather buy jeans already distressed, or wear in your own? Why does that matter, if at all?',
     quiz: [
       { q: 'What did Jacob Davis add to work trousers to stop them tearing?', a: 'Copper rivets', w: ['Leather patches', 'Double stitching', 'Elastic waistbands'], why: 'Rivets at stress points were the heart of the 1873 patent.' },
-      { q: 'Why do jeans fade to reveal white?', a: 'Indigo coats the yarn without soaking through', w: ['The dye is washed out on purpose', 'Sunlight bleaches cotton white', 'Denim is woven from white wool'], why: 'Wear rubs away the indigo surface and exposes the white core.' },
+      { q: 'Why do jeans fade to reveal white?', a: 'Indigo dyes only the outside of the yarn', w: ['Washing strips the dye on purpose', 'Sunlight bleaches the cotton fibres', 'The cloth is dyed after weaving'], why: 'Wear rubs away the indigo surface and exposes the white core.' },
     ],
     timeline: { event: 'Davis and Strauss patent jeans', year: 1873 },
     estimate: null,
@@ -122,7 +122,7 @@ export default [
     question: 'Is it worth paying more for something because of how it was made, even if it looks almost the same? Where do you draw the line?',
     quiz: [
       { q: 'What does "selvedge" on jeans refer to?', a: 'A self-finished woven edge', w: ['A type of rivet', 'A dye recipe', 'A kind of pocket'], why: 'Selvedge is the clean, closed edge made by a shuttle loom.' },
-      { q: 'Why did most mills move away from shuttle looms?', a: 'They are slow and weave narrow cloth', w: ['They were made illegal', 'They could not weave cotton', 'Their cloth was always blue'], why: 'Faster, wider projectile looms replaced them for mass production.' },
+      { q: 'Why did most mills move away from shuttle looms?', a: 'They are slow and weave narrow cloth', w: ['They used too much cotton', 'They could only weave wool', 'They were too noisy for towns'], why: 'Faster, wider projectile looms replaced them for mass production.' },
     ],
     timeline: null,
     estimate: null,
@@ -138,7 +138,7 @@ export default [
     question: 'Would you enjoy a wardrobe where the shape was fixed and only fabric and colour changed? Why or why not?',
     quiz: [
       { q: 'How is a kimono traditionally made?', a: 'From one bolt cut into straight panels', w: ['From curved, fitted pattern pieces', 'From knitted wool', 'From dozens of different fabrics'], why: 'A kimono uses straight cuts from a single tanmono bolt, with little waste.' },
-      { q: 'Which way should a kimono be wrapped when worn by the living?', a: 'Left side over right', w: ['Right side over left', 'Either way', 'Straight down the middle'], why: 'Right over left is reserved for dressing the dead.' },
+      { q: 'Which way should a kimono be wrapped when worn by the living?', a: 'Left side over right', w: ['Right side over left', 'Right over left for women only', 'Left over right for men only'], why: 'Right over left is reserved for dressing the dead.' },
     ],
     timeline: null,
     estimate: { q: 'Roughly how many metres long is a traditional kimono bolt?', answer: 12, unit: 'metres', min: 1, max: 40 },
@@ -185,8 +185,8 @@ export default [
     ],
     question: 'Do you think protecting a craft by law keeps it alive, or risks freezing it in the past?',
     quiz: [
-      { q: 'Where must genuine Harris Tweed be handwoven?', a: "In islanders' homes in the Outer Hebrides", w: ['In any Scottish factory', 'In London tailors\' workshops', 'Anywhere using Scottish wool'], why: 'The Harris Tweed Act requires home weaving by Outer Hebrides islanders.' },
-      { q: 'How does Harris Tweed get its flecked, many-toned colour?', a: 'Wools dyed different shades are blended before spinning', w: ['It is printed after weaving', 'It is bleached in the sun', 'Coloured threads are embroidered on'], why: 'Blending dyed wools before spinning creates the heathery effect.' },
+      { q: 'Where must genuine Harris Tweed be handwoven?', a: 'By islanders at home in the Outer Hebrides', w: ['In any mill in Scotland', 'In London tailors\' workshops', 'Anywhere, if Scottish wool is used'], why: 'The Harris Tweed Act requires home weaving by Outer Hebrides islanders.' },
+      { q: 'How does Harris Tweed get its flecked, many-toned colour?', a: 'Dyed wools blended before spinning', w: ['Colour printed on after weaving', 'Cloth dyed after weaving', 'Coloured threads embroidered on'], why: 'Blending dyed wools before spinning creates the heathery effect.' },
     ],
     timeline: { event: 'Harris Tweed Act passed', year: 1993 },
     estimate: null,
@@ -282,7 +282,7 @@ export default [
     question: 'How much do you think about who made your clothes? Has anything ever changed what you buy?',
     quiz: [
       { q: 'Which brand became famous for sketch-to-store in weeks?', a: 'Zara', w: ['Chanel', 'Burberry', 'Hermès'], why: 'Zara, founded in 1975, built its model on speed.' },
-      { q: 'Where was the Rana Plaza building that collapsed in 2013?', a: 'Near Dhaka, Bangladesh', w: ['Mumbai, India', 'Shenzhen, China', 'Ho Chi Minh City, Vietnam'], why: 'The building near Dhaka housed several garment factories.' },
+      { q: 'In which country did the Rana Plaza building collapse in 2013?', a: 'Bangladesh', w: ['India', 'China', 'Vietnam'], why: 'The building near Dhaka housed several garment factories.' },
     ],
     timeline: { event: 'Rana Plaza collapse', year: 2013 },
     estimate: { q: 'Roughly how many people were killed in the Rana Plaza collapse?', answer: 1100, unit: 'people', min: 50, max: 5000 },
@@ -297,7 +297,7 @@ export default [
     ],
     question: 'If you had to build a capsule wardrobe tomorrow, what would be the first three pieces in it?',
     quiz: [
-      { q: 'What is a capsule wardrobe?', a: 'A small set of pieces that all work together', w: ['A suitcase for travel', 'A rotating rental service', 'A themed costume collection'], why: 'Susie Faux coined the term for versatile, combinable essentials.' },
+      { q: 'What is a capsule wardrobe?', a: 'A few pieces that all mix and match', w: ['A suitcase packed for travel', 'A clothing rental subscription', 'A themed costume collection'], why: 'Susie Faux coined the term for versatile, combinable essentials.' },
       { q: 'What was Donna Karan\'s 1985 debut collection called?', a: 'Seven Easy Pieces', w: ['The Little Black Edit', 'Ten Perfect Things', 'Five Forever Looks'], why: 'It was built around a bodysuit with a few combinable items.' },
     ],
     timeline: null,
@@ -314,7 +314,7 @@ export default [
     question: 'Which do you think takes more skill: cutting and sewing a garment to fit, or draping one beautifully from a single cloth?',
     quiz: [
       { q: 'How is a sari shaped on the body?', a: 'By wrapping, pleating and draping', w: ['By stitching to measure', 'By buttons and zips', 'By a fitted corset'], why: 'A sari is one unstitched cloth, shaped by draping each time.' },
-      { q: 'What is the pallu of a sari?', a: 'The decorated end over the shoulder', w: ['The fitted blouse', 'The underskirt', 'The front pleats'], why: 'In the Nivi drape, the pallu is thrown over the left shoulder.' },
+      { q: 'What is the pallu of a sari?', a: 'The decorated end over the shoulder', w: ['The short fitted blouse underneath', 'The petticoat worn under the drape', 'The pleats tucked in at the waist'], why: 'In the Nivi drape, the pallu is thrown over the left shoulder.' },
     ],
     timeline: null,
     estimate: null,
