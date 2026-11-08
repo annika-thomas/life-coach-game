@@ -40,6 +40,7 @@ const mastery = (cat) => S.mastery[cat] || 0;
 const stageFor = (it) => (it.signature ? Math.max(1, Math.min(3, mastery(it.req.cat))) : 3);
 
 S.built.forEach((b) => world.placeBuilt(b.id, false, stageFor(ITEM_BY_ID[b.id] || {})));
+world.setPlots(ITEMS.map((i) => i.id));
 world.setEnergy(S.energy);
 
 // ── Cast ───────────────────────────────────────────────────────────────
@@ -319,6 +320,12 @@ world.on('creatureTap', async () => {
   if (!left) { talk('pip', [pipLine()]); return; }
   const c = await talk('pip', [`${left} topic${left > 1 ? 's' : ''} left today.`], ['Show me', 'Later']);
   if (c === 0) setTimeout(openHub, 200);
+});
+// A staked-out plot: what goes there and how to get it.
+world.on('plotTap', (id) => {
+  const it = ITEM_BY_ID[id];
+  const ready = isUnlocked(it);
+  talk('note', [`A spot for the ${it.name.toLowerCase()}.`, ready ? `Bram can build it for ${it.cost} energy.` : `To unlock it: ${reqLabel(it)}.`]);
 });
 world.on('itemTap', (id) => {
   const it = ITEM_BY_ID[id];

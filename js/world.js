@@ -70,6 +70,57 @@ const MARKET = [
   '....................',
   '....................',
 ];
+// The planned layout: each topic has its own corner with a shape that reads
+// as finished even before everything is built. Ground ops change the tile
+// (g gravel, d tilled soil, c cobbles); decor ops place fixed pieces:
+// h hedge, f fence, o topiary, n bench, s cinema seat, k stone column,
+// l lamp, t tree, v vines. Items have planned spots in items.js.
+const LAYOUT = [
+  // Arts quarter: sculpture garden (art)
+  ['ring', 'h', -20, 5, -14, 10, [[-17, 10]]], ['fill', 'g', -19, 6, -15, 9], ['at', 'n', -15, 8],
+  // boutique terrace (fashion)
+  ['fill', 'c', -6, 6, -2, 9], ['at', 'o', -7, 6], ['at', 'o', -1, 6], ['at', 'o', -7, 9], ['at', 'o', -1, 9], ['at', 't', -12, 5], ['at', 't', -5, 5],
+  // tea garden (culture), entered under the arch
+  ['ring', 'f', -20, 12, -14, 16, [[-17, 12]]], ['fill', 'g', -19, 13, -15, 15], ['at', 'g', -17, 12],
+  // outdoor cinema (film)
+  ['at', 'l', -8, 12], ['at', 'l', -2, 12], ['fill', 'g', -5, 13, -5, 15], ['fill', 's', -7, 14, -6, 15], ['fill', 's', -4, 14, -3, 15],
+  ['at', 't', -20, 17], ['at', 't', -9, 17], ['at', 't', -1, 17],
+  // Market: kitchen garden (food)
+  ['ring', 'f', 22, 5, 27, 9, [[24, 9]]], ['fill', 'd', 23, 6, 26, 8],
+  // dairy pasture (cheese)
+  ['ring', 'f', 36, 5, 41, 9, [[38, 9]]],
+  ['at', 'l', 28, 10], ['at', 'l', 35, 10],
+  // orchard
+  ...[24, 26, 28, 30].flatMap((x) => [12, 14, 16].map((z) => ['at', 't', x, z])),
+  // vineyard (wine)
+  ...[37, 38, 39, 40].flatMap((x) => [12, 14, 16].map((z) => ['at', 'v', x, z])),
+  // Sage's hill: probability garden (stats)
+  ['ring', 'h', -2, -13, 3, -8, [[1, -8]]], ['fill', 'g', -1, -12, 2, -9],
+  // star-gazing pad (science)
+  ['fill', 'g', 19, -12, 22, -10], ['at', 'l', 18, -12], ['at', 'l', 23, -12],
+  // stoa (philosophy)
+  ['fill', 'g', -1, -4, 3, 1], ['at', 'k', -2, -5], ['at', 'k', 4, -5], ['at', 'k', -2, 2], ['at', 'k', 4, 2],
+  // robot test track (robotics)
+  ['fill', 'g', 18, -4, 22, 1], ['at', 'l', 17, -5], ['at', 'l', 23, -5],
+  // the lawn between, with benches facing the observatory
+  ['at', 't', 7, -4], ['at', 't', 14, -4], ['at', 't', 9, 0], ['at', 't', 12, 0], ['at', 'n', 9, -5], ['at', 'n', 12, -5],
+  // flower beds (x: you can walk through them)
+  ...[[-19, 6], [-15, 6], [-19, 9], [-15, 9], [-19, 13], [-19, 15], [-15, 15], [-6, 9], [-2, 9], [-6, 16], [-4, 16], [-8, 16],
+    [23, 8], [26, 8], [40, 6], [36, 11], [41, 11], [33, 12], [-1, -12], [2, -12], [-1, -9], [2, -9], [19, -10], [22, -10],
+    [7, -2], [8, 2], [13, -2], [14, 2], [10, -3], [11, 2], [6, -6], [15, -6], [0, -4], [3, 1], [18, 1], [22, -4]].map(([x, z]) => ['at', 'x', x, z]),
+];
+const layoutCells = (op) => {
+  const [kind, ch, x0, z0, x1, z1, gaps] = op;
+  const out = [];
+  if (kind === 'at') return [[x0, z0, ch]];
+  for (let z = z0; z <= z1; z++) for (let x = x0; x <= x1; x++) {
+    if (kind === 'ring' && x !== x0 && x !== x1 && z !== z0 && z !== z1) continue;
+    if (gaps && gaps.some(([gx, gz]) => gx === x && gz === z)) continue;
+    out.push([x, z, ch]);
+  }
+  return out;
+};
+const GROUND_OPS = new Set(['g', 'd', 'c']);
 const MAP = (() => {
   const rows = [];
   for (let z = Z0; z < Z1; z++) {
@@ -91,12 +142,18 @@ const MAP = (() => {
     }
     rows.push(row);
   }
-  return rows;
+  const grid = rows.map((r) => r.split(''));
+  for (const op of LAYOUT) for (const [x, z, ch] of layoutCells(op)) {
+    if (!GROUND_OPS.has(ch)) continue;
+    const row = grid[z - Z0], i = x - X0, base = row[i];
+    row[i] = ch === 'g' && (base === 'H' || base === 'P') ? 'G' : ch;
+  }
+  return grid.map((r) => r.join(''));
 })();
 const W = MAP[0].length;
 const D = MAP.length;
 const tileAt = (x, z) => { const i = x - X0, j = z - Z0; return i < 0 || j < 0 || i >= W || j >= D ? 'w' : MAP[j][i]; };
-const HEIGHT = { H: 1, F: 1, P: 1, '.': 0, '#': 0, c: 0, S: 0.5, s: -0.2, w: -0.8 };
+const HEIGHT = { H: 1, F: 1, P: 1, G: 1, '.': 0, '#': 0, c: 0, g: 0, d: 0, S: 0.5, s: -0.2, w: -0.8 };
 // The fishing dock: wooden planks over the sand and water you can walk on.
 const DOCK = new Set(['10,19', '10,20', '10,21']);
 const tileH = (x, z) => (DOCK.has(`${x},${z}`) ? -0.1 : HEIGHT[tileAt(x, z)]);
@@ -1444,7 +1501,7 @@ export class World {
     this.stick = new THREE.Vector2();   // joystick input, length 0..1
     this.anims = [];
     this.energy = 0;
-    this.listeners = { creatureTap: [], itemTap: [], station: [], visitor: [], giftTap: [], pickupTap: [], treeTap: [] };
+    this.listeners = { creatureTap: [], itemTap: [], station: [], visitor: [], giftTap: [], pickupTap: [], treeTap: [], plotTap: [] };
 
     LEAF_MAT = new THREE.MeshLambertMaterial({ map: leafTex('#4cae3f', '#6ccb52', '#3c9632') });
     LEAF_MAT_DARK = new THREE.MeshLambertMaterial({ color: '#3f8f4a' });
@@ -1536,6 +1593,7 @@ export class World {
     const plateauTop = new THREE.MeshLambertMaterial({ map: plateauGrassTex() });
     this.grassMats = { grassTop, plateauTop };
     const pathTop = new THREE.MeshLambertMaterial({ map: speckleTex('#dcb978', '#ecd29a', '#c49a5e', 9) });
+    const gravelTop = new THREE.MeshLambertMaterial({ map: speckleTex('#dccdb2', '#ebe0cb', '#c2b293', 29) });
     const sandTop = new THREE.MeshLambertMaterial({ map: speckleTex('#f3e3b3', '#fbf1d0', '#e2cd92', 13) });
     const seabed = M('#d9c48f');
     const cliff = new THREE.MeshLambertMaterial({ map: cliffTex() });
@@ -1549,6 +1607,9 @@ export class World {
       H: { top: plateauTop, side: cliff, list: [] },
       F: { top: plateauTop, side: cliff, list: [] },
       P: { top: pathTop, side: cliff, list: [] },
+      g: { top: gravelTop, side: cliff, list: [] },
+      G: { top: gravelTop, side: cliff, list: [] },
+      d: { top: new THREE.MeshLambertMaterial({ map: speckleTex('#9a6a44', '#b5845a', '#7d5235', 19) }), side: cliff, list: [] },
       s: { top: sandTop, side: sandSide, list: [] },
       w: { top: seabed, side: sandSide, list: [] },
     };
@@ -1652,21 +1713,10 @@ export class World {
       g.rotation.y = rot;
       this._place(g, x, z);
     };
-    const flowers = (list) => list.forEach(([x, z, k]) => { const f = flowerCluster(k); f.position.set(x + 0.5, tileH(x, z), z + 0.5); this.scene.add(f); });
-    const trees = (list) => list.forEach(([x, z, fruit], i) => { const t = this._place(tree(fruit, x * 7 + z + i), x, z); this.sways.push(t); });
-    // Arts quarter (west)
     sign('ARTS', '#8a5a9e', -1, 10);
-    lamp(-13.1, 7.9); lamp(-6.9, 7.9);
-    lamp(-13.1, 10.1); lamp(-6.9, 10.1);
-    trees([[-19, 6, null], [-12, 14, null], [-19, 15, '#ff9f1c'], [-2, 16, null], [-9, 16, '#e8312f']]);
-    flowers([[-17, 8, 21], [-14, 9, 22], [-6, 9, 23], [-12, 12, 24], [-9, 13, 25], [-18, 10, 26], [-3, 8, 27], [-7, 16, 28]]);
-    // Market (east)
     sign('MARKET', '#e5483b', 22, 10);
-    lamp(27.9, 7.9); lamp(36.1, 7.9);
-    lamp(27.9, 10.1); lamp(36.1, 10.1);
-    for (const [x, z] of [[29, 8], [34, 8]]) {
-      const st = stallModel(); this._place(st, x, z);
-    }
+    // Market stalls and bunting over the plaza
+    for (const [x, z] of [[29, 8], [34, 8]]) this._place(stallModel(), x, z);
     const flagCols = ['#e5483b', '#f2c94c', '#3fa7b8', '#4a9b6e', '#e27fb0'];
     for (const x of [28.1, 35.9]) cyl(0.03, 0.03, 1.8, '#8a5a35', x, 0.9, 7.9, this.scene, 6);
     for (let i = 0; i < 18; i++) {
@@ -1674,20 +1724,10 @@ export class World {
       const f = mesh(new THREE.ConeGeometry(0.07, 0.14, 3), M(flagCols[i % 5]), x, y - 0.07, 7.9, this.scene);
       f.rotation.z = Math.PI; f.castShadow = false;
     }
-    // vineyard rows
-    for (let row = 0; row < 3; row++) for (let i = 0; i < 4; i++) {
-      const v = new THREE.Group();
-      cyl(0.03, 0.03, 0.6, '#8a5a35', 0, 0.3, 0, v, 5);
-      sph(0.2, LEAF_MAT, 0, 0.55, 0, v, 8).scale.set(1.4, 0.8, 0.7);
-      for (const dx of [-0.12, 0.1]) sph(0.05, '#6b2f5e', dx, 0.42, 0.12, v, 6);
-      this._place(v, 38 + i, 12 + row * 2);
-    }
-    trees([[24, 6, '#e8312f'], [41, 6, null], [25, 16, '#ff9f1c'], [33, 16, null], [41, 16, '#e8312f']]);
-    flowers([[23, 8, 31], [27, 9, 32], [33, 6, 33], [36, 10, 34], [29, 15, 35], [31, 12, 36]]);
-    // Sage's hill (north): the observatory, lamps along the path
+    // Sage's observatory
     const dome = new THREE.Group();
     cyl(1.25, 1.35, 1.2, '#f4efe2', 0, 0.6, 0, dome, 24);
-    const top = sph(1.28, '#c9d3dc', 0, 1.2, 0, dome, 24); top.scale.y = 0.85;
+    const top = sph(1.28, '#dfe6ee', 0, 1.2, 0, dome, 24); top.scale.y = 0.85;
     box(0.36, 1.5, 0.2, '#3a4660', 0, 1.6, 1.0, dome).rotation.x = -0.55;
     const door = new THREE.Shape(); door.moveTo(-0.25, 0); door.lineTo(-0.25, 0.5); door.absarc(0, 0.5, 0.25, Math.PI, 0, true); door.lineTo(0.25, 0);
     mesh(new THREE.ExtrudeGeometry(door, { depth: 0.05, bevelEnabled: false }), M('#2f6fa8'), 0, 0, 1.3, dome);
@@ -1695,8 +1735,66 @@ export class World {
     for (let x = 9; x <= 11; x++) for (let z = -12; z <= -10; z++) this.occupied.add(`${x},${z}`);
     for (const z of [-1.5, -5.5]) { lamp(4.6, z, 1); lamp(16.4, z, 1); }
     lamp(8.4, -6.6, 1); lamp(13.6, -6.6, 1);
-    trees([[1, -10, null], [22, -9, null], [6, -12, '#ff9f1c'], [-1, -7, null], [23, -3, null], [18, -6, '#e8312f']]);
-    flowers([[3, -6, 41], [9, -5, 42], [15, -2, 43], [19, -8, 44], [7, -10, 45], [1, -1, 46]]);
+    this._layoutDecor(lamp);
+  }
+
+  // Fixed pieces from LAYOUT. Hedges and fences join up with their
+  // neighbours and are drawn as a few batched meshes.
+  _layoutDecor(lamp) {
+    const cells = new Map();
+    for (const op of LAYOUT) for (const [x, z, ch] of layoutCells(op)) if (!GROUND_OPS.has(ch)) cells.set(`${x},${z}`, ch);
+    const same = (x, z, ch) => cells.get(`${x},${z}`) === ch;
+    const batches = new Map();
+    const add = (mat, x, y, z, sx, sy, sz) => { if (!batches.has(mat)) batches.set(mat, []); batches.get(mat).push([x, y, z, sx, sy, sz]); };
+    const wood = M('#c9a06a'), stone = M('#efe9dc');
+    const DIRS = [[1, 0], [-1, 0], [0, 1], [0, -1]];
+    for (const [k, ch] of cells) {
+      const [x, z] = k.split(',').map(Number);
+      const y = tileH(x, z), cx = x + 0.5, cz = z + 0.5;
+      if (ch === 'h') {
+        add(LEAF_MAT_DARK, cx, y + 0.3, cz, 0.62, 0.6, 0.62);
+        for (const [dx, dz] of DIRS) if (same(x + dx, z + dz, 'h')) add(LEAF_MAT_DARK, cx + dx * 0.3, y + 0.3, cz + dz * 0.3, dx ? 0.62 : 0.62, 0.6, 0.62);
+      } else if (ch === 'f') {
+        add(wood, cx, y + 0.24, cz, 0.08, 0.48, 0.08);
+        for (const [dx, dz] of DIRS) if (same(x + dx, z + dz, 'f')) for (const ry of [0.18, 0.36]) add(wood, cx + dx * 0.25, y + ry, cz + dz * 0.25, dx ? 0.5 : 0.05, 0.05, dz ? 0.5 : 0.05);
+      } else if (ch === 'k') {
+        add(stone, cx, y + 0.06, cz, 0.42, 0.12, 0.42);
+        add(stone, cx, y + 0.7, cz, 0.24, 1.2, 0.24);
+        add(stone, cx, y + 1.34, cz, 0.38, 0.1, 0.38);
+      } else if (ch === 's') {
+        add(M('#b34a3c'), cx, y + 0.22, cz, 0.7, 0.08, 0.5);
+        add(M('#b34a3c'), cx, y + 0.42, cz + 0.22, 0.7, 0.4, 0.08);
+        for (const sx of [-0.3, 0.3]) add(M('#33363d'), cx + sx, y + 0.11, cz, 0.05, 0.22, 0.4);
+      } else if (ch === 'n') {
+        add(wood, cx, y + 0.22, cz, 0.8, 0.06, 0.32);
+        add(wood, cx, y + 0.42, cz - 0.15, 0.8, 0.3, 0.05);
+        for (const sx of [-0.33, 0.33]) add(M('#7a4e2c'), cx + sx, y + 0.11, cz, 0.06, 0.22, 0.3);
+      } else if (ch === 'o') {
+        cyl(0.2, 0.16, 0.28, '#c46a4a', cx, y + 0.14, cz, this.scene, 12);
+        sph(0.3, LEAF_MAT_DARK, cx, y + 0.55, cz, this.scene, 12);
+      } else if (ch === 'l') {
+        lamp(cx, cz, y);
+      } else if (ch === 't') {
+        const t = tree(null, x * 7 + z * 3); t.position.set(cx, y, cz); this.scene.add(t); this.sways.push(t);
+      } else if (ch === 'x') {
+        const f = flowerCluster(x * 13 + z); f.position.set(cx, y, cz); this.scene.add(f);
+        continue;   // flowers don't block the way
+      } else if (ch === 'v') {
+        const v = new THREE.Group();
+        cyl(0.03, 0.03, 0.6, '#8a5a35', 0, 0.3, 0, v, 5);
+        sph(0.2, LEAF_MAT, 0, 0.55, 0, v, 8).scale.set(1.4, 0.8, 0.7);
+        for (const dx of [-0.12, 0.1]) sph(0.05, '#6b2f5e', dx, 0.42, 0.12, v, 6);
+        v.position.set(cx, y, cz); this.scene.add(v);
+      }
+      this.occupied.add(k);
+    }
+    const unit = new THREE.BoxGeometry(1, 1, 1), o = new THREE.Object3D();
+    for (const [mat, list] of batches) {
+      const m = new THREE.InstancedMesh(unit, mat, list.length);
+      list.forEach(([x, y, z, sx, sy, sz], i) => { o.position.set(x, y, z); o.scale.set(sx, sy, sz); o.updateMatrix(); m.setMatrixAt(i, o.matrix); });
+      m.castShadow = true; m.receiveShadow = true;
+      this.scene.add(m);
+    }
   }
 
   _districtDecor() {
@@ -1723,13 +1821,6 @@ export class World {
           f.rotation.z = Math.PI; f.rotation.y = Math.PI / 2; f.castShadow = false;
         }
       }
-    }
-    // arts corner: a low white picket fence along the road
-    for (const x of [-20, -19, -18, -17, -4, -3, -2]) {
-      const g = new THREE.Group();
-      for (let i = 0; i < 4; i++) box(0.06, 0.32, 0.04, '#fbf6ec', -0.4 + i * 0.27, 0.16, 0, g);
-      box(1, 0.05, 0.03, '#fbf6ec', 0, 0.2, 0, g);
-      g.position.set(x + 0.5, 0, 10.9); this.scene.add(g);
     }
     this._neighbourhoods(lamp);
     // fish pond: a clearer water surface so the fish show, and a stone rim
@@ -1839,8 +1930,9 @@ export class World {
     obj.userData.itemId = id;
     obj.traverse((o) => { o.userData.itemId = id; });
     const [x, z] = item.slot;
-    this._place(obj, x, z);
+    this._place(obj, x, z, id !== 'arch');   // you walk under the arch
     this.built.set(id, obj);
+    this._removePlot(id);
     this._glowLamps(obj);
     if (obj.userData.fruits?.length) this._registerFruitTree(id, obj, x, z);
     if (animate) {
@@ -1851,6 +1943,39 @@ export class World {
       });
       this._puff(obj.position);
     }
+  }
+
+  // Staked-out plots where unbuilt items will go, so the finished layout is
+  // visible from the start.
+  setPlots(ids) {
+    this.plots = new Map(ids.filter((id) => !this.built.has(id) && ITEM_BY_ID[id]).map((id) => [id, ITEM_BY_ID[id].slot]));
+    this._drawPlots();
+  }
+  _removePlot(id) { if (this.plots?.delete(id)) this._drawPlots(); }
+  _drawPlots() {
+    for (const m of this.plotMeshes || []) { this.scene.remove(m); m.dispose(); }
+    this.plotMeshes = [];
+    const list = [...(this.plots || new Map())];
+    if (!list.length) return;
+    const o = new THREE.Object3D();
+    const make = (geo, mat, per, place, shadow = true) => {
+      const m = new THREE.InstancedMesh(geo, mat, list.length * per);
+      list.forEach(([, [x, z]], i) => { for (let k = 0; k < per; k++) { place(o, x + 0.5, tileH(x, z), z + 0.5, k); o.updateMatrix(); m.setMatrixAt(i * per + k, o.matrix); } });
+      m.castShadow = shadow; m.receiveShadow = true;
+      m.userData.plotIds = list.map(([id]) => id); m.userData.per = per;
+      this.scene.add(m); this.plotMeshes.push(m);
+      return m;
+    };
+    const corners = [[-0.36, -0.36], [0.36, -0.36], [0.36, 0.36], [-0.36, 0.36]];
+    this.plotPatch = make(new THREE.PlaneGeometry(0.84, 0.84), new THREE.MeshLambertMaterial({ color: '#b98b5c', transparent: true, opacity: 0.55, depthWrite: false }), 1,
+      (o, x, y, z) => { o.position.set(x, y + 0.02, z); o.rotation.set(-Math.PI / 2, 0, 0); o.scale.set(1, 1, 1); }, false);
+    make(new THREE.BoxGeometry(0.045, 0.3, 0.045), M('#c9a06a'), 4, (o, x, y, z, k) => { o.position.set(x + corners[k][0], y + 0.15, z + corners[k][1]); o.rotation.set(0, 0, 0); o.scale.set(1, 1, 1); });
+    make(new THREE.BoxGeometry(1, 0.012, 0.012), M('#fbf6ec'), 4, (o, x, y, z, k) => {
+      const [ax, az] = corners[k], [bx, bz] = corners[(k + 1) % 4];
+      o.position.set(x + (ax + bx) / 2, y + 0.24, z + (az + bz) / 2); o.rotation.set(0, ax === bx ? Math.PI / 2 : 0, 0); o.scale.set(0.72, 1, 1);
+    }, false);
+    this.plotTag = make(new THREE.BoxGeometry(0.26, 0.17, 0.03), M('#e8d2a8'), 1, (o, x, y, z) => { o.position.set(x, y + 0.42, z + 0.36); o.rotation.set(-0.15, 0, 0); o.scale.set(1, 1, 1); });
+    make(new THREE.BoxGeometry(0.035, 0.36, 0.035), M('#a07a4a'), 1, (o, x, y, z) => { o.position.set(x, y + 0.18, z + 0.36); o.rotation.set(0, 0, 0); o.scale.set(1, 1, 1); });
   }
 
   // Regrow a signature item at a new stage (mastery went up).
@@ -2661,6 +2786,8 @@ export class World {
       if (items.length) { this._emit('itemTap', items[0].object.userData.itemId); return; }
       const gifts = ray.intersectObjects([...(this.gifts?.values() || [])], true);
       if (gifts.length) { this._emit('giftTap', gifts[0].object.userData.gift); return; }
+      const pl = ray.intersectObjects([this.plotTag, this.plotPatch].filter(Boolean), false);
+      if (pl.length && pl[0].instanceId != null) { this._emit('plotTap', pl[0].object.userData.plotIds[pl[0].instanceId]); return; }
       const g = ray.intersectObjects(this.ground, false);
       if (g.length) {
         const p = g[0].point;
