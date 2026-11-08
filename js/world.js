@@ -76,6 +76,8 @@ const MARKET = [
 // h hedge, f fence, o topiary, n bench, s cinema seat, k stone column,
 // l lamp, t tree, v vines. Items have planned spots in items.js.
 const LAYOUT = [
+  // Town: a cobbled path up to the museum
+  ['fill', 'c', 2, 9, 3, 10],
   // Arts quarter: sculpture garden (art)
   ['ring', 'h', -20, 5, -14, 10, [[-17, 10]]], ['fill', 'g', -19, 6, -15, 9], ['at', 'n', -15, 8],
   // boutique terrace (fashion)
@@ -1183,6 +1185,25 @@ function pondModel() {
   });
   return g;
 }
+// The museum: steps, columns and a pediment, a banner over the door.
+function museumModel() {
+  const g = new THREE.Group();
+  const stone = M('#efe7d6'), dark = M('#c9bfa8');
+  box(3.9, 0.12, 2.9, dark, 0, 0.06, 0, g);
+  box(3.7, 0.12, 2.7, stone, 0, 0.18, -0.05, g);
+  box(3.3, 1.7, 2.0, M('#e9dfcb'), 0, 1.09, -0.35, g);
+  for (let i = 0; i < 4; i++) cyl(0.12, 0.13, 1.6, stone, -1.35 + i * 0.9, 1.04, 0.95, g, 12);
+  box(3.6, 0.16, 0.5, stone, 0, 1.92, 0.75, g);
+  box(3.6, 0.16, 2.6, stone, 0, 1.98, -0.1, g);
+  const ped = new THREE.Shape(); ped.moveTo(-1.85, 0); ped.lineTo(1.85, 0); ped.lineTo(0, 0.62); ped.closePath();
+  mesh(new THREE.ExtrudeGeometry(ped, { depth: 2.6, bevelEnabled: false }), stone, 0, 2.06, -1.4, g);
+  const door = new THREE.Shape(); door.moveTo(-0.32, 0); door.lineTo(-0.32, 0.75); door.absarc(0, 0.75, 0.32, Math.PI, 0, true); door.lineTo(0.32, 0);
+  mesh(new THREE.ExtrudeGeometry(door, { depth: 0.05, bevelEnabled: false }), M('#6b4a2b'), 0, 0.24, 0.66, g);
+  const sign = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.3, 0.05), [M('#7a4e2c'), M('#7a4e2c'), M('#7a4e2c'), M('#7a4e2c'), new THREE.MeshLambertMaterial({ map: signTex('MUSEUM', '#3f6f8f') }), M('#7a4e2c')]);
+  sign.position.set(0, 2.32, 1.06); g.add(sign);
+  for (const x of [-1.6, 1.6]) sph(0.09, LAMP_MAT, x, 1.3, 1.0, g, 8);
+  return g;
+}
 function noticeBoardModel() {
   const g = new THREE.Group();
   for (const x of [-0.38, 0.38]) box(0.07, 1.3, 0.07, '#7a4e2c', x, 0.65, 0, g);
@@ -1256,6 +1277,7 @@ const STATIONS = {
   workbench:   { model: workbenchModel,   tiles: [[12, 7]],                              at: [12.5, 7.5],  approach: [12, 8],  labelY: 1.4, keeper: makeBram,   keeperAt: [13, 7], pin: true },
   dock:        { model: dockModel,        tiles: [],                                     at: [10.5, 20.5], approach: [10, 21], labelY: 1.1, pin: true },
   pond:        { model: pondModel,        tiles: [],                                     at: [16.5, 15.9], approach: [16, 14], labelY: 0.8 },
+  museum:      { model: museumModel,      tiles: [[1, 6], [2, 6], [3, 6], [4, 6], [1, 7], [2, 7], [3, 7], [4, 7], [1, 8], [2, 8], [3, 8], [4, 8]], at: [3.0, 7.5], approach: [3, 9], labelY: 3.2 },
   home:        { model: null,             tiles: [],                                     at: [10.5, 6.0],  approach: [10, 7],  labelY: 2.9 },
   square:      { model: noticeBoardModel, tiles: [[7, 8]],                               at: [7.5, 8.5],   approach: [8, 8],   labelY: 1.8, keeper: makeFennel, keeperAt: [7, 9] },
   market:      { model: stallModel,       tiles: [[31, 8]],                              at: [31.5, 8.5],  approach: [30, 8],  labelY: 1.8, keeper: makePepper, keeperAt: [31, 9], pin: true },
@@ -1501,7 +1523,7 @@ export class World {
     this.stick = new THREE.Vector2();   // joystick input, length 0..1
     this.anims = [];
     this.energy = 0;
-    this.listeners = { creatureTap: [], itemTap: [], station: [], visitor: [], giftTap: [], pickupTap: [], treeTap: [], plotTap: [] };
+    this.listeners = { creatureTap: [], itemTap: [], station: [], visitor: [], giftTap: [], pickupTap: [], treeTap: [], plotTap: [], exhibitTap: [] };
 
     LEAF_MAT = new THREE.MeshLambertMaterial({ map: leafTex('#4cae3f', '#6ccb52', '#3c9632') });
     LEAF_MAT_DARK = new THREE.MeshLambertMaterial({ color: '#3f8f4a' });
@@ -1889,7 +1911,7 @@ export class World {
       if (f) this._registerFruitTree(`d${i}`, t, x, z);
     });
     this._forest();
-    [[0, 5, 1], [2, 6, 2], [0, 7, 3], [2, 8, 4], [4, 6, 5], [1, 12, 6], [5, 15, 7], [7, 13, 8], [8, 6, 9], [13, 6, 10], [20, 10, 11], [17, 13, 12]].forEach(([x, z, s]) => {
+    [[0, 5, 1], [0, 9, 3], [1, 12, 6], [5, 15, 7], [7, 13, 8], [8, 6, 9], [13, 6, 10], [20, 10, 11], [17, 13, 12]].forEach(([x, z, s]) => {
       const f = flowerCluster(s); f.position.set(x + 0.5, 0, z + 0.5); this.scene.add(f);
     });
     // little grass tufts scattered over open grass (non-blocking)
@@ -2026,6 +2048,26 @@ export class World {
   hop() {
     const { body } = this.creature.userData;
     this._anim(0.5, (t) => { body.position.y = Math.sin(t * Math.PI) * 0.35; });
+  }
+
+  // Inside a building: render a room scene instead of the island.
+  enterRoom(room) {
+    this.leaveRoom();
+    this.room = room;
+    this.stick.set(0, 0); this.path = []; if (this.state === 'walk') this.state = 'idle';
+    room.fit(this.canvas.clientWidth / this.canvas.clientHeight);
+    try { this.renderer.compile(room.scene, room.camera); } catch (e) { /* fine */ }
+  }
+  leaveRoom() {
+    if (!this.room) return;
+    this.room.dispose(); this.room = null;
+  }
+  _roomTap(e) {
+    const r = this.canvas.getBoundingClientRect();
+    const ndc = new THREE.Vector2(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+    const ray = new THREE.Raycaster(); ray.setFromCamera(ndc, this.room.camera);
+    const hit = ray.intersectObjects(this.room.pick, false)[0];
+    if (hit) this._emit('exhibitTap', hit.object.userData.slot);
   }
 
   // Happy to see you: turn to the camera, two little hops and a wave.
@@ -2727,6 +2769,7 @@ export class World {
     const w = this.canvas.clientWidth, h = this.canvas.clientHeight;
     this.renderer.setSize(w, h, false);
     this.camera.aspect = w / h;
+    if (this.room) this.room.fit(w / h);
     const vis = w < h ? 9 : 14; // tiles visible across
     this.dist = Math.max(12, Math.min(40, vis / (2 * Math.tan(THREE.MathUtils.degToRad(this.camera.fov / 2)) * this.camera.aspect)));
     this.camera.updateProjectionMatrix();
@@ -2742,7 +2785,7 @@ export class World {
     const RADIUS = 55;
     let down = null;
     el.addEventListener('pointerdown', (e) => {
-      if (down) return;
+      if (down || this.room) return;
       down = { id: e.pointerId, x: e.clientX, y: e.clientY, drag: false };
       el.setPointerCapture(e.pointerId);
     });
@@ -2795,7 +2838,7 @@ export class World {
         this.walkTo(Math.floor(p.x), Math.floor(p.z - 0.001));
       }
     };
-    el.addEventListener('pointerup', end);
+    el.addEventListener('pointerup', (e) => { if (this.room) { this._roomTap(e); return; } end(e); });
     el.addEventListener('pointercancel', end);
   }
 
@@ -2803,6 +2846,12 @@ export class World {
   _tick() {
     const dt = Math.min(this.clock.getDelta(), 0.05);
     const time = this.clock.elapsedTime;
+    if (this.room) {
+      this.room.update(dt, time);
+      this.renderer.render(this.room.scene, this.room.camera);
+      if (this.onFrame) this.onFrame();
+      return;
+    }
     // animations
     for (const a of this.anims) { a.t = Math.min(1, a.t + dt / a.dur); a.fn(a.t); }
     this.anims = this.anims.filter((a) => a.t < 1);
@@ -2988,4 +3037,4 @@ export class World {
   }
 }
 
-export { ITEMS };
+export { ITEMS, makeCreature };

@@ -1,4 +1,5 @@
-import { World, PINNED } from './world.js';
+import { World, PINNED, makeCreature } from './world.js';
+import { buildRoom } from './museum.js';
 import { ITEMS, ITEM_BY_ID, DISTRICTS, SIGNATURE } from './items.js';
 import { GIFTS } from './world.js';
 import { REQUESTS } from './lessons.js';
@@ -1265,6 +1266,7 @@ VISIT.market = () => placeMenu('Market', '', [
   ...(fruitTotal() >= 5 ? [{ label: 'Trade 5 fruit', sub: `You have ${fruitTotal()}`, fn: tradeFruit }] : []),
   { label: 'Read about food, wine or cheese', fn: () => { filters = new Set(DISTRICTS.market.cats); openLessons(); } },
 ]);
+VISIT.museum = () => enterMuseum();
 VISIT.home = () => placeMenu('Focus time', S.grove.length ? `${S.grove.length} grown so far.` : '', [
   { label: '10 minutes', sub: 'A flower patch · +1 energy', fn: () => startFocus(10) },
   { label: '25 minutes', sub: 'A tree · +2 energy', fn: () => startFocus(25) },
@@ -1416,7 +1418,7 @@ function openKeeper(id) {
     </div>`, 'keeper-sheet');
   wireTopicRows(back);
   if (due) $('#k-rev').onclick = () => reviewLesson(t.cats, back);
-  $('#k-mus').onclick = () => openMuseum(id);
+  $('#k-mus').onclick = () => { closeSheet(); setTimeout(() => enterMuseum(t.cats[0]), 260); };
 }
 // Everything in one place: each keeper's topics, and everything due.
 function openHub() {
@@ -1428,17 +1430,74 @@ function openHub() {
   wireTopicRows(back);
   if (due) $('#h-rev').onclick = () => reviewLesson(ALL_CATS, back);
 }
-// A keeper's museum: every card in their topics, filled in as you learn them.
-function openMuseum(id) {
-  const t = TEACH[id], read = new Set(S.lessons.map((l) => l.id));
-  openSheet(`${CAST[t.who].name()}'s museum`, t.cats.map((cat) => {
-    const c = CATEGORIES[cat], cards = catCards(cat), n = cards.filter((l) => read.has(l.id)).length;
-    return `<div class="mus-head" style="--c:${c.color}"><i></i><b>${c.label}</b>${dots(cat)}<small>${n}/${cards.length}</small></div>
-      ${n ? `<div class="mus-grid">${cards.filter((l) => read.has(l.id)).map((l) => `<button class="mus-cell b${S.reviews[l.id]?.box || 1}" data-id="${l.id}" style="--c:${c.color}"><span>${esc(l.title)}</span></button>`).join('')}</div>` : ''}
-      <p class="mus-left">${n === cards.length ? 'Every card on display.' : `${cards.length - n} still to find`}</p>`;
-  }).join('') + '<p class="lead small">Exhibits brighten as you remember them in reviews. Tap one to reread it.</p>', 'museum');
-  sheet.querySelectorAll('.mus-cell[data-id]').forEach((b) => b.onclick = () => openReader(b.dataset.id, () => openMuseum(id)));
+// ── The museum ─────────────────────────────────────────────────────
+// A wing per keeper, a room per topic, an aquarium and a nature room. Every
+// exhibit has its spot from the start; empty ones wait to be filled.
+const WING = {
+  library: { style: 'paint', wall: '#efe2d0', accent: '#8a5a9e' },
+  square: { style: 'paper', wall: '#e3ead8', accent: '#3f6f8f' },
+  market: { style: 'still', wall: '#f3e1cf', accent: '#c4572e' },
+  observatory: { style: 'diagram', wall: '#dfe6ee', accent: '#2f4a3a' },
+};
+const ROOMS = [
+  ...Object.entries(TEACH).flatMap(([id, t]) => t.cats.map((cat) => ({ key: cat, wing: id }))),
+  { key: 'aquarium' }, { key: 'nature' },
+];
+function roomSpec(key) {
+  const room = ROOMS.find((r) => r.key === key);
+  if (room.wing) {
+    const read = new Set(S.lessons.map((l) => l.id)), cards = catCards(key), w = WING[room.wing];
+    return { title: CATEGORIES[key].label, wing: CAST[TEACH[room.wing].who].name(), style: w.style, wall: w.wall, floor: '#b98a5a', accent: w.accent,
+      slots: cards.map((l) => ({ key: l.id, filled: read.has(l.id), level: S.reviews[l.id]?.box || 1, color: CATEGORIES[key].color, seed: l.id })) };
+  }
+  if (key === 'aquarium') {
+    const caught = new Set(S.fish.map((f) => f.species));
+    return { title: 'Aquarium', wing: 'Fish', style: 'tank', wall: '#d8e8ee', floor: '#8fa7b3', accent: '#3f7f9f',
+      slots: FISH.map((f) => ({ key: f.id, filled: caught.has(f.id), color: f.color, size: Math.min(1.15, 0.6 + f.size * 0.35) })) };
+  }
+  return { title: 'Nature room', wing: 'Bugs and shells', style: 'case', wall: '#e8efdc', floor: '#a88a5a', accent: '#6b8f4a',
+    slots: [...BUGS.map((b) => ({ key: b.id, kind: 'bug', filled: (pocket.bugs[b.id] || 0) > 0, color: b.color })),
+      ...SHELLS.map((sh) => ({ key: sh.id, kind: 'shell', filled: (pocket.shells[sh.id] || 0) > 0, color: sh.color }))] };
 }
+let museumAt = null, museumSpec = null;
+const roomUi = $('#room-ui');
+function enterMuseum(key = museumAt || ROOMS[0].key) {
+  museumAt = key; museumSpec = roomSpec(key);
+  world.enterRoom(buildRoom(museumSpec, makeCreature));
+  document.body.classList.add('in-room');
+  const n = museumSpec.slots.filter((x) => x.filled).length;
+  $('#room-name').textContent = museumSpec.title;
+  $('#room-count').textContent = `${museumSpec.wing} · ${n} of ${museumSpec.slots.length}`;
+}
+function leaveMuseum() { world.leaveRoom(); document.body.classList.remove('in-room'); museumAt = museumAt || null; }
+const stepRoom = (d) => { const i = ROOMS.findIndex((r) => r.key === museumAt); enterMuseum(ROOMS[(i + d + ROOMS.length) % ROOMS.length].key); };
+$('#room-prev').onclick = () => stepRoom(-1);
+$('#room-next').onclick = () => stepRoom(1);
+$('#room-leave').onclick = leaveMuseum;
+$('#room-dir').onclick = () => {
+  const count = (k) => { const sp = roomSpec(k); return `${sp.slots.filter((x) => x.filled).length} of ${sp.slots.length}`; };
+  const groups = [...Object.entries(TEACH).map(([id, t]) => [`${CAST[t.who].name()}'s wing`, t.cats.map((c) => [c, CATEGORIES[c].label])]), ['Nature', [['aquarium', 'Aquarium'], ['nature', 'Bugs and shells']]]];
+  openSheet('Museum', groups.map(([h, list]) => `<h4>${esc(h)}</h4><div class="menu">${list.map(([k, label]) => `<button class="menu-btn" data-room="${k}"><b>${esc(label)}</b><small>${count(k)}</small></button>`).join('')}</div>`).join(''), 'keeper-sheet');
+  sheet.querySelectorAll('[data-room]').forEach((b) => b.onclick = () => { closeSheet(); enterMuseum(b.dataset.room); });
+};
+world.on('exhibitTap', (i) => {
+  const sp = museumSpec, slot = sp?.slots[i];
+  if (!slot) return;
+  if (sp.style === 'tank') {
+    const f = FISH.find((x) => x.id === slot.key);
+    if (!slot.filled) { toast(`Not caught yet. Try the ${f.where === 'pond' ? 'pond' : 'dock'} ${TIME_LABEL[f.time]}.`); return; }
+    const best = Math.max(0, ...S.fish.filter((x) => x.species === f.id).map((x) => x.cm || 0));
+    toast(`${f.name}${best ? `, best ${best} cm` : ''}`); return;
+  }
+  if (sp.style === 'case') {
+    const b = BUGS.find((x) => x.id === slot.key), sh = SHELLS.find((x) => x.id === slot.key);
+    if (b) toast(slot.filled ? `${b.name} ×${pocket.bugs[b.id]}` : `Not found yet. Out ${b.time === 'night' ? 'at night' : 'in the day'} in ${b.seasons.join(', ')}.`);
+    else toast(slot.filled ? `${sh.name} ×${pocket.shells[sh.id]}` : 'Not found yet. Shells wash up on the beach.');
+    return;
+  }
+  if (!slot.filled) { toast(`A ${sp.title.toLowerCase()} card goes here.`); return; }
+  openReader(slot.key, closeSheet);
+});
 function openReader(cardId, back) {
   const l = LESSONS.find((x) => x.id === cardId), c = CATEGORIES[l.cat];
   openSheet(c.label, `<article class="card guessed"><h3>${esc(l.title)}</h3><div class="reading">${l.body.map((p) => `<p>${esc(p)}</p>`).join('')}${hasDemo(l.id) ? `<div class="demo" data-demo="${l.id}"></div>` : ''}</div></article>

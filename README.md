@@ -36,7 +36,7 @@ Then open `http://localhost:8080`, or `http://<laptop-ip>:8080` from your phone 
 
 ## How it plays
 
-**Every topic has one card a day.** Fourteen topics, so up to fourteen cards a day. **Maple** (art, film, fashion, culture), **Fennel** (news, travel, history), **Pepper** (food, wine, cheese) and **Sage** (science, probability, robotics, philosophy) each show a red mark while one of their topics still has today's card waiting. Tap them for their topic list, a Review button when cards are due, and their **museum**: every card you've learned in their topics, brightening as you remember it, tap to reread. Each topic counts the days you've done it; missing a day loses nothing. After today's card you can keep learning more in that topic, as much as you like.
+**Every topic has one card a day.** Fourteen topics, so up to fourteen cards a day. **Maple** (art, film, fashion, culture), **Fennel** (news, travel, history), **Pepper** (food, wine, cheese) and **Sage** (science, probability, robotics, philosophy) each show a red mark while one of their topics still has today's card waiting. Tap them for their topic list, a Review button when cards are due, and their wing of the **museum**. Each topic counts the days you've done it; missing a day loses nothing. After today's card you can keep learning more in that topic, as much as you like.
 
 **Today** (top left) shows how many of the 14 topics you've done and opens all of them in one list, plus a review of everything due. A topic lesson runs that topic's due reviews first (as a map, Timeline, number slider or recall question), then the new card with a quick guess before the reading. Once every card in a topic is read, its daily card becomes a refresher review. Buildings open straight away when you tap them. Visitors drop by to say hello.
 
@@ -62,6 +62,10 @@ Then open `http://localhost:8080`, or `http://<laptop-ip>:8080` from your phone 
 | Sage's hill | Up either staircase behind town, around the observatory | Science, Probability, Robotics, Philosophy |
 
 The island is one continuous map (66 by 38 tiles) ringed by wooded cliffs, with the sea along the south. Each neighbourhood is about the size the whole island used to be, with room to fill. Pip jogs on long walks.
+
+Each topic has its own corner (a hedged sculpture garden, a tea garden behind an arch, an outdoor cinema, a kitchen garden, a dairy pasture, a vineyard, a probability garden, a stoa, a robot test track...), laid out in `LAYOUT` in `world.js`. Everything not built yet shows as a staked-out plot in its planned spot; tap one to see what goes there and how to unlock it.
+
+**The museum** (west of the cottage) has a wing per keeper with a room per topic: every card has its own frame on the wall from the start, empty until you learn it, and the frame turns from plain wood to gold as you remember it in reviews. Tap a picture to reread its card. There's also an aquarium (a tank for each of the 20 fish, with a silhouette and a hint until you catch it) and a nature room for bugs and shells. Arrows move between rooms; tap the room name for the full list.
 
 Each topic has three items:
 
